@@ -64,10 +64,10 @@
   "homepage": "https://docs.heyo.sh",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/heyo/heyo-docs.git"
+    "url": "git+https://github.com/heyo-sh/heyo-docs.git"
   },
   "bugs": {
-    "url": "https://github.com/heyo/heyo-docs/issues"
+    "url": "https://github.com/heyo-sh/heyo-docs/issues"
   },
   "files": [
     "dist"

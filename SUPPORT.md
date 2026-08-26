@@ -1,6 +1,6 @@
 # Getting help
 
-- Use [GitHub Discussions](https://github.com/heyo/heyo-docs/discussions) for
+- Use [GitHub Discussions](https://github.com/heyo-sh/heyo-docs/discussions) for
   questions, integration help, and early design conversations.
 - Use an issue template for confirmed bugs and well-defined feature requests.
 - Use the private process in [SECURITY.md](SECURITY.md) for vulnerabilities.

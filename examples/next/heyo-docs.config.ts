@@ -56,7 +56,7 @@ export default heyoDocs({
     },
   ],
   footer: {
-    github: "https://github.com/heyo/heyo-docs",
+    github: "https://github.com/heyo-sh/heyo-docs",
     website: "https://docs.heyo.sh",
   },
   branding: { name: "Heyo Docs" },

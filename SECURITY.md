@@ -5,7 +5,7 @@
 Please do not open a public issue for a suspected security vulnerability.
 Use GitHub's private vulnerability-report form for this repository instead:
 
-<https://github.com/heyo/heyo-docs/security/advisories/new>
+<https://github.com/heyo-sh/heyo-docs/security/advisories/new>
 
 Include the affected package and version, a minimal proof of concept, impact,
 and any mitigation you know. Do not include credentials, customer data, or

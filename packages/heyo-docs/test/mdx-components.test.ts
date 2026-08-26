@@ -215,9 +215,9 @@ test("renders interactive component shells during SSR", () => {
         null,
         createElement(File, { name: "heyo-docs.config.ts" }),
       ),
-      createElement(GitHub, { href: "https://github.com/heyo/heyo-docs" }),
+      createElement(GitHub, { href: "https://github.com/heyo-sh/heyo-docs" }),
       createElement(GitHub, {
-        href: "https://github.com/heyo/heyo-docs",
+        href: "https://github.com/heyo-sh/heyo-docs",
         variant: "inset",
       }),
       createElement(Mermaid, { chart: "flowchart LR\nA-->B" }),
@@ -297,7 +297,7 @@ test("uses a fenced code block title as its label", () => {
 test("MDX compiles component syntax used by the documentation theme", async () => {
   const output = String(
     await compile(
-      '<Tabs><Tab title="Bun">Content</Tab></Tabs>\n\n<Callout variant="destructive">Danger</Callout>\n\n<GitHub href="https://github.com/heyo/heyo-docs" />',
+      '<Tabs><Tab title="Bun">Content</Tab></Tabs>\n\n<Callout variant="destructive">Danger</Callout>\n\n<GitHub href="https://github.com/heyo-sh/heyo-docs" />',
       {
         outputFormat: "program",
         providerImportSource: undefined,
