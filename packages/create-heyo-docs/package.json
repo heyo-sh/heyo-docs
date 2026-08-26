@@ -1,0 +1,36 @@
+{
+  "name": "@heyo-sh/create-heyo-docs",
+  "version": "0.1.0",
+  "description": "Create a standalone Heyo Docs documentation project.",
+  "homepage": "https://heyo.sh",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/heyo/heyo-docs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/heyo/heyo-docs/issues"
+  },
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "create-heyo-docs": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "templates",
+    "deployments"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@clack/prompts": "0.10.0"
+  },
+  "scripts": {
+    "dev": "bun run build --watch",
+    "build": "bun build src/index.ts --outdir dist --target bun --external @clack/prompts && bun run build:types",
+    "build:types": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "bun test"
+  }
+}

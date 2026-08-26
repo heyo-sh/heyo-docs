@@ -1,0 +1,70 @@
+---
+import config from "../../heyo-docs.config";
+import "../styles/app.css";
+import { getThemeScript, THEME_STORAGE_KEY } from "../lib/theme";
+
+interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  robots?: "index, follow" | "noindex";
+  structuredData: unknown[];
+}
+
+const {
+  title,
+  description,
+  canonical,
+  robots = "index, follow",
+  structuredData,
+} = Astro.props;
+const jsonLd = JSON.stringify(structuredData).replace(/</g, "\\u003c");
+const hasChangelog = config.groups.some((group) => group.type === "changelog");
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="robots" content={robots} />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content={config.title} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {canonical && <link rel="canonical" href={canonical} />}
+    {canonical && <meta property="og:url" content={canonical} />}
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link
+      rel="icon"
+      href="/favicon-96x96.png"
+      sizes="96x96"
+      type="image/png"
+    />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <link rel="manifest" href="/site.webmanifest" />
+    {
+      hasChangelog && (
+        <link
+          rel="alternate"
+          href="/rss.xml"
+          type="application/rss+xml"
+          title={`${config.title} updates`}
+        />
+      )
+    }
+    <script is:inline set:html={getThemeScript(THEME_STORAGE_KEY, config.mode)}></script>
+    <script is:inline type="application/ld+json" set:html={jsonLd}></script>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

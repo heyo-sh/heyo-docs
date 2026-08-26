@@ -1,0 +1,10 @@
+node_modules/
+dist/
+build/
+coverage/
+**/.astro/
+**/.next/
+**/.react-router/
+**/app/_heyo-docs/
+**/public/_heyo-docs/openapi/
+bun.lock

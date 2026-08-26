@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and help
+    url: https://github.com/heyo/heyo-docs/discussions
+    about: Ask for implementation help or share an idea that is not yet a scoped feature request.
+  - name: Security vulnerability
+    url: https://github.com/heyo/heyo-docs/security/advisories/new
+    about: Report vulnerabilities privately. Do not disclose them in a public issue.

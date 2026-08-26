@@ -1,0 +1,50 @@
+---
+import { AstroDocsApp } from "../components/docs-app";
+import DocsLayout from "../layouts/docs-layout.astro";
+import { docsContext, pathnameForSlug } from "../lib/docs";
+import { docsSeo } from "../lib/seo";
+import { openApiEndpointDetail } from "@heyo-sh/heyo-docs";
+import { pages } from "virtual:heyo-docs-content";
+import { openApiEndpoints } from "virtual:heyo-docs-openapi/index";
+
+export async function getStaticPaths() {
+  return [...pages, ...openApiEndpoints].map(({ slug }) => ({
+    params: { slug: slug === "/" ? undefined : slug.slice(1) },
+  }));
+}
+
+const pathname = pathnameForSlug(Astro.params.slug);
+const context = docsContext(pathname);
+const exists = Boolean(context.page || context.endpoint);
+if (!exists) Astro.response.status = 404;
+const currentOpenApiEndpoint = context.endpoint
+  ? openApiEndpointDetail(context.endpoint)
+  : undefined;
+
+const seo = exists
+  ? docsSeo({ ...context, pathname })
+  : {
+      title: `Not found | ${context.config.title}`,
+      description: context.config.description,
+      structuredData: [
+        {
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: context.config.title,
+          description: context.config.description,
+          ...(context.config.siteUrl ? { url: context.config.siteUrl } : {}),
+        },
+      ],
+    };
+---
+
+<DocsLayout
+  {...seo}
+  robots={exists ? "index, follow" : "noindex"}
+>
+  <AstroDocsApp
+    client:load
+    currentOpenApiEndpoint={currentOpenApiEndpoint}
+    pathname={pathname}
+  />
+</DocsLayout>

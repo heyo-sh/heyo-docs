@@ -1,0 +1,34 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "ignoreWorkspaces": ["examples/*"],
+  "workspaces": {
+    "packages/heyo-docs": {
+      "entry": [
+        "src/index.tsx",
+        "src/vite.ts",
+        "src/node.ts",
+        "src/next.ts",
+        "src/next-plugins.ts",
+        "src/astro.ts",
+        "src/config.ts",
+        "test/**/*.test.ts"
+      ],
+      "project": [
+        "src/**/*.{ts,tsx,css,mdx}",
+        "scripts/**/*.ts",
+        "test/**/*.ts"
+      ],
+      "ignoreFiles": [
+        "src/components/ui/input-group.tsx",
+        "src/theme/**/*.css",
+        "src/theme/grain/brand-mark.tsx"
+      ],
+      "ignoreDependencies": ["shadcn", "tailwindcss", "tw-animate-css"]
+    },
+    "packages/create-heyo-docs": {
+      "entry": ["src/index.ts", "test/**/*.test.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"],
+      "ignore": ["templates/**"]
+    }
+  }
+}

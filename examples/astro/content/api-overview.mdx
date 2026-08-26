@@ -1,0 +1,34 @@
+---
+title: API overview
+description: Learn how to authenticate and explore the API reference.
+---
+
+# API overview
+
+The API reference is generated from `openapi.json`. Use the endpoint pages to
+enter parameters, send a request, and copy a cURL or JavaScript example.
+
+## Large-schema debugging fixtures
+
+The sidebar also includes a pinned, public OpenAPI fixture for exercising
+static route generation, endpoint JSON sharding, search, navigation, and
+request forms with a large real-world document:
+
+- Square: 3.3 MB, 255 paths, 334 operations
+
+It is remote by design, so the example repository stays lightweight. Its URL
+is pinned to a commit for repeatable debugging. Open any endpoint through
+the relevant **stress test** group in the sidebar. Every fixture endpoint is
+prerendered and receives its own static data asset, so this example deliberately
+trades longer builds and larger output for request-time-free documentation.
+
+## Authentication
+
+The example API uses a Bearer token. Enter it once on any protected endpoint;
+Heyo Docs keeps it in this browser while you move between API pages.
+
+## Custom pages first
+
+This ordinary MDX page belongs to the OpenAPI group. Its section is configured
+before the generated endpoint sections, so it always appears at the top of the
+sidebar.

@@ -1,0 +1,8 @@
+@import "@fontsource-variable/figtree";
+@import "@heyo-sh/heyo-docs/theme/moss.css";
+
+:root {
+  --heyo-docs-font-family: "Figtree Variable", sans-serif;
+}
+
+/* Add project-specific token overrides and theme styles below this import. */

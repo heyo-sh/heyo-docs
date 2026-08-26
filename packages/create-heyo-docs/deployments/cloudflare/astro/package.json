@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "deploy": "wrangler deploy --config dist/server/wrangler.json",
+    "cf-typegen": "wrangler types --config dist/server/wrangler.json"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^14.2.3"
+  },
+  "devDependencies": {
+    "wrangler": "^4.125.0"
+  }
+}

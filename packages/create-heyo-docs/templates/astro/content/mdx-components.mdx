@@ -1,0 +1,44 @@
+---
+title: MDX components
+description: Every built-in MDX component, its variants, and its usage.
+---
+
+# MDX components
+
+Every component below is available without an import. The examples show every visual variant, so this page is also the reference for the documentation theme.
+
+## Button
+
+`Button` uses the same shadcn component as the theme. It accepts `variant` and `size`, and uses `href` when the button should navigate. Use `align="left"`, `"center"`, or `"right"` to position it in the documentation column.
+
+<Button href="/getting-started" variant="default" size="lg">
+  Get started
+</Button>
+
+## Callout
+
+<Callout type="tip" title="No imports needed">
+  Write built-in components directly in any MDX page.
+</Callout>
+
+## Tabs
+
+<Tabs defaultValue="npm" variant="line">
+  <Tab title="npm">npm install @heyo-sh/heyo-docs</Tab>
+  <Tab title="Bun">bun add @heyo-sh/heyo-docs</Tab>
+</Tabs>
+
+## Code blocks
+
+`CodeBlock` preserves every newline as a hard code line.
+
+<CodeBlock language="ts" title="src/config.ts">
+  {`export const title = "My docs";
+export const searchEnabled = true;`}
+</CodeBlock>
+
+## Mermaid
+
+<Mermaid>{`flowchart LR
+  Content --> Build
+  Build --> Documentation`}</Mermaid>

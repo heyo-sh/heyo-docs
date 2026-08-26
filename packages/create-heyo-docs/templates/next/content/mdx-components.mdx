@@ -1,0 +1,41 @@
+---
+title: MDX components
+description: Every built-in MDX component is available without an import.
+---
+
+# MDX components
+
+Every built-in component is available in a Next.js MDX page without an import.
+
+## Callout
+
+<Callout
+  type="tip"
+  title="No imports needed"
+  description="Use the documentation components directly in your MDX files."
+/>
+
+## Tabs
+
+<Tabs defaultValue="npm" variant="line">
+  <Tab title="npm" value="npm">
+    npm run dev
+  </Tab>
+  <Tab title="Bun" value="bun">
+    bun run dev
+  </Tab>
+</Tabs>
+
+## Code blocks
+
+`CodeBlock` preserves every newline as a hard code line.
+
+<CodeBlock language="tsx" title="app/page.tsx" showLineNumbers>
+  {`export default function Page() {
+  return <h1>Hello</h1>;
+}`}
+</CodeBlock>
+
+## More components
+
+`Accordion`, `Button`, `Columns`, `File`, `GitHub`, `HoverCard`, `Image`, `Mermaid`, `RelatedTopics`, `Steps`, `Tree`, `Video`, and the remaining primitives use the same MDX contract as every Heyo Docs template.

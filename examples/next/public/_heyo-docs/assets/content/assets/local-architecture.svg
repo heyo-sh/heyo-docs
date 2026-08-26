@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="360" viewBox="0 0 960 360" fill="none">
+  <rect width="960" height="360" rx="24" fill="#F7F7F8"/>
+  <g fill="#FFFFFF" stroke="#D4D4D8" stroke-width="2">
+    <rect x="72" y="108" width="220" height="144" rx="18"/>
+    <rect x="370" y="108" width="220" height="144" rx="18"/>
+    <rect x="668" y="108" width="220" height="144" rx="18"/>
+  </g>
+  <g fill="#18181B" font-family="Arial, sans-serif" text-anchor="middle">
+    <text x="182" y="166" font-size="17" font-weight="700">Content</text>
+    <text x="182" y="194" font-size="14" fill="#71717A">MDX and assets</text>
+    <text x="480" y="166" font-size="17" font-weight="700">Build</text>
+    <text x="480" y="194" font-size="14" fill="#71717A">Vite bundles files</text>
+    <text x="778" y="166" font-size="17" font-weight="700">Documentation</text>
+    <text x="778" y="194" font-size="14" fill="#71717A">Static output</text>
+  </g>
+  <g stroke="#71717A" stroke-linecap="round" stroke-width="2">
+    <path d="M314 180h34"/>
+    <path d="m340 172 8 8-8 8"/>
+    <path d="M612 180h34"/>
+    <path d="m638 172 8 8-8 8"/>
+  </g>
+</svg>

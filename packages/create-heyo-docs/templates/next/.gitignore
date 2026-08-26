@@ -1,0 +1,5 @@
+node_modules/
+.next/
+app/_heyo-docs/
+public/_heyo-docs/openapi/
+*.tsbuildinfo

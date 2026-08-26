@@ -1,0 +1,67 @@
+name: Bug report
+description: Report a reproducible problem in Heyo Docs.
+title: "bug: "
+labels: [bug, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. A small reproduction lets us investigate much faster.
+  - type: input
+    id: version
+    attributes:
+      label: Heyo Docs version
+      description: Include the package version and framework adapter, if relevant.
+      placeholder: "@heyo-sh/heyo-docs 0.1.0, React Router 8.3.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: framework
+    attributes:
+      label: Framework
+      options:
+        - React Router
+        - Next.js
+        - Astro
+        - Package API only
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Link a repository or paste the smallest configuration and steps that reproduce the issue. Never include secrets.
+      placeholder: |
+        1. Create a project with …
+        2. Configure …
+        3. Run …
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs, stack trace, or screenshot
+      description: Remove tokens, private URLs, and personal data before posting.
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues and did not find a duplicate.
+          required: true
+        - label: I can reproduce this with a supported, current dependency version.
+          required: true

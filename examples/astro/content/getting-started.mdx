@@ -1,0 +1,88 @@
+---
+title: Getting started
+description: Create a standalone documentation project with the CLI.
+---
+
+# Getting started
+
+Run `bun create @heyo-sh/heyo-docs`, select a deployment target, then start documenting.
+
+## Routes from files
+
+An MDX file at `content/api/auth.mdx` becomes the `/api/auth` route.
+
+### Root documents
+
+Name a file `index.mdx` to serve it from the root of its directory. The root content file becomes `/`, while `guides/index.mdx` becomes `/guides`.
+
+### Nested documents
+
+Directories become URL segments. For example, `content/api/authentication.mdx` is available at `/api/authentication` and can be placed in any section of the sidebar configuration.
+
+### Stable page titles
+
+Set a descriptive frontmatter title even when the filename is abbreviated. The title appears in navigation, page metadata, and adjacent-page links.
+
+## Write an article
+
+Start with a single first-level heading and use second-level headings for the major steps. Third-level headings are ideal for detail that should appear indented beneath its parent in the table of contents.
+
+### Add frontmatter
+
+Frontmatter is optional, but a title and description provide a better page heading and a clear search result. Keep the description short enough to work as a meta description.
+
+### Add sections
+
+Write prose between headings so the page has a natural reading rhythm. Code samples, lists, callouts, and links are rendered by the same MDX pipeline.
+
+### Add subsections
+
+Use subsections only when they clarify a larger section. They are included in the TOC with a deeper indentation and a connector that turns toward the nested level.
+
+## Configure navigation
+
+The page tree is defined in `heyo-docs.config.ts`. It can be organized independently from the physical folders, which is useful when a guide spans multiple areas of a project.
+
+### Create a group
+
+A group provides a high-level heading in the sidebar. Give it a clear label so visitors can scan the documentation structure quickly.
+
+### Create a section
+
+Sections are collapsible lists of pages. Mark a section as expanded when its pages should be visible on first load.
+
+### Choose page order
+
+List pages in the order they should appear to readers. That order also controls the previous and next navigation at the end of each article.
+
+## Check the result
+
+Run the development server and visit this page at a wide viewport. The right column is intentionally long enough to exercise its independent scrolling behaviour.
+
+### Verify the sticky panel
+
+Scroll the article body. The TOC stays fixed beside the article without shifting upward when it becomes sticky.
+
+### Verify nested entries
+
+Notice that third-level headings are indented farther than second-level headings. The connector should bend between those two levels without covering the text.
+
+### Verify active progress
+
+Move through the sections of this article. The active label changes color, and the connector fills continuously from the first heading to the active one.
+
+## Continue building
+
+Once the basic page works, add pages for your product concepts, API reference, and troubleshooting notes. The same content and navigation conventions apply to each document.
+
+### Add a guide
+
+Create a new MDX file and include it in the appropriate configured section. Rebuild the application to verify its final route and generated metadata.
+
+### Add API documentation
+
+Keep endpoint documentation in a dedicated area when it has a different navigation pattern. The rest of the site can still share the same header, sidebar, and theme tokens.
+
+### Review on smaller screens
+
+The right-side TOC is intentionally hidden before the large desktop breakpoint. On narrow screens, the article remains the primary reading surface.

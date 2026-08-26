@@ -1,0 +1,36 @@
+name: Feature request
+description: Suggest an improvement to the public API, templates, or documentation experience.
+title: "feature: "
+labels: [enhancement, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Start with the problem. A proposed API is welcome, but should not be required.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: Who has this problem and what are they unable to do today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution or API
+      description: Include an example configuration, component, or user flow when helpful.
+      render: ts
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Include workarounds and why they are insufficient.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues and discussions for this idea.
+          required: true
+        - label: I am willing to help test a proposed implementation.
+          required: false

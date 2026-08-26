@@ -1,0 +1,293 @@
+---
+title: MDX components
+description: Every built-in MDX component, its variants, and its usage.
+---
+
+# MDX components
+
+Every component below is available without an import. The examples show every visual variant, so this page is also the reference for the documentation theme.
+
+## Button
+
+`Button` uses the same shadcn component as the theme. It accepts `variant` and `size`, and uses `href` when the button should navigate. Use `align="left"`, `"center"`, or `"right"` to position it in the documentation column. Available variants are `default`, `secondary`, `outline`, `ghost`, `destructive`, and `link`; sizes are `xs`, `sm`, `default`, and `lg`.
+
+<Button href="/getting-started" variant="default" size="lg">
+  Get started
+</Button>
+
+<Button align="center" href="/mdx-components" variant="outline" size="sm">
+  Centred outline button
+</Button>
+
+<Button
+  align="right"
+  href="https://github.com/heyo/heyo-docs"
+  target="_blank"
+  variant="ghost"
+  size="xs"
+>
+  View on GitHub
+</Button>
+
+## Tabs
+
+`Tabs` supports the `default` and `line` variants. Each `Tab` needs a title and can have a stable `value`.
+
+<Tabs defaultValue="npm" variant="default">
+  <Tab title="npm" value="npm">
+    Install the package with npm.
+  </Tab>
+  <Tab title="Bun" value="bun">
+    Bun works with the same Vite plugin.
+  </Tab>
+</Tabs>
+
+<Tabs defaultValue="npm" variant="line">
+  <Tab title="npm" value="npm">
+    The line treatment is useful for compact comparisons.
+  </Tab>
+  <Tab title="Bun" value="bun">
+    Use the variant that fits the surrounding content.
+  </Tab>
+</Tabs>
+
+## Accordion
+
+`Accordion` works as a group of `AccordionItem` elements or as a concise, one-item disclosure. Set `multiple` to keep more than one item open.
+
+<Accordion multiple>
+  <AccordionItem title="Multiple items" value="multiple">
+    Several items can be open at the same time.
+  </AccordionItem>
+  <AccordionItem title="Individual item" value="item">
+    Give each item its own `value` when the state needs to be stable.
+  </AccordionItem>
+</Accordion>
+
+<Accordion title="Concise Accordion" defaultOpen>
+  Use `title` directly on Accordion for one disclosure, and `defaultOpen` to
+  reveal it initially.
+</Accordion>
+
+## CodeBlock
+
+`CodeBlock` uses GitHub syntax highlighting and preserves every newline as a
+hard code line. Use `showLineNumbers` when a reader may need to reference a
+line.
+
+<CodeBlock language="ts" showLineNumbers title="config.ts">
+  {`export const theme = "github";
+export const showLineNumbers = true;`}
+</CodeBlock>
+
+## CodeSnippet
+
+`CodeSnippet` pairs a rendered preview with its implementation. Source longer than three lines is collapsed behind a gradient; select **View Code** to reveal a scrollable code pane and copy it. Pass the preview as children and the source through `code`.
+
+<CodeSnippet
+  code={`const title = "Keep examples compact"
+const details = [
+  "Readers can reveal the implementation when they need it.",
+  "The open code pane keeps long examples within the page.",
+  "Use the copy button to take the complete snippet.",
+]
+
+export function CompactExample() {
+  return (
+    <Callout
+      type="tip"
+      title={title}
+      description={details.join(" ")}
+    />
+  )
+}`}
+  language="tsx"
+  showLineNumbers
+>
+  <Callout
+    type="tip"
+    title="Keep examples compact"
+    description="Readers can reveal the implementation when they need it."
+  />
+</CodeSnippet>
+
+## CodeBlockGroup
+
+`CodeBlockGroup` groups code blocks into tabs. It supports the same `default` and `line` tab variants as `Tabs`.
+
+<CodeBlockGroup variant="default">
+  <CodeBlock language="bash" title="npm">
+    {"npm install your-package"}
+  </CodeBlock>
+  <CodeBlock language="bash" title="Bun">
+    {"bun add your-package"}
+  </CodeBlock>
+</CodeBlockGroup>
+
+<CodeBlockGroup variant="line">
+  <CodeBlock language="bash" title="npm">
+    {"npm run dev"}
+  </CodeBlock>
+  <CodeBlock language="bash" title="Bun">
+    {"bun run dev"}
+  </CodeBlock>
+</CodeBlockGroup>
+
+## Callout
+
+`Callout` supports `note`, `warning`, `info`, `tip`, `check`, and `danger`. Each type has a matching icon and colour accent. Use `title` and `description` for a concise callout, or provide richer MDX content as children.
+
+<Callout type="note" description="Use a note for supporting context." />
+
+<Callout
+  type="warning"
+  title="Check your configuration"
+  description="This value affects every deployed environment."
+/>
+
+<Callout
+  type="info"
+  description="This guide assumes React Router Framework Mode."
+/>
+
+<Callout
+  type="tip"
+  description="Keep stable values when an accordion state must persist."
+/>
+
+<Callout type="check" description="Your project is ready to publish." />
+
+<Callout
+  type="danger"
+  title="Irreversible action"
+  description="This action permanently removes the deployment."
+/>
+
+## Columns
+
+`Columns` supports two or three columns, while `Column` supports `card` and `plain` variants. A `href` makes a card linkable.
+
+<Columns columns={2} variant="card">
+  <Column title="Card column">
+    The default card surface works well for grouped links.
+  </Column>
+  <Column href="https://ui.shadcn.com" title="Linked card">
+    This card is a link.
+  </Column>
+</Columns>
+
+<Columns columns={3} variant="plain">
+  <Column title="Plain one">Use plain columns for lighter layouts.</Column>
+  <Column title="Plain two">
+    Individual items may override the parent variant.
+  </Column>
+  <Column title="Card override" variant="card">
+    This column restores the card surface.
+  </Column>
+</Columns>
+
+## Related topics
+
+`RelatedTopics` creates a compact list of nearby documentation. Each `RelatedTopic` takes an `icon`, `name`, and `src` destination.
+
+<RelatedTopics>
+  <RelatedTopic icon="book" name="Getting started" src="/getting-started" />
+  <RelatedTopic
+    icon="code"
+    name="Code snippets"
+    src="/mdx-components#codesnippet"
+  />
+  <RelatedTopic
+    icon="globe"
+    name="shadcn documentation"
+    src="https://ui.shadcn.com/docs/components/base/hover-card"
+  />
+</RelatedTopics>
+
+## Hover Card
+
+`HoverCard` is the shadcn Hover Card primitive. It opens instantly by default; pass `delay` or `closeDelay` to `HoverCardTrigger` when a particular preview needs different timing. Its trigger can sit directly in a sentence: hover or focus <HoverCard><HoverCardTrigger href="#hover-card">this inline link</HoverCardTrigger><HoverCardContent>Preview content without navigating away from the page.</HoverCardContent></HoverCard> to open it.
+
+<HoverCard>
+  <HoverCardTrigger
+    href="https://github.com/shadcn-ui"
+    target="_blank"
+    rel="noreferrer"
+    className="inline-flex font-medium underline underline-offset-4"
+  >
+    <span>@shadcn</span>
+  </HoverCardTrigger>
+  <HoverCardContent className="w-80 p-4">
+    <div className="flex justify-between gap-4">
+      <img
+        src="https://github.com/shadcn-ui.png?size=96"
+        alt="shadcn"
+        width="48"
+        height="48"
+        className="size-12 rounded-full"
+      />
+      <div className="min-w-0 space-y-1.5">
+        <p className="font-semibold text-popover-foreground">shadcn/ui</p>
+        <p className="text-muted-foreground">
+          Beautifully designed components that you can copy, own, and build on.
+        </p>
+        <div className="flex flex-wrap gap-x-3 gap-y-1 pt-1 text-[0.6875rem] text-muted-foreground">
+          <span>127k GitHub stars</span>
+          <span>Open source</span>
+        </div>
+      </div>
+    </div>
+  </HoverCardContent>
+</HoverCard>
+
+## Tree
+
+`Tree` contains `Folder` and `File`. Folders are open by default; set `defaultOpen={false}` for a collapsed branch.
+
+<Tree>
+  <Folder name="app">
+    <File name="routes.ts" />
+    <Folder name="components" defaultOpen={false}>
+      <File name="theme-provider.tsx" />
+    </Folder>
+  </Folder>
+  <File name="heyo-docs.config.ts" />
+</Tree>
+
+## GitHub
+
+`GitHub` only needs a GitHub URL in `href`; it fetches the public description, star count, and fork count in the browser. `simple` is the default one-card presentation. Use `inset` for a nested repository summary with the statistics below it.
+
+<GitHub href="https://github.com/shadcn-ui/ui" />
+
+<GitHub href="https://github.com/react/react" variant="inset" />
+
+<GitHub href="https://github.com/heyo/heyo-docs" />
+
+## Steps
+
+`Steps` automatically numbers each `Step`. Pass `number` to a step when the sequence needs an explicit number.
+
+<Steps>
+  <Step title="Create content">
+    Add an `.mdx` file to the configured content directory.
+  </Step>
+  <Step title="Use a component">
+    Write `Callout`, `GitHub`, or `Mermaid` directly in the file.
+  </Step>
+  <Step number={4} title="Ship">
+    Override the number only when the sequence continues elsewhere.
+  </Step>
+</Steps>
+
+## Mermaid
+
+`Mermaid` renders client-side with the active shadcn color tokens. SVG is the default output; use `variant="ascii"` for Unicode terminal-style output.
+
+<Mermaid>{`flowchart LR
+  Content --> Build
+  Build --> Documentation`}</Mermaid>
+
+<Mermaid variant="ascii">{`flowchart LR
+  Content --> Build
+  Build --> Documentation`}</Mermaid>

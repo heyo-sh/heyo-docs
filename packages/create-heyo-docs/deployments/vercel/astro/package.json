@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "@astrojs/vercel": "^11.0.7"
+  },
+  "devDependencies": {
+    "vercel": "^59.3.0"
+  }
+}

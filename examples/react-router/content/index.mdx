@@ -1,0 +1,72 @@
+---
+title: Heyo Docs
+description: A documentation framework for projects that need a focused home for their technical content.
+---
+
+# Heyo Docs
+
+This is the local workspace example. The app owns routing; `heyo-docs` owns content discovery, MDX and presentation.
+
+## Thin integration
+
+The template only configures React Router and passes its current pathname to `DocsApp`.
+
+### Route boundary
+
+React Router owns the URL, route parameters, error boundaries, and document metadata. The documentation runtime receives the final pathname and renders the matching page.
+
+### Presentation boundary
+
+The documentation package owns the layout, sidebar navigation, search surface, page navigation, and table of contents. Keeping that split makes the example small while leaving the app in control of routing.
+
+### Runtime boundary
+
+The content plugin scans MDX during development and build time. The route imports the generated page list, so there is no request for a page body while the visitor is navigating between documentation pages.
+
+## Content model
+
+Every MDX file becomes a page model with a slug, a title, a description, rendered content, and a generated table of contents. The model is deliberately simple enough to replace the local content source later.
+
+### Files become pages
+
+Use `index.mdx` for the root page. A nested file such as `guides/installation.mdx` becomes `/guides/installation`, with the same path available to React Router.
+
+### Headings build the TOC
+
+Second- and third-level headings are collected from MDX and exposed as navigation items. The indentation in the right column reflects whether an entry is a section or a subsection.
+
+### Frontmatter supplies metadata
+
+The title and description in frontmatter are used for the document heading and SEO metadata. If a title is omitted, the first Markdown heading becomes the page title.
+
+## Navigation behaviour
+
+The sidebar follows the configured group and section order, while previous and next links follow the same structure. This lets a guide have a deliberate reading order without changing the file system.
+
+### Active sidebar entry
+
+The current page is highlighted in the left navigation. Collapsible sections preserve a compact overview when documentation grows.
+
+### Active table-of-contents entry
+
+As the article scrolls, the active heading is highlighted in the TOC. Its connected line is progressively filled from the beginning of the article to the current section.
+
+### Deep links
+
+Each heading has an ID, which makes URLs such as `/#headings-build-the-toc` shareable. Refreshing the page preserves the browser's native anchor behaviour.
+
+## Testing the layout
+
+This page intentionally contains several sections and subsections. It is useful for checking a tall article, a nested TOC, a sticky right column, and overflow inside the TOC panel.
+
+### Short headings
+
+Short labels show the normal rhythm of the navigation list and make the curved connector easy to inspect.
+
+### A longer heading that wraps on narrower documentation columns
+
+Long labels test whether text stays readable without colliding with the connector or overflowing the side panel.
+
+### Manual TOC scrolling
+
+When the list is taller than its available viewport, hover the right panel and scroll it independently. The article and the TOC should then remain separate scroll surfaces.
