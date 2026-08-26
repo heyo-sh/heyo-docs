@@ -177,14 +177,7 @@ export interface SearchDocument {
 }
 
 export type OpenApiHttpMethod =
-  | "get"
-  | "put"
-  | "post"
-  | "delete"
-  | "options"
-  | "head"
-  | "patch"
-  | "trace";
+  "get" | "put" | "post" | "delete" | "options" | "head" | "patch" | "trace";
 
 /** JSON-compatible OpenAPI document data emitted by the Vite plugin. */
 export interface OpenApiDocument {

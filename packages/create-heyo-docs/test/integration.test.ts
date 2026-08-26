@@ -42,7 +42,10 @@ beforeAll(async () => {
     runtimeDirectory,
   );
   const files = await readdir(temporaryRoot);
-  tarball = join(temporaryRoot, files.find((file) => file.endsWith(".tgz"))!);
+  tarball = join(
+    temporaryRoot,
+    files.find((file) => file.endsWith(".tgz"))!,
+  );
 });
 
 afterAll(async () => {
