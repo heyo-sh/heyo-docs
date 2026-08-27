@@ -8,3 +8,4 @@ coverage/
 **/app/_heyo-docs/
 **/public/_heyo-docs/openapi/
 bun.lock
+**/*.svg

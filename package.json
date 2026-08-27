@@ -33,6 +33,6 @@
     "typescript": "7.0.2"
   },
   "lint-staged": {
-    "*.{astro,cjs,css,cts,html,js,json,jsonc,jsx,md,mdx,mjs,mts,svg,ts,tsx,yaml,yml}": "prettier --write"
+    "*.{astro,cjs,css,cts,html,js,json,jsonc,jsx,md,mdx,mjs,mts,ts,tsx,yaml,yml}": "prettier --write"
   }
 }
