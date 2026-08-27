@@ -1,4 +1,4 @@
-<img src="./heyo-docs-hero.png" alt="Heyo Docs Logo"/>
+<img src="./public/heyo-docs-hero.png" alt="Heyo Docs Logo"/>
 
 ## Heyo Docs
 
