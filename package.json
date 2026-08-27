@@ -13,6 +13,8 @@
     "typecheck": "bun run --filter @heyo-sh/heyo-docs build && bun run --filter '*' typecheck",
     "format": "prettier --write .",
     "lint": "prettier --check .",
+    "format-staged": "lint-staged",
+    "prepare": "husky",
     "knip": "knip --include files,dependencies,unlisted,unresolved",
     "changeset": "changeset",
     "version-packages": "changeset version",
@@ -24,8 +26,13 @@
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",
     "bun-types": "1.4.0",
+    "husky": "9.1.7",
     "knip": "6.32.2",
+    "lint-staged": "17.3.0",
     "prettier": "3.9.6",
     "typescript": "7.0.2"
+  },
+  "lint-staged": {
+    "*.{astro,cjs,css,cts,html,js,json,jsonc,jsx,md,mdx,mjs,mts,ts,tsx,yaml,yml}": "prettier --write"
   }
 }
