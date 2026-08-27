@@ -1,6 +1,12 @@
+<<<<<<< HEAD
+<img src="./heyo-docs-hero.webp" alt="Heyo Docs Logo"/>
+=======
+
 <img src="./public/heyo-docs-hero.png" alt="Heyo Docs Logo"/>
 
 ## Heyo Docs
+
+> > > > > > > 29c694592a0a6a11090486efd20c1f043e349adb
 
 Heyo Docs is a themeable documentation toolkit for React Router, Next.js, and Astro. Create a standalone documentation site with MDX content, navigation, search, OpenAPI reference pages, and built-in SEO.
 
@@ -11,18 +17,29 @@ Heyo Docs is a themeable documentation toolkit for React Router, Next.js, and As
 Create a new documentation project, then start its development server:
 
 ```bash
+# pnpm
 pnpm create @heyo-sh/heyo-docs my-docs
 cd my-docs
 pnpm dev
-```
 
-The creator lets you choose React Router, Next.js, or Astro, as well as a theme and deployment target. It also works with Bun, npm, and Yarn:
-
-```bash
-bun create @heyo-sh/heyo-docs my-docs
+# npm
 npm create @heyo-sh/heyo-docs@latest my-docs
-yarn create @heyo-sh/heyo-docs my-docs
+cd my-docs
+npm run dev
+
+# Yarn
+yarn dlx @heyo-sh/create-heyo-docs my-docs
+cd my-docs
+yarn dev
+
+# Bun
+bun create @heyo-sh/heyo-docs my-docs
+cd my-docs
+bun run dev
 ```
+
+The creator works with pnpm, npm, Yarn, and Bun. It lets you choose React
+Router, Next.js, or Astro, plus a theme and deployment target.
 
 For an existing application, follow the framework-specific guides for [React Router](https://docs.heyo.sh/framework/react-router), [Next.js](https://docs.heyo.sh/framework/nextjs), or [Astro](https://docs.heyo.sh/framework/astro).
 

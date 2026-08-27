@@ -7,13 +7,33 @@ The themeable documentation runtime behind Heyo Docs sites. It provides MDX cont
 For a new documentation site, use the project creator:
 
 ```bash
+# pnpm
 pnpm create @heyo-sh/heyo-docs my-docs
+
+# npm
+npm create @heyo-sh/heyo-docs@latest my-docs
+
+# Yarn
+yarn dlx @heyo-sh/create-heyo-docs my-docs
+
+# Bun
+bun create @heyo-sh/heyo-docs my-docs
 ```
 
 To add the runtime to an existing supported application:
 
 ```bash
+# pnpm
 pnpm add @heyo-sh/heyo-docs
+
+# npm
+npm install @heyo-sh/heyo-docs
+
+# Yarn
+yarn add @heyo-sh/heyo-docs
+
+# Bun
+bun add @heyo-sh/heyo-docs
 ```
 
 Framework integrations and the configuration reference are available in the [Heyo Docs documentation](https://docs.heyo.sh).
