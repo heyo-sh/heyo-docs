@@ -10,28 +10,22 @@ Heyo Docs is a themeable documentation toolkit for React Router, Next.js, and As
 
 ## Get started
 
-Create a new documentation project, then start its development server:
+Start the creator and answer its questions about the project directory,
+framework, deployment target, theme, and package manager. When it finishes, it
+prints the exact commands for starting the development server.
 
 ```bash
 # pnpm
-pnpm create @heyo-sh/heyo-docs my-docs
-cd my-docs
-pnpm dev
+pnpm create @heyo-sh/heyo-docs
 
 # npm
-npm create @heyo-sh/heyo-docs@latest my-docs
-cd my-docs
-npm run dev
+npm create @heyo-sh/heyo-docs@latest
 
 # Yarn
-yarn dlx @heyo-sh/create-heyo-docs my-docs
-cd my-docs
-yarn dev
+yarn dlx @heyo-sh/create-heyo-docs
 
 # Bun
-bun create @heyo-sh/heyo-docs my-docs
-cd my-docs
-bun run dev
+bun create @heyo-sh/heyo-docs
 ```
 
 The creator works with pnpm, npm, Yarn, and Bun. It lets you choose React

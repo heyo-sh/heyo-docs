@@ -4,38 +4,30 @@ Create a standalone, production-ready documentation site with Heyo Docs. Choose 
 
 ## Create a project
 
+Run the creator without arguments to choose the project directory, framework,
+deployment target, theme, and package manager interactively. It prints the
+appropriate `cd` and development-server commands when it finishes.
+
 ```bash
 # pnpm
-pnpm create @heyo-sh/heyo-docs my-docs
-cd my-docs
-pnpm dev
+pnpm create @heyo-sh/heyo-docs
 
 # npm
-npm create @heyo-sh/heyo-docs@latest my-docs
-cd my-docs
-npm run dev
+npm create @heyo-sh/heyo-docs@latest
 
 # Yarn
-yarn dlx @heyo-sh/create-heyo-docs my-docs
-cd my-docs
-yarn dev
+yarn dlx @heyo-sh/create-heyo-docs
 
 # Bun
-bun create @heyo-sh/heyo-docs my-docs
-cd my-docs
-bun run dev
+bun create @heyo-sh/heyo-docs
 ```
 
 The creator works with pnpm, npm, Yarn, and Bun.
 
 ## Options
 
-```bash
-pnpm create @heyo-sh/heyo-docs my-docs \
-  --template astro \
-  --theme moss \
-  --deployment cloudflare
-```
+Passing options makes the creator non-interactive; include a project-directory
+argument when using them in automation.
 
 | Option              | Values                          |
 | ------------------- | ------------------------------- |

@@ -8,16 +8,16 @@ For a new documentation site, use the project creator:
 
 ```bash
 # pnpm
-pnpm create @heyo-sh/heyo-docs my-docs
+pnpm create @heyo-sh/heyo-docs
 
 # npm
-npm create @heyo-sh/heyo-docs@latest my-docs
+npm create @heyo-sh/heyo-docs@latest
 
 # Yarn
-yarn dlx @heyo-sh/create-heyo-docs my-docs
+yarn dlx @heyo-sh/create-heyo-docs
 
 # Bun
-bun create @heyo-sh/heyo-docs my-docs
+bun create @heyo-sh/heyo-docs
 ```
 
 To add the runtime to an existing supported application:
