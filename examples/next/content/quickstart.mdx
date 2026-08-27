@@ -1,0 +1,60 @@
+---
+title: Quickstart
+description: Create, run, and understand your Heyo Docs project.
+---
+
+# Quickstart
+
+A new Heyo Docs project is a complete documentation site: MDX files provide the
+content, `heyo-docs.config.ts` defines the site model, and your selected
+framework renders the finished experience.
+
+## Create a project
+
+Use the creator with the package manager you already use. It asks for a project
+name, framework, deployment target, theme, and package manager, then creates a
+ready-to-run application.
+
+<CodeBlockGroup defaultValue="bun" variant="line">
+  <CodeBlock language="bash" title="bun">
+    {"bun create @heyo-sh/heyo-docs"}
+  </CodeBlock>
+  <CodeBlock language="bash" title="npm">
+    {"npm create @heyo-sh/heyo-docs@latest"}
+  </CodeBlock>
+  <CodeBlock language="bash" title="pnpm">
+    {"pnpm create @heyo-sh/heyo-docs"}
+  </CodeBlock>
+  <CodeBlock language="bash" title="yarn">
+    {"yarn dlx @heyo-sh/create-heyo-docs"}
+  </CodeBlock>
+</CodeBlockGroup>
+
+When the command finishes, move into the new directory and run the development
+command printed by the creator. The local server rebuilds the documentation
+when you change either content or configuration.
+
+## How the pieces fit together
+
+1. **Content** lives in the `content` directory. Every `.mdx` file becomes a
+   documentation route.
+2. **Configuration** in `heyo-docs.config.ts` gives the site its name, theme,
+   navigation order, and public metadata.
+3. **The framework app** loads the same model during development and production
+   builds, so the sidebar, search, routes, and adjacent-page links stay in sync.
+
+Create a new file such as `content/guides/deployment.mdx` to add the
+`/guides/deployment` route. Add that path to a navigation section when the
+page should appear in the sidebar.
+
+## Make your first change
+
+Update the title and description in the frontmatter of `content/index.mdx`,
+then refresh the browser. Use [Basic Configuration](/configuration) to adjust
+the site model and [Text Styling](/essentials/text-styling) for writing the
+page itself.
+
+<Callout type="tip" title="One source of truth">
+  Keep navigation in <code>heyo-docs.config.ts</code> and page-specific details
+  in MDX frontmatter. The build validates both before publishing.
+</Callout>

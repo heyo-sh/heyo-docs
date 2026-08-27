@@ -1,0 +1,42 @@
+---
+title: Tabs
+description: Let readers choose between related commands or platform-specific instructions.
+---
+
+# Tabs
+
+`Tabs` presents related content one panel at a time. It is useful for package
+manager commands, framework variants, and small comparisons where readers need
+only one option to complete the task.
+
+## Label equivalent choices clearly
+
+Each `Tab` needs a concise title. Give a tab a stable `value` when you need
+to set a different initial panel with `defaultValue`.
+
+<Tabs defaultValue="typescript" variant="line">
+  <Tab title="JavaScript" value="javascript">
+    Import the package from your JavaScript entry point.
+  </Tab>
+  <Tab title="TypeScript" value="typescript">
+    Import the package with full type information and keep configuration typed.
+  </Tab>
+</Tabs>
+
+## Keep the choices parallel
+
+Tabs work when every panel solves the same problem in a different environment.
+Use headings or `Steps` for a sequence that every reader must complete; tabs
+can hide required information.
+
+<Tabs defaultValue="vercel" variant="line">
+  <Tab title="Vercel" value="vercel">
+    Connect the repository and let Vercel detect the framework.
+  </Tab>
+  <Tab title="Cloudflare" value="cloudflare">
+    Deploy the generated static site when your team already uses Cloudflare.
+  </Tab>
+  <Tab title="Static host" value="static">
+    Upload the build output to any host that serves static files.
+  </Tab>
+</Tabs>

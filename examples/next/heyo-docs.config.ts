@@ -15,33 +15,38 @@ export default heyoDocs({
       icon: "globe",
       sections: [
         {
-          section: "Get started",
-          pages: ["index"],
+          pages: [
+            {
+              title: "Documentation",
+              src: "https://docs.heyo.sh/introduction",
+              icon: "book",
+            },
+          ],
+        },
+        {
+          section: "Get Started",
+          icon: "lightbulb",
+          pages: ["quickstart", "configuration", "deploying"],
+        },
+        {
+          section: "Essentials",
+          icon: "book",
+          pages: [
+            "essentials/text-styling",
+            "essentials/code-blocks",
+            "essentials/callouts",
+            "essentials/tabs",
+            "essentials/lists",
+            "essentials/tables",
+          ],
         },
       ],
     },
     {
-      group: "API Reference",
+      group: "Square API",
       icon: "code",
       sections: [
         {
-          section: "Get started",
-          pages: ["api-overview"],
-        },
-        { schema: "./openapi.json" },
-      ],
-    },
-    {
-      group: "Petstore debug",
-      icon: "code",
-      sections: [{ schema: "./openapi-petstore.json" }],
-    },
-    {
-      group: "Square API stress test",
-      icon: "store",
-      sections: [
-        {
-          // 3.3 MB · 255 paths · 334 operations.
           schema:
             "https://raw.githubusercontent.com/square/connect-api-specification/551af55f16fce178780e6556570973aaf660e52a/api.json",
         },
@@ -49,7 +54,7 @@ export default heyoDocs({
     },
     {
       group: "Changelog",
-      description: "Keep up with the latest improvements to Heyo Docs.",
+      description: "Mock release notes for the Heyo Docs demo.",
       icon: "changelog",
       type: "changelog",
       updates: ["changelog"],

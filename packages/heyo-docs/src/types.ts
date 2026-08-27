@@ -85,6 +85,8 @@ export interface DocumentationSection {
 export interface DocumentationPageLink {
   title: string;
   src: string;
+  /** Optional semantic icon displayed before the link title in the sidebar. */
+  icon?: string;
 }
 
 /** An MDX page/directory reference that displays a required sidebar icon. */

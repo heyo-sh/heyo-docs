@@ -136,7 +136,7 @@ describe("configuration", () => {
     ]);
   });
 
-  test("accepts custom sidebar links alongside MDX page references", () => {
+  test("accepts icon-bearing custom sidebar links alongside MDX page references", () => {
     const group = heyoDocs({
       content: "./content",
       groups: [
@@ -147,7 +147,11 @@ describe("configuration", () => {
               section: "Start here",
               pages: [
                 "getting-started",
-                { title: "Admin panel", src: "https://app.example.com" },
+                {
+                  title: "Admin panel",
+                  src: "https://app.example.com",
+                  icon: "externalLink",
+                },
               ],
             },
           ],
@@ -163,7 +167,11 @@ describe("configuration", () => {
       expanded: true,
       pages: [
         "getting-started",
-        { title: "Admin panel", src: "https://app.example.com" },
+        {
+          title: "Admin panel",
+          src: "https://app.example.com",
+          icon: "externalLink",
+        },
       ],
     });
   });

@@ -123,6 +123,40 @@ test("builds an unsectioned page list without adding it to the page ancestry", (
   });
 });
 
+test("keeps icons on custom sidebar links", () => {
+  const navigation = navigationFromGroups(
+    [
+      {
+        group: "Documentation",
+        public: true,
+        type: "documentation" as const,
+        sections: [
+          {
+            expanded: true,
+            pages: [
+              {
+                title: "Documentation",
+                src: "https://docs.example.com",
+                icon: "book",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    [],
+  );
+
+  expect(navigation[0]?.sections[0]?.pages).toEqual([
+    {
+      slug: "https://docs.example.com",
+      title: "Documentation",
+      link: true,
+      icon: "book",
+    },
+  ]);
+});
+
 test("keeps icons on configured page references in their resolved order", () => {
   const navigation = navigationFromGroups(
     [
