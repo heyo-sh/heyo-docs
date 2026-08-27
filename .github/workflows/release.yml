@@ -92,6 +92,9 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      - name: Build packages
+        run: bun run build
+
       - name: Publish packages to npm
         uses: changesets/action/publish@v2
         with:

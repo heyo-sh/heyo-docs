@@ -20,7 +20,7 @@ and published only by GitHub Actions.
 6. In GitHub Actions settings, allow the workflow `GITHUB_TOKEN` to create pull
    requests and write repository contents.
 7. After the packages exist on npm, configure each package's **Trusted Publisher**
-   for the `heyo/heyo-docs` repository, the `release.yml` workflow, and the `npm`
+   for the `heyo-sh/heyo-docs` repository, the `release.yml` workflow, and the `npm`
    environment. Then remove `NPM_TOKEN`. The workflow has the required OIDC
    permission and npm will use short-lived credentials automatically.
 
