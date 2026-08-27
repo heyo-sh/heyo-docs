@@ -6,7 +6,7 @@ Complete the following GitHub and registry settings before the first release.
 
 ## GitHub settings
 
-1. Create the `heyo/heyo-docs` repository, set `main` as its default branch,
+1. Create the `heyo-sh/heyo-docs` repository, set `main` as its default branch,
    and enable GitHub Discussions plus private vulnerability reporting.
 2. Add a branch ruleset for `main`: require a pull request, at least one
    approval, resolved conversations, and the `Quality` status check from CI;
@@ -18,7 +18,7 @@ Complete the following GitHub and registry settings before the first release.
    `good first issue`, `help wanted`, `needs-triage`, `breaking change`, and
    `security` (the last one is for internal triage only, never public reports).
 5. Replace the GitHub organization URLs in issue, support, and security files
-   if the final owner is not `heyo/heyo-docs`.
+   if the final owner is not `heyo-sh/heyo-docs`.
 
 ## Package release flow
 
