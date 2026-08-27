@@ -1,4 +1,7 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
+import { realpathSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+
 import * as p from "@clack/prompts";
 
 import {
@@ -52,11 +55,21 @@ const PACKAGE_MANAGER_OPTIONS = [
   { value: "yarn", label: "yarn" },
 ];
 
-if (import.meta.main) {
+if (isMainModule()) {
   run(process.argv.slice(2)).catch((error: unknown) => {
     p.log.error(error instanceof Error ? error.message : String(error));
     process.exitCode = 1;
   });
+}
+
+function isMainModule(): boolean {
+  const entryPoint = process.argv[1];
+  if (!entryPoint) return false;
+  try {
+    return realpathSync(entryPoint) === fileURLToPath(import.meta.url);
+  } catch {
+    return false;
+  }
 }
 
 export async function run(argv = process.argv.slice(2)): Promise<void> {

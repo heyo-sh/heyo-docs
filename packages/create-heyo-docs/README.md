@@ -5,18 +5,28 @@ Create a standalone, production-ready documentation site with Heyo Docs. Choose 
 ## Create a project
 
 ```bash
+# pnpm
 pnpm create @heyo-sh/heyo-docs my-docs
 cd my-docs
 pnpm dev
-```
 
-The creator also works with Bun, npm, and Yarn:
-
-```bash
-bun create @heyo-sh/heyo-docs my-docs
+# npm
 npm create @heyo-sh/heyo-docs@latest my-docs
-yarn create @heyo-sh/heyo-docs my-docs
+cd my-docs
+npm run dev
+
+# Yarn
+yarn dlx @heyo-sh/create-heyo-docs my-docs
+cd my-docs
+yarn dev
+
+# Bun
+bun create @heyo-sh/heyo-docs my-docs
+cd my-docs
+bun run dev
 ```
+
+The creator works with pnpm, npm, Yarn, and Bun.
 
 ## Options
 

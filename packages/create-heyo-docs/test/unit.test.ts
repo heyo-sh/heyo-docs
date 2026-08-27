@@ -21,6 +21,7 @@ describe("creator utilities", () => {
     expect(packageManagerField("bun", { name: "bun", version: "1.3.1" })).toBe(
       "bun@1.3.1",
     );
+    expect(detectPackageManager("")).toEqual({ name: "npm" });
   });
 
   test("merges package JSON fragments without losing scripts", () => {
