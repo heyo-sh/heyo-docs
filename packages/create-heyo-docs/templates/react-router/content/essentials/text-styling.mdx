@@ -1,0 +1,50 @@
+---
+title: Text Styling
+description: Structure documentation with clear headings, emphasis, links, and quotes.
+---
+
+# Text Styling
+
+Good documentation is easy to scan before it is read in detail. Use the
+frontmatter title for the page's H1, then organize the body around short,
+descriptive H2 and H3 headings.
+
+## Build a clear hierarchy
+
+Use `##` for the main tasks or ideas on a page. Add `###` only when a section
+has a meaningful subdivision. Headings should tell the reader what they will
+learn, not simply announce that more information follows.
+
+```md
+## Configure navigation
+
+Add pages in the order readers should follow.
+
+### Add an external resource
+
+Use a custom link for a separate destination.
+```
+
+## Emphasize the decision
+
+Use **bold text** for an important choice and inline `code` for literal values
+such as file names, commands, and configuration keys. Keep the rest of the
+sentence plain so these signals remain useful.
+
+```md
+Set `content: "content"` in `heyo-docs.config.ts`.
+
+Deploy **after** reviewing the production build.
+```
+
+## Link with context
+
+Describe where a link goes instead of pasting a raw URL. Relative links work
+well for another page in the same documentation, while full URLs are useful for
+external resources.
+
+Read the [Quickstart](/quickstart) before changing the
+[site configuration](/configuration).
+
+> Keep each paragraph focused on one idea so readers can quickly find the
+> decision that applies to them.

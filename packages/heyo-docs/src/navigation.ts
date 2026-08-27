@@ -279,7 +279,12 @@ function navigationItemsForReferences(
     const key = `link:${reference.src}`;
     if (seen.has(key)) continue;
     seen.add(key);
-    selected.push({ slug: reference.src, title: reference.title, link: true });
+    selected.push({
+      slug: reference.src,
+      title: reference.title,
+      link: true,
+      ...(reference.icon ? { icon: reference.icon } : {}),
+    });
   }
 
   return selected;

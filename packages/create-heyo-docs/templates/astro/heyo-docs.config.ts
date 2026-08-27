@@ -12,8 +12,30 @@ export default heyoDocs({
       icon: "globe",
       sections: [
         {
-          section: "Get started",
-          pages: ["index"],
+          pages: [
+            {
+              title: "Documentation",
+              src: "https://docs.heyo.sh/introduction",
+              icon: "book",
+            },
+          ],
+        },
+        {
+          section: "Get Started",
+          icon: "lightbulb",
+          pages: ["quickstart", "configuration", "deploying"],
+        },
+        {
+          section: "Essentials",
+          icon: "book",
+          pages: [
+            "essentials/text-styling",
+            "essentials/code-blocks",
+            "essentials/callouts",
+            "essentials/tabs",
+            "essentials/lists",
+            "essentials/tables",
+          ],
         },
       ],
     },

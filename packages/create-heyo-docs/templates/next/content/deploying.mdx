@@ -1,0 +1,57 @@
+---
+title: Deploying
+description: Build and publish your Heyo Docs site with the deployment target chosen during setup.
+---
+
+# Deploying
+
+A Heyo Docs site is built as part of the framework application. The creator asks
+for a deployment target when the project is created and adds the corresponding
+configuration, so the same MDX content, navigation, search, and metadata are
+used locally and in production.
+
+## Choose the target during setup
+
+Select Vercel or Cloudflare when running the creator if you already know where
+the site will live. The generated project includes the adapter and deployment
+configuration required by that platform. You can also choose to configure
+deployment later and keep the starter focused on local development.
+
+## Build before publishing
+
+Run the production build on your machine before creating a deployment. It
+resolves every configured page, validates the navigation tree, and generates
+the sitemap, RSS feed, robots file, and AI-facing documentation endpoints.
+
+<CodeBlock language="bash" title="Terminal">
+  {"bun run build"}
+</CodeBlock>
+
+Use the equivalent `npm run build`, `pnpm build`, or `yarn build` command
+when the project uses a different package manager.
+
+<Callout type="tip" title="Set the canonical URL">
+  Add the final public origin as <code>siteUrl</code> in
+  <code>heyo-docs.config.ts</code> before the first production release. It keeps
+  canonical links, social metadata, and generated discovery files consistent.
+</Callout>
+
+## Publish the project
+
+For a generated Vercel or Cloudflare project, connect the repository in the
+provider dashboard or run the deployment script included by the selected setup.
+The provider builds the application with the same command you verified locally.
+
+<Steps>
+  <Step title="Push the documentation source">
+    Commit the MDX content and <code>heyo-docs.config.ts</code> together so the
+    deployed navigation matches the reviewed pages.
+  </Step>
+  <Step title="Create a preview">
+    Review the provider's preview URL for layout, links, search, and metadata.
+  </Step>
+  <Step title="Promote the production build">
+    Publish once the preview is correct and the configured <code>siteUrl</code>
+    matches the public domain.
+  </Step>
+</Steps>

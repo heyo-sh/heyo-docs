@@ -34,6 +34,7 @@ const pageLinkSchema = z
   .object({
     title: nonEmptyString,
     src: nonEmptyString,
+    icon: nonEmptyString.optional(),
   })
   .strict();
 

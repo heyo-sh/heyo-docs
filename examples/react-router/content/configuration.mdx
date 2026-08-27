@@ -1,0 +1,76 @@
+---
+title: Basic Configuration
+description: Set the identity, content source, and sidebar structure for a Heyo Docs site.
+---
+
+# Basic Configuration
+
+`heyo-docs.config.ts` is the single source of truth for a Heyo Docs site.
+The framework integration and the documentation UI read the same validated
+object, so a change to navigation or metadata does not need to be repeated in
+multiple places.
+
+## Start with the site model
+
+The generated project already includes a working configuration. Update the
+identity fields first, then point `content` at the directory that contains
+your MDX files.
+
+<CodeBlock language="ts" title="heyo-docs.config.ts" showLineNumbers>
+  {`import { heyoDocs } from "@heyo-sh/heyo-docs";
+
+export default heyoDocs({
+  title: "Heyo Docs",
+  description: "Guides and reference for Heyo Docs.",
+  content: "./content",
+  theme: "grain",
+  mode: "system",
+  branding: { name: "Heyo Docs" },
+});`}
+</CodeBlock>
+
+Set `siteUrl` to the final public origin before publishing. It is used for
+canonical URLs, social metadata, the sitemap, RSS, and AI-facing discovery
+files.
+
+## Organize the sidebar
+
+Use `groups` to define the order readers see. A group contains named sections
+and their MDX page references; a reference is relative to `content` and does
+not include the `.mdx` extension.
+
+<CodeBlock language="ts" title="heyo-docs.config.ts">
+  {`groups: [
+  {
+    group: "Documentation",
+    icon: "globe",
+    sections: [
+      {
+        section: "Get Started",
+        icon: "lightbulb",
+        pages: ["quickstart", "configuration"],
+      },
+      {
+        section: "Essentials",
+        icon: "book",
+        pages: ["essentials/text-styling", "essentials/code-blocks"],
+      },
+    ],
+  },
+],`}
+</CodeBlock>
+
+The order is meaningful: it controls the sidebar and the previous/next links at
+the end of each article. Use a page object with `title` and `src` when a
+sidebar entry should point to a page outside the local documentation.
+
+## Verify the result
+
+Run the project's typecheck and build commands after changing configuration.
+They resolve each configured MDX page and report missing paths or malformed
+navigation before the site is deployed.
+
+<Callout type="info" title="Keep page metadata close to the page">
+  Put a page's <code>title</code> and <code>description</code> in its MDX
+  frontmatter. Keep shared site settings in <code>heyo-docs.config.ts</code>.
+</Callout>

@@ -1,0 +1,51 @@
+---
+title: Code Blocks
+description: Write compact, copyable examples with syntax highlighting and context.
+---
+
+# Code Blocks
+
+A code example should answer one implementation question and be safe to copy.
+Use inline code for a literal value, then use a fenced block or `CodeBlock`
+when a reader needs more than one line.
+
+## Add a language to fenced code
+
+The language label enables syntax highlighting and tells readers what they are
+looking at. Use `bash` for commands, `ts` for configuration, and `json` for
+data.
+
+```bash
+bun run dev
+bun run build
+```
+
+## Give configuration a title
+
+Use `CodeBlock` when a sample needs a filename or line numbers. Keep examples
+small enough that a reader can understand their effect before copying them.
+
+<CodeBlock language="ts" title="heyo-docs.config.ts" showLineNumbers>
+  {`export default heyoDocs({
+  title: "Orbit Docs",
+  content: "content",
+  theme: "grain",
+});`}
+</CodeBlock>
+
+## Compare equivalent commands
+
+Put package-manager variants in a `CodeBlockGroup` so readers can choose one
+command without scrolling past unrelated options.
+
+<CodeBlockGroup defaultValue="bun" variant="line">
+  <CodeBlock language="bash" title="bun">
+    {"bun add @heyo-sh/heyo-docs"}
+  </CodeBlock>
+  <CodeBlock language="bash" title="npm">
+    {"npm install @heyo-sh/heyo-docs"}
+  </CodeBlock>
+  <CodeBlock language="bash" title="pnpm">
+    {"pnpm add @heyo-sh/heyo-docs"}
+  </CodeBlock>
+</CodeBlockGroup>

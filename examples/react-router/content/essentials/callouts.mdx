@@ -1,0 +1,36 @@
+---
+title: Callouts
+description: Highlight prerequisites, tips, warnings, and successful outcomes.
+---
+
+# Callouts
+
+Use `Callout` when an important note should stand apart from the surrounding
+prose. It works well for a prerequisite, a preferred approach, a warning, or a
+successful result.
+
+## Choose the right emphasis
+
+Use `note` or `info` for context, `tip` for a recommended approach, and
+`check` for a completed outcome. Reserve `warning` and `danger` for cases
+where missing the message has a real consequence.
+
+<Callout type="tip" title="Keep examples focused">
+  Show one idea at a time so readers can apply it quickly.
+</Callout>
+
+<Callout type="warning" title="Preview before publishing">
+  Run the production build locally after changing navigation or MDX.
+</Callout>
+
+## Add richer guidance
+
+Pass the message as children when it needs Markdown or another MDX component.
+
+<Callout type="info" title="Configuration and content work together">
+  Navigation belongs in <code>heyo-docs.config.ts</code>; page titles and
+  descriptions belong in the page frontmatter.
+</Callout>
+
+Keep each callout focused on one decision. A long sequence of status messages is
+usually clearer as regular sections or a numbered procedure.
