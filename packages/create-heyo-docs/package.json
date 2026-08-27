@@ -12,6 +12,9 @@
   },
   "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">=20.11.0"
+  },
   "bin": {
     "create-heyo-docs": "./dist/index.js"
   },
@@ -28,7 +31,7 @@
   },
   "scripts": {
     "dev": "bun run build --watch",
-    "build": "bun build src/index.ts --outdir dist --target bun --external @clack/prompts && bun run build:types",
+    "build": "bun build src/index.ts --outdir dist --target node --external @clack/prompts && bun run build:types",
     "build:types": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json",
     "test": "bun test"

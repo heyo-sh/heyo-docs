@@ -1,3 +1,4 @@
+import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { mkdir, readdir } from "node:fs/promises";
 import { join, resolve } from "node:path";
@@ -80,13 +81,18 @@ async function installDependencies(
   packageManager: CreateOptions["packageManager"],
 ): Promise<void> {
   const command = packageManagerInstallCommand(packageManager);
-  const process = Bun.spawn(command, {
-    cwd: projectPath,
-    stdout: "inherit",
-    stderr: "inherit",
+  const [executable, ...arguments_] = command;
+  await new Promise<void>((resolveInstall, rejectInstall) => {
+    const child = spawn(executable, arguments_, {
+      cwd: projectPath,
+      stdio: "inherit",
+    });
+    child.once("error", rejectInstall);
+    child.once("close", (exitCode) => {
+      if (exitCode === 0) return resolveInstall();
+      rejectInstall(
+        new Error(`Dependency installation failed with ${command.join(" ")}.`),
+      );
+    });
   });
-  if ((await process.exited) !== 0)
-    throw new Error(
-      `Dependency installation failed with ${command.join(" ")}.`,
-    );
 }

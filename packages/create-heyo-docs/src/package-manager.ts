@@ -1,3 +1,5 @@
+import { spawnSync } from "node:child_process";
+
 import type { DetectedPackageManager, PackageManager } from "./types";
 
 const FALLBACK_VERSIONS: Record<PackageManager, string> = {
@@ -11,7 +13,7 @@ export function detectPackageManager(
   userAgent = process.env.npm_config_user_agent ?? "",
 ): DetectedPackageManager {
   const match = userAgent.match(/(?:^|\s)(bun|pnpm|npm|yarn)\/([^\s]+)/);
-  if (!match) return { name: "bun", version: Bun.version };
+  if (!match) return { name: "npm" };
   return { name: match[1] as PackageManager, version: match[2] };
 }
 
@@ -23,9 +25,11 @@ export function packageManagerField(
     return `${manager}@${detected.version}`;
   const executable = manager === "yarn" ? "yarn" : manager;
   try {
-    const result = Bun.spawnSync([executable, "--version"]);
-    const version = new TextDecoder().decode(result.stdout).trim();
-    if (result.exitCode === 0 && /^\d+(?:\.\d+)+/.test(version))
+    const result = spawnSync(executable, ["--version"], {
+      encoding: "utf8",
+    });
+    const version = result.stdout?.trim();
+    if (result.status === 0 && version && /^\d+(?:\.\d+)+/.test(version))
       return `${manager}@${version}`;
   } catch {
     // The selected package manager need not be installed on the creator's machine.
