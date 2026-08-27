@@ -1,8 +1,6 @@
-<img src="./public/heyo-docs-hero.png" alt="Heyo Docs Logo"/>
+<img src="./public/heyo-docs-hero.webp" alt="Heyo Docs Logo"/>
 
 ## Heyo Docs
-
-> > > > > > > 29c694592a0a6a11090486efd20c1f043e349adb
 
 Heyo Docs is a themeable documentation toolkit for React Router, Next.js, and Astro. Create a standalone documentation site with MDX content, navigation, search, OpenAPI reference pages, and built-in SEO.
 
