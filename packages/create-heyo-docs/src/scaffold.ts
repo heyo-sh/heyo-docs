@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
-import { mkdir, readdir } from "node:fs/promises";
+import { mkdir, readdir, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 
 import {
@@ -13,11 +13,22 @@ import { copyTemplate, mergePackageJson, readJson, writeJson } from "./utils";
 
 const packageRoot = resolve(import.meta.dirname, "..");
 
+export const REACT_ROUTER_VERCEL_UNSUPPORTED_MESSAGE =
+  "Vercel does not support React Router 8 yet. Choose Cloudflare or configure deployment later. https://github.com/vercel/vercel/issues/16730";
+
+export function assertSupportedProjectOptions(
+  options: Pick<CreateOptions, "template" | "deployment">,
+): void {
+  if (options.template === "react-router" && options.deployment === "vercel")
+    throw new Error(REACT_ROUTER_VERCEL_UNSUPPORTED_MESSAGE);
+}
+
 export async function scaffoldProject(
   options: CreateOptions,
 ): Promise<{ projectPath: string }> {
   const cwd = options.cwd ?? process.cwd();
   const projectName = assertProjectName(options.projectName);
+  assertSupportedProjectOptions(options);
   const projectPath = resolve(cwd, projectName);
   if (existsSync(projectPath))
     throw new Error(`Directory already exists: ${projectPath}`);
@@ -37,6 +48,11 @@ export async function scaffoldProject(
   );
   await mkdir(projectPath, { recursive: true });
   await copyTemplate(templatePath, projectPath, placeholders);
+  if (options.packageManager === "yarn")
+    await writeFile(
+      join(projectPath, ".yarnrc.yml"),
+      "nodeLinker: node-modules\n",
+    );
 
   const basePackage = await readJson<Record<string, unknown>>(
     join(projectPath, "package.json"),
