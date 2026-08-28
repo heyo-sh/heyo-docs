@@ -1,5 +1,11 @@
 # @heyo-sh/create-heyo-docs
 
+## 0.2.2
+
+### Patch Changes
+
+- e2af9e1: Update Templates Version
+
 ## 0.2.1
 
 ### Patch Changes
