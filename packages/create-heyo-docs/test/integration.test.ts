@@ -53,7 +53,7 @@ afterAll(async () => {
 });
 
 describe.serial("generated React Router projects", () => {
-  for (const deployment of ["cloudflare", "vercel", "later"] as Deployment[]) {
+  for (const deployment of ["cloudflare", "later"] as Deployment[]) {
     test(`${deployment} installs and builds`, async () => {
       const name = `docs-${deployment}`;
       const { projectPath } = await scaffoldProject({
@@ -260,6 +260,9 @@ describe.serial("generated Astro projects", () => {
 describe.serial("generated Next.js projects", () => {
   for (const deployment of ["cloudflare", "vercel", "later"] as Deployment[]) {
     test(`${deployment} installs and builds`, async () => {
+      // A lockfile in an ancestor directory used to make Turbopack choose that
+      // directory as its root instead of the generated project's directory.
+      await Bun.write(join(temporaryRoot, "package-lock.json"), "{}\n");
       const name = `next-docs-${deployment}`;
       const { projectPath } = await scaffoldProject({
         projectName: name,
@@ -314,6 +317,8 @@ describe.serial("generated Next.js projects", () => {
         join(projectPath, "next.config.ts"),
       ).text();
       expect(nextConfig).toContain("heyoDocsMdxOptions");
+      expect(nextConfig).toContain("turbopack: {");
+      expect(nextConfig).toContain("root: projectRoot,");
       expect(nextConfig).toContain('source: "/:path*.md"');
       expect(nextConfig).toContain(
         'destination: "/heyo-docs-internal/markdown/:path*"',

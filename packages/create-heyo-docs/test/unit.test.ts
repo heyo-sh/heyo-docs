@@ -74,6 +74,46 @@ describe("creator utilities", () => {
     }
   });
 
+  test("configures Yarn projects to use node_modules", async () => {
+    const cwd = await mkdtemp(join(tmpdir(), "create-heyo-docs-"));
+    try {
+      const { projectPath } = await scaffoldProject({
+        projectName: "docs-next",
+        template: "next",
+        deployment: "later",
+        theme: "grain",
+        packageManager: "yarn",
+        install: false,
+        cwd,
+      });
+
+      expect(await readFile(join(projectPath, ".yarnrc.yml"), "utf8")).toBe(
+        "nodeLinker: node-modules\n",
+      );
+    } finally {
+      await rm(cwd, { recursive: true, force: true });
+    }
+  });
+
+  test("rejects React Router projects configured for Vercel", async () => {
+    const cwd = await mkdtemp(join(tmpdir(), "create-heyo-docs-"));
+    try {
+      await expect(
+        scaffoldProject({
+          projectName: "docs-react-router",
+          template: "react-router",
+          deployment: "vercel",
+          theme: "grain",
+          packageManager: "bun",
+          install: false,
+          cwd,
+        }),
+      ).rejects.toThrow("Vercel does not support React Router 8 yet.");
+    } finally {
+      await rm(cwd, { recursive: true, force: true });
+    }
+  });
+
   test("parses non-interactive creator options", () => {
     expect(
       parseArguments([

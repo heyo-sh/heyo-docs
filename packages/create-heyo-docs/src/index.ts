@@ -9,8 +9,11 @@ import {
   packageManagerRunCommand,
 } from "./package-manager";
 import { projectNameError } from "./project-name";
-import { scaffoldProject } from "./scaffold";
-import type { CreateOptions } from "./types";
+import {
+  REACT_ROUTER_VERCEL_UNSUPPORTED_MESSAGE,
+  scaffoldProject,
+} from "./scaffold";
+import type { CreateOptions, Template } from "./types";
 
 export {
   detectPackageManager,
@@ -173,12 +176,7 @@ async function askQuestions(defaults: CreateOptions): Promise<CreateOptions> {
     "next",
     "astro",
   ] as const);
-  const deployment = await selectAvailable(
-    "Deployment",
-    DEPLOYMENT_OPTIONS,
-    ["cloudflare", "vercel", "later"] as const,
-    defaults.deployment,
-  );
+  const deployment = await selectDeployment(template, defaults.deployment);
   const theme = await selectAvailable("Theme", THEME_OPTIONS, [
     "grain",
     "shade",
@@ -204,6 +202,23 @@ async function askQuestions(defaults: CreateOptions): Promise<CreateOptions> {
     packageManager,
     install,
   };
+}
+
+async function selectDeployment(
+  template: Template,
+  initialValue?: CreateOptions["deployment"],
+): Promise<CreateOptions["deployment"]> {
+  for (;;) {
+    const deployment = await selectAvailable(
+      "Deployment",
+      DEPLOYMENT_OPTIONS,
+      ["cloudflare", "vercel", "later"] as const,
+      initialValue,
+    );
+    if (template !== "react-router" || deployment !== "vercel")
+      return deployment;
+    p.log.warn(REACT_ROUTER_VERCEL_UNSUPPORTED_MESSAGE);
+  }
 }
 
 async function selectAvailable<T extends string>(
