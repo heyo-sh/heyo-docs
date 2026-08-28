@@ -23,7 +23,7 @@ Complete the following GitHub and registry settings before the first release.
 ## Package release flow
 
 Publish `@heyo-sh/heyo-docs` before deploying the separate `heyo-landing` repository:
-the landing app depends on the public npm range `^0.1.0` and no longer has a
+the landing app depends on the public npm range `^0.1.3` and no longer has a
 workspace link to the library.
 
 Changesets and the protected release workflow are already tracked in this

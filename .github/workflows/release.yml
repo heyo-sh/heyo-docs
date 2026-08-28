@@ -12,6 +12,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  verify:
+    name: Verify release candidate
+    uses: ./.github/workflows/ci.yml
+
   select-mode:
     name: Select release mode
     runs-on: ubuntu-latest
@@ -64,7 +68,7 @@ jobs:
 
   publish:
     name: Publish packages to npm
-    needs: select-mode
+    needs: [select-mode, verify]
     if: needs.select-mode.outputs.mode == 'publish'
     runs-on: ubuntu-latest
     environment: npm

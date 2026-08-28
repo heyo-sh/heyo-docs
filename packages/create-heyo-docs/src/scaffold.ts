@@ -24,7 +24,7 @@ export async function scaffoldProject(
 
   const placeholders = {
     PROJECT_NAME: projectName,
-    HEYO_DOCS_VERSION: options.heyoDocsVersion ?? "0.1.0",
+    HEYO_DOCS_VERSION: options.heyoDocsVersion ?? "latest",
     PACKAGE_MANAGER: packageManagerField(options.packageManager),
     THEME: options.theme,
   };
