@@ -1,4 +1,7 @@
 import { describe, expect, test } from "bun:test";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 import {
   detectPackageManager,
@@ -6,6 +9,7 @@ import {
 } from "../src/package-manager";
 import { projectNameError } from "../src/project-name";
 import { parseArguments } from "../src/index";
+import { scaffoldProject } from "../src/scaffold";
 import { mergePackageJson, replacePlaceholders } from "../src/utils";
 
 describe("creator utilities", () => {
@@ -44,6 +48,30 @@ describe("creator utilities", () => {
     expect(replacePlaceholders("{{NAME}} {{KEEP}}", { NAME: "docs" })).toBe(
       "docs {{KEEP}}",
     );
+  });
+
+  test("scaffolds every template with the latest published runtime by default", async () => {
+    const cwd = await mkdtemp(join(tmpdir(), "create-heyo-docs-"));
+    try {
+      for (const template of ["react-router", "next", "astro"] as const) {
+        const { projectPath } = await scaffoldProject({
+          projectName: `docs-${template}`,
+          template,
+          deployment: "later",
+          theme: "grain",
+          packageManager: "bun",
+          install: false,
+          cwd,
+        });
+        const packageJson = JSON.parse(
+          await readFile(join(projectPath, "package.json"), "utf8"),
+        ) as { dependencies: Record<string, string> };
+
+        expect(packageJson.dependencies["@heyo-sh/heyo-docs"]).toBe("latest");
+      }
+    } finally {
+      await rm(cwd, { recursive: true, force: true });
+    }
   });
 
   test("parses non-interactive creator options", () => {
