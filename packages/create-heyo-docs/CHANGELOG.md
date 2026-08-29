@@ -1,5 +1,11 @@
 # @heyo-sh/create-heyo-docs
 
+## 0.2.3
+
+### Patch Changes
+
+- 96c9836: Fix generated Next.js projects and block the unsupported React Router 8 + Vercel combination.
+
 ## 0.2.2
 
 ### Patch Changes
