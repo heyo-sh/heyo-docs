@@ -68,11 +68,11 @@ const intercom = config.integrations.support.intercom
         />
       )
     }
+    {osano && <script is:inline src={osano.src} />}
     <script
       is:inline
       set:html={getThemeScript(THEME_STORAGE_KEY, config.mode)}
     />
-    {osano && <script is:inline src={osano.src} />}
     {adobe && <script is:inline async src={adobe.src} />}
     {
       intercom && (

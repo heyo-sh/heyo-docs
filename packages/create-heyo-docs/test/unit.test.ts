@@ -83,6 +83,27 @@ describe("creator utilities", () => {
         expect(layout).toContain("config.integrations.analytics.adobe");
         expect(layout).toContain("config.integrations.support.intercom");
         expect(layout).toContain("data-intercom-app-id");
+
+        const osanoScript =
+          template === "astro"
+            ? "{osano && <script is:inline src={osano.src} />}"
+            : "{osano && <script src={osano.src} />}";
+        const adobeScript =
+          template === "astro"
+            ? "{adobe && <script is:inline async src={adobe.src} />}"
+            : "{adobe && <script async={adobe.async} src={adobe.src} />}";
+        const osanoIndex = layout.indexOf(osanoScript);
+        const themeIndex = layout.lastIndexOf("getThemeScript(");
+        const adobeIndex = layout.indexOf(adobeScript);
+        const intercomIndex = layout.indexOf("intercom && (");
+
+        expect(osanoIndex).toBeGreaterThan(-1);
+        expect(themeIndex).toBeGreaterThan(-1);
+        expect(adobeIndex).toBeGreaterThan(-1);
+        expect(intercomIndex).toBeGreaterThan(-1);
+        expect(osanoIndex).toBeLessThan(themeIndex);
+        expect(osanoIndex).toBeLessThan(adobeIndex);
+        expect(osanoIndex).toBeLessThan(intercomIndex);
       }
     } finally {
       await rm(cwd, { recursive: true, force: true });

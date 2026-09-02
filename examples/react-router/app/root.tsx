@@ -100,12 +100,12 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="color-scheme" content="light dark" />
+        {osano && <script src={osano.src} />}
         <script
           dangerouslySetInnerHTML={{
             __html: getThemeScript(THEME_STORAGE_KEY, config.mode),
           }}
         />
-        {osano && <script src={osano.src} />}
         {adobe && <script async={adobe.async} src={adobe.src} />}
         {intercom && (
           <script

@@ -8,7 +8,13 @@ const adobeLaunchUrlSchema = z
     "Adobe Analytics launchUrl must use HTTPS.",
   );
 
-/** Configuration for Adobe Experience Platform Launch. */
+/**
+ * Source of truth: https://experienceleague.adobe.com/en/docs/experience-platform/tags/client-side/asynchronous-deployment
+ *
+ * Adobe Experience Platform Tags supports an asynchronous launch script in
+ * the document head. The configured URL comes from the Adobe environment's
+ * generated embed code.
+ */
 export const adobeAnalyticsSchema = z
   .object({ launchUrl: adobeLaunchUrlSchema })
   .strict();

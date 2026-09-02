@@ -5,6 +5,44 @@ import { adobeAnalyticsScript } from "../src/integrations/analytics/adobe";
 import { osanoConsentScript } from "../src/integrations/consent/osano";
 import { intercomBootstrapScript } from "../src/integrations/support/intercom";
 
+test("keeps an official source of truth directly above every provider schema", async () => {
+  const providers = [
+    {
+      source: Bun.file(
+        new URL("../src/integrations/analytics/adobe.ts", import.meta.url),
+      ),
+      schema: "adobeAnalyticsSchema",
+      sourceOfTruth: "experienceleague.adobe.com",
+    },
+    {
+      source: Bun.file(
+        new URL("../src/integrations/support/intercom.ts", import.meta.url),
+      ),
+      schema: "intercomSupportSchema",
+      sourceOfTruth: "developers.intercom.com",
+    },
+    {
+      source: Bun.file(
+        new URL("../src/integrations/consent/osano.ts", import.meta.url),
+      ),
+      schema: "osanoConsentSchema",
+      sourceOfTruth: "docs.osano.com",
+    },
+  ];
+
+  for (const provider of providers) {
+    const source = await provider.source.text();
+    expect(source).toContain(
+      `Source of truth: https://${provider.sourceOfTruth}`,
+    );
+    expect(source).toMatch(
+      new RegExp(
+        `Source of truth: https://${provider.sourceOfTruth}[\\s\\S]*?export const ${provider.schema}`,
+      ),
+    );
+  }
+});
+
 test("normalises integrations into their purpose-specific categories", () => {
   expect(
     heyoDocs({

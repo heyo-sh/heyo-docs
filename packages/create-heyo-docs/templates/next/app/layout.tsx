@@ -61,12 +61,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <head>
         <meta name="color-scheme" content="light dark" />
         <meta name="referrer" content="strict-origin-when-cross-origin" />
+        {osano && <script src={osano.src} />}
         <script
           dangerouslySetInnerHTML={{
             __html: getThemeScript(THEME_STORAGE_KEY, config.mode),
           }}
         />
-        {osano && <script src={osano.src} />}
         {adobe && <script async={adobe.async} src={adobe.src} />}
         {intercom && (
           <script

@@ -18,10 +18,32 @@ integrations: {
 }
 ```
 
+## Source of truth (required)
+
+Every integration file must have at least one direct link to the official
+third-party documentation immediately above its exported configuration schema.
+Use a `Source of truth:` doc comment and state the provider-specific loading,
+ordering, or lifecycle behaviour that the link verifies. This is mandatory even
+when the provider configuration only contains a public identifier.
+
+```ts
+/**
+ * Source of truth: https://provider.example.com/docs/installation
+ *
+ * Explain the provider-specific behaviour this implementation follows.
+ */
+export const providerSchema = z.object({/* ... */}).strict();
+```
+
+Use the provider's official documentation, not a blog post or an integration
+directory. Review the linked guidance whenever changing the schema, emitted
+script, script order, or SPA lifecycle behaviour.
+
 ## Adding an integration
 
 1. Create one file at `src/integrations/<category>/<provider>.ts`. The file
-   owns that provider's schema, TypeScript type, and browser output.
+   owns that provider's source-of-truth documentation, schema, TypeScript type,
+   and browser output.
 2. Add the optional provider property to the category in `src/types.ts`.
 3. Import the provider's schema directly in `src/config.ts` and add it to the
    matching strict Zod object. The normalized config must always contain the

@@ -12,7 +12,12 @@ const osanoScriptUrlSchema = z
     );
   }, "Osano scriptUrl must be an HTTPS cmp.osano.com URL ending in /osano.js.");
 
-/** Configuration for an Osano cookie-consent script. */
+/**
+ * Source of truth: https://docs.osano.com/en-US/osano/article/UT9yXk6U-installing-osano-cookie-consent
+ *
+ * Osano supplies an osano.js URL for a published consent configuration. It
+ * must execute in the document head before third-party scripts it manages.
+ */
 export const osanoConsentSchema = z
   .object({ scriptUrl: osanoScriptUrlSchema })
   .strict();
