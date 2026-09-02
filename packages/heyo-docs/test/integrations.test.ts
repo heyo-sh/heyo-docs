@@ -32,12 +32,16 @@ test("keeps an official source of truth directly above every provider schema", a
 
   for (const provider of providers) {
     const source = await provider.source.text();
+    const escapedSourceOfTruth = provider.sourceOfTruth.replace(
+      /[.*+?^${}()|[\]\\]/g,
+      "\\$&",
+    );
     expect(source).toContain(
       `Source of truth: https://${provider.sourceOfTruth}`,
     );
     expect(source).toMatch(
       new RegExp(
-        `Source of truth: https://${provider.sourceOfTruth}[\\s\\S]*?export const ${provider.schema}`,
+        `Source of truth: https://${escapedSourceOfTruth}[\\s\\S]*?export const ${provider.schema}`,
       ),
     );
   }
