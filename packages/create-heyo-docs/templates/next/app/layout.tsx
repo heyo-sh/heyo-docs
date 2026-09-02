@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { adobeAnalyticsScript } from "@heyo-sh/heyo-docs/integrations/analytics/adobe";
+import { osanoConsentScript } from "@heyo-sh/heyo-docs/integrations/consent/osano";
+import { intercomBootstrapScript } from "@heyo-sh/heyo-docs/integrations/support/intercom";
 
 import config from "../heyo-docs.config";
 import "./app.css";
@@ -42,6 +45,16 @@ export const metadata: Metadata = {
   },
 };
 
+const osano = config.integrations.consent.osano
+  ? osanoConsentScript(config.integrations.consent.osano)
+  : undefined;
+const adobe = config.integrations.analytics.adobe
+  ? adobeAnalyticsScript(config.integrations.analytics.adobe)
+  : undefined;
+const intercom = config.integrations.support.intercom
+  ? intercomBootstrapScript(config.integrations.support.intercom)
+  : undefined;
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -53,6 +66,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             __html: getThemeScript(THEME_STORAGE_KEY, config.mode),
           }}
         />
+        {osano && <script src={osano.src} />}
+        {adobe && <script async={adobe.async} src={adobe.src} />}
+        {intercom && <script dangerouslySetInnerHTML={{ __html: intercom }} />}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

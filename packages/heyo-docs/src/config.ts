@@ -2,6 +2,9 @@ import { z } from "zod";
 import type { ReactNode } from "react";
 
 import { builtInThemeNames } from "./theme/names";
+import { adobeAnalyticsSchema } from "./integrations/analytics/adobe";
+import { osanoConsentSchema } from "./integrations/consent/osano";
+import { intercomSupportSchema } from "./integrations/support/intercom";
 import type {
   DocumentationSection,
   HeyoDocsConfig,
@@ -141,6 +144,23 @@ const configSchema = z
       .strict()
       .default({}),
     siteUrl: siteUrlSchema.optional(),
+    integrations: z
+      .object({
+        analytics: z
+          .object({ adobe: adobeAnalyticsSchema.optional() })
+          .strict()
+          .default({}),
+        support: z
+          .object({ intercom: intercomSupportSchema.optional() })
+          .strict()
+          .default({}),
+        consent: z
+          .object({ osano: osanoConsentSchema.optional() })
+          .strict()
+          .default({}),
+      })
+      .strict()
+      .default({ analytics: {}, support: {}, consent: {} }),
   })
   .strict();
 
@@ -161,6 +181,7 @@ export function validateConfig(config: UserHeyoDocsConfig): HeyoDocsConfig {
       logo: parsed.branding.logo,
     },
     siteUrl: parsed.siteUrl?.replace(/\/$/, ""),
+    integrations: parsed.integrations,
   };
 }
 

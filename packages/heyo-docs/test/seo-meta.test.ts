@@ -23,6 +23,7 @@ const config: HeyoDocsConfig = {
   content: "./content",
   branding: { name: "Acme Docs" },
   siteUrl: "https://docs.example.com",
+  integrations: { analytics: {}, support: {}, consent: {} },
 };
 
 function jsonLd(meta: ReturnType<typeof docsSeoMeta>) {

@@ -38,10 +38,7 @@ const seo = exists
     };
 ---
 
-<DocsLayout
-  {...seo}
-  robots={exists ? "index, follow" : "noindex"}
->
+<DocsLayout {...seo} robots={exists ? "index, follow" : "noindex"}>
   <AstroDocsApp
     client:load
     currentOpenApiEndpoint={currentOpenApiEndpoint}

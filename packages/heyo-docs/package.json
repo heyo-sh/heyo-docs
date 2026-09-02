@@ -52,6 +52,18 @@
       "types": "./dist/astro.d.ts",
       "default": "./dist/astro.js"
     },
+    "./integrations/analytics/adobe": {
+      "types": "./dist/integrations/analytics/adobe.d.ts",
+      "default": "./dist/integrations/analytics/adobe.js"
+    },
+    "./integrations/support/intercom": {
+      "types": "./dist/integrations/support/intercom.d.ts",
+      "default": "./dist/integrations/support/intercom.js"
+    },
+    "./integrations/consent/osano": {
+      "types": "./dist/integrations/consent/osano.d.ts",
+      "default": "./dist/integrations/consent/osano.js"
+    },
     "./config": {
       "types": "./dist/config.d.ts",
       "browser": "./dist/config.browser.js",
@@ -80,7 +92,7 @@
     "dev": "bun run build --watch",
     "build": "bun run build:js && bun run build:types && bun run copy:assets",
     "clean": "rm -rf dist",
-    "build:js": "bun build src/index.tsx --outdir dist --target browser --production --external react --external react-dom --external react/jsx-runtime --external zod --external zbsearch --external beautiful-mermaid --external react-markdown --external rehype-raw --external rehype-sanitize --external remark-gfm && bun build src/config.ts --outfile dist/config.browser.js --target browser --production --external zod && bun build src/vite.ts src/node.ts src/next.ts src/next-plugins.ts src/astro.ts src/config.ts --outdir dist --target node --production --external @mdx-js/mdx --external rehype-slug --external zod",
+    "build:js": "bun build src/index.tsx --outdir dist --target browser --production --external react --external react-dom --external react/jsx-runtime --external zod --external zbsearch --external beautiful-mermaid --external react-markdown --external rehype-raw --external rehype-sanitize --external remark-gfm && bun build src/config.ts --outfile dist/config.browser.js --target browser --production --external zod && bun build --root src src/integrations/analytics/adobe.ts src/integrations/support/intercom.ts src/integrations/consent/osano.ts --outdir dist --target browser --production --external zod && bun build --root src src/vite.ts src/node.ts src/next.ts src/next-plugins.ts src/astro.ts src/config.ts --outdir dist --target node --production --external @mdx-js/mdx --external rehype-slug --external zod",
     "build:types": "tsc -p tsconfig.build.json",
     "copy:assets": "bun scripts/copy-theme-assets.ts",
     "typecheck": "tsc -p tsconfig.json",

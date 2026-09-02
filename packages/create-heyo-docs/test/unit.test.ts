@@ -68,6 +68,20 @@ describe("creator utilities", () => {
         ) as { dependencies: Record<string, string> };
 
         expect(packageJson.dependencies["@heyo-sh/heyo-docs"]).toBe("latest");
+
+        const layoutPath =
+          template === "next"
+            ? join(projectPath, "app/layout.tsx")
+            : template === "react-router"
+              ? join(projectPath, "app/root.tsx")
+              : join(projectPath, "src/layouts/docs-layout.astro");
+        const layout = await readFile(layoutPath, "utf8");
+        expect(layout).toContain("integrations/analytics/adobe");
+        expect(layout).toContain("integrations/support/intercom");
+        expect(layout).toContain("integrations/consent/osano");
+        expect(layout).toContain("config.integrations.consent.osano");
+        expect(layout).toContain("config.integrations.analytics.adobe");
+        expect(layout).toContain("config.integrations.support.intercom");
       }
     } finally {
       await rm(cwd, { recursive: true, force: true });

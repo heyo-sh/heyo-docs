@@ -2,6 +2,9 @@ import type { ComponentProps, ComponentType, ReactNode } from "react";
 
 import type { BuiltInThemeName } from "./theme/names";
 import type { DocsLinkComponent } from "./components/docs-link";
+import type { AdobeAnalyticsConfig } from "./integrations/analytics/adobe";
+import type { OsanoConsentConfig } from "./integrations/consent/osano";
+import type { IntercomSupportConfig } from "./integrations/support/intercom";
 
 export interface BrandingConfig {
   name: string;
@@ -16,6 +19,25 @@ export interface DocsColors {
 export interface FooterConfig {
   github?: string;
   website?: string;
+}
+
+export interface AnalyticsIntegrations {
+  adobe?: AdobeAnalyticsConfig;
+}
+
+export interface SupportIntegrations {
+  intercom?: IntercomSupportConfig;
+}
+
+export interface ConsentIntegrations {
+  osano?: OsanoConsentConfig;
+}
+
+/** Browser integrations grouped by their operational purpose. */
+export interface DocsIntegrations {
+  analytics: AnalyticsIntegrations;
+  support: SupportIntegrations;
+  consent: ConsentIntegrations;
 }
 
 export type DocsMode = "system" | "light" | "dark";
@@ -507,6 +529,7 @@ export interface HeyoDocsConfig {
   content: string;
   branding: BrandingConfig;
   siteUrl?: string;
+  integrations: DocsIntegrations;
 }
 
 export interface UserDocumentationSection {
@@ -566,4 +589,5 @@ export interface UserHeyoDocsConfig {
   content: string;
   branding?: Partial<BrandingConfig>;
   siteUrl?: string;
+  integrations?: Partial<DocsIntegrations>;
 }

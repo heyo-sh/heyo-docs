@@ -9,6 +9,9 @@ import {
   type MetaFunction,
 } from "react-router";
 import { pathnameFromMarkdownPath } from "@heyo-sh/heyo-docs";
+import { adobeAnalyticsScript } from "@heyo-sh/heyo-docs/integrations/analytics/adobe";
+import { osanoConsentScript } from "@heyo-sh/heyo-docs/integrations/consent/osano";
+import { intercomBootstrapScript } from "@heyo-sh/heyo-docs/integrations/support/intercom";
 import type { Route } from "./+types/root";
 
 import "./app.css";
@@ -80,6 +83,16 @@ export const links: LinksFunction = () => [
     : []),
 ];
 
+const osano = config.integrations.consent.osano
+  ? osanoConsentScript(config.integrations.consent.osano)
+  : undefined;
+const adobe = config.integrations.analytics.adobe
+  ? adobeAnalyticsScript(config.integrations.analytics.adobe)
+  : undefined;
+const intercom = config.integrations.support.intercom
+  ? intercomBootstrapScript(config.integrations.support.intercom)
+  : undefined;
+
 export function Layout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -92,6 +105,9 @@ export function Layout({ children }: { children: ReactNode }) {
             __html: getThemeScript(THEME_STORAGE_KEY, config.mode),
           }}
         />
+        {osano && <script src={osano.src} />}
+        {adobe && <script async={adobe.async} src={adobe.src} />}
+        {intercom && <script dangerouslySetInnerHTML={{ __html: intercom }} />}
         <Meta />
         <Links />
       </head>
