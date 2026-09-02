@@ -90,7 +90,7 @@ const adobe = config.integrations.analytics.adobe
   ? adobeAnalyticsScript(config.integrations.analytics.adobe)
   : undefined;
 const intercom = config.integrations.support.intercom
-  ? intercomBootstrapScript(config.integrations.support.intercom)
+  ? intercomBootstrapScript()
   : undefined;
 
 export function Layout({ children }: { children: ReactNode }) {
@@ -107,7 +107,12 @@ export function Layout({ children }: { children: ReactNode }) {
         />
         {osano && <script src={osano.src} />}
         {adobe && <script async={adobe.async} src={adobe.src} />}
-        {intercom && <script dangerouslySetInnerHTML={{ __html: intercom }} />}
+        {intercom && (
+          <script
+            data-intercom-app-id={config.integrations.support.intercom?.appId}
+            dangerouslySetInnerHTML={{ __html: intercom }}
+          />
+        )}
         <Meta />
         <Links />
       </head>

@@ -82,6 +82,7 @@ describe("creator utilities", () => {
         expect(layout).toContain("config.integrations.consent.osano");
         expect(layout).toContain("config.integrations.analytics.adobe");
         expect(layout).toContain("config.integrations.support.intercom");
+        expect(layout).toContain("data-intercom-app-id");
       }
     } finally {
       await rm(cwd, { recursive: true, force: true });

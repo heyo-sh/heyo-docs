@@ -30,7 +30,7 @@ const adobe = config.integrations.analytics.adobe
   ? adobeAnalyticsScript(config.integrations.analytics.adobe)
   : undefined;
 const intercom = config.integrations.support.intercom
-  ? intercomBootstrapScript(config.integrations.support.intercom)
+  ? intercomBootstrapScript()
   : undefined;
 ---
 
@@ -74,7 +74,15 @@ const intercom = config.integrations.support.intercom
     />
     {osano && <script is:inline src={osano.src} />}
     {adobe && <script is:inline async src={adobe.src} />}
-    {intercom && <script is:inline set:html={intercom} />}
+    {
+      intercom && (
+        <script
+          is:inline
+          data-intercom-app-id={config.integrations.support.intercom?.appId}
+          set:html={intercom}
+        />
+      )
+    }
     <script is:inline type="application/ld+json" set:html={jsonLd} />
   </head>
   <body>

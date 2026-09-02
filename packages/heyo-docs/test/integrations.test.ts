@@ -78,8 +78,10 @@ test("emits each provider's isolated browser integration", () => {
     }),
   ).toEqual({ src: "https://cmp.osano.com/tenant/site/osano.js" });
 
-  const script = intercomBootstrapScript({ appId: "abc123" });
-  expect(script).toContain('window.intercomSettings={"app_id":"abc123"}');
-  expect(script).toContain("https://widget.intercom.io/widget/abc123");
+  const script = intercomBootstrapScript();
+  expect(script).toContain('getAttribute("data-intercom-app-id")');
+  expect(script).toContain(
+    'new URL(encodeURIComponent(appId),"https://widget.intercom.io/widget/")',
+  );
   expect(script).toContain('w.addEventListener("load",l,false)');
 });
