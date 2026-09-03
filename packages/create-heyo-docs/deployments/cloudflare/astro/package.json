@@ -4,7 +4,7 @@
     "cf-typegen": "wrangler types --config dist/server/wrangler.json"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^14.2.3"
+    "@astrojs/cloudflare": "14.2.6"
   },
   "devDependencies": {
     "wrangler": "^4.125.0"
