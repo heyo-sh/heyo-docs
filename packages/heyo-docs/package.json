@@ -56,13 +56,113 @@
       "types": "./dist/integrations/analytics/adobe.d.ts",
       "default": "./dist/integrations/analytics/adobe.js"
     },
+    "./integrations/analytics/amplitude": {
+      "types": "./dist/integrations/analytics/amplitude.d.ts",
+      "default": "./dist/integrations/analytics/amplitude.js"
+    },
+    "./integrations/analytics/clarity": {
+      "types": "./dist/integrations/analytics/clarity.d.ts",
+      "default": "./dist/integrations/analytics/clarity.js"
+    },
+    "./integrations/analytics/clearbit": {
+      "types": "./dist/integrations/analytics/clearbit.d.ts",
+      "default": "./dist/integrations/analytics/clearbit.js"
+    },
+    "./integrations/analytics/fathom": {
+      "types": "./dist/integrations/analytics/fathom.d.ts",
+      "default": "./dist/integrations/analytics/fathom.js"
+    },
+    "./integrations/analytics/google-analytics": {
+      "types": "./dist/integrations/analytics/google-analytics.d.ts",
+      "default": "./dist/integrations/analytics/google-analytics.js"
+    },
+    "./integrations/analytics/google-tag-manager": {
+      "types": "./dist/integrations/analytics/google-tag-manager.d.ts",
+      "default": "./dist/integrations/analytics/google-tag-manager.js"
+    },
+    "./integrations/analytics/heap": {
+      "types": "./dist/integrations/analytics/heap.d.ts",
+      "default": "./dist/integrations/analytics/heap.js"
+    },
+    "./integrations/analytics/hotjar": {
+      "types": "./dist/integrations/analytics/hotjar.d.ts",
+      "default": "./dist/integrations/analytics/hotjar.js"
+    },
+    "./integrations/analytics/logrocket": {
+      "types": "./dist/integrations/analytics/logrocket.d.ts",
+      "default": "./dist/integrations/analytics/logrocket.js"
+    },
+    "./integrations/analytics/mixpanel": {
+      "types": "./dist/integrations/analytics/mixpanel.d.ts",
+      "default": "./dist/integrations/analytics/mixpanel.js"
+    },
+    "./integrations/analytics/openpanel": {
+      "types": "./dist/integrations/analytics/openpanel.d.ts",
+      "default": "./dist/integrations/analytics/openpanel.js"
+    },
+    "./integrations/analytics/openreplay": {
+      "types": "./dist/integrations/analytics/openreplay.d.ts",
+      "default": "./dist/integrations/analytics/openreplay.js"
+    },
+    "./integrations/analytics/pirsch": {
+      "types": "./dist/integrations/analytics/pirsch.d.ts",
+      "default": "./dist/integrations/analytics/pirsch.js"
+    },
+    "./integrations/analytics/plausible": {
+      "types": "./dist/integrations/analytics/plausible.d.ts",
+      "default": "./dist/integrations/analytics/plausible.js"
+    },
+    "./integrations/analytics/posthog": {
+      "types": "./dist/integrations/analytics/posthog.d.ts",
+      "default": "./dist/integrations/analytics/posthog.js"
+    },
+    "./integrations/analytics/rybbit": {
+      "types": "./dist/integrations/analytics/rybbit.d.ts",
+      "default": "./dist/integrations/analytics/rybbit.js"
+    },
+    "./integrations/analytics/swetrix": {
+      "types": "./dist/integrations/analytics/swetrix.d.ts",
+      "default": "./dist/integrations/analytics/swetrix.js"
+    },
+    "./integrations/analytics/umami": {
+      "types": "./dist/integrations/analytics/umami.d.ts",
+      "default": "./dist/integrations/analytics/umami.js"
+    },
     "./integrations/support/intercom": {
       "types": "./dist/integrations/support/intercom.d.ts",
       "default": "./dist/integrations/support/intercom.js"
     },
+    "./integrations/support/front": {
+      "types": "./dist/integrations/support/front.d.ts",
+      "default": "./dist/integrations/support/front.js"
+    },
+    "./integrations/support/chatwoot": {
+      "types": "./dist/integrations/support/chatwoot.d.ts",
+      "default": "./dist/integrations/support/chatwoot.js"
+    },
+    "./integrations/support/chaskiq": {
+      "types": "./dist/integrations/support/chaskiq.d.ts",
+      "default": "./dist/integrations/support/chaskiq.js"
+    },
+    "./integrations/support/papercups": {
+      "types": "./dist/integrations/support/papercups.d.ts",
+      "default": "./dist/integrations/support/papercups.js"
+    },
+    "./integrations/support/typebot": {
+      "types": "./dist/integrations/support/typebot.d.ts",
+      "default": "./dist/integrations/support/typebot.js"
+    },
+    "./integrations/support/zammad": {
+      "types": "./dist/integrations/support/zammad.d.ts",
+      "default": "./dist/integrations/support/zammad.js"
+    },
     "./integrations/consent/osano": {
       "types": "./dist/integrations/consent/osano.d.ts",
       "default": "./dist/integrations/consent/osano.js"
+    },
+    "./integrations/consent/transcend": {
+      "types": "./dist/integrations/consent/transcend.d.ts",
+      "default": "./dist/integrations/consent/transcend.js"
     },
     "./config": {
       "types": "./dist/config.d.ts",
@@ -92,7 +192,7 @@
     "dev": "bun run build --watch",
     "build": "bun run build:js && bun run build:types && bun run copy:assets",
     "clean": "rm -rf dist",
-    "build:js": "bun build src/index.tsx --outdir dist --target browser --production --external react --external react-dom --external react/jsx-runtime --external zod --external zbsearch --external beautiful-mermaid --external react-markdown --external rehype-raw --external rehype-sanitize --external remark-gfm && bun build src/config.ts --outfile dist/config.browser.js --target browser --production --external zod && bun build --root src src/integrations/analytics/adobe.ts src/integrations/support/intercom.ts src/integrations/consent/osano.ts --outdir dist --target browser --production --external zod && bun build --root src src/vite.ts src/node.ts src/next.ts src/next-plugins.ts src/astro.ts src/config.ts --outdir dist --target node --production --external @mdx-js/mdx --external rehype-slug --external zod",
+    "build:js": "bun build src/index.tsx --outdir dist --target browser --production --external react --external react-dom --external react/jsx-runtime --external zod --external zbsearch --external beautiful-mermaid --external react-markdown --external rehype-raw --external rehype-sanitize --external remark-gfm && bun build src/config.ts --outfile dist/config.browser.js --target browser --production --external zod && bun build --root src src/integrations/analytics/adobe.ts src/integrations/analytics/amplitude.ts src/integrations/analytics/clarity.ts src/integrations/analytics/clearbit.ts src/integrations/analytics/fathom.ts src/integrations/analytics/google-analytics.ts src/integrations/analytics/google-tag-manager.ts src/integrations/analytics/heap.ts src/integrations/analytics/hotjar.ts src/integrations/analytics/logrocket.ts src/integrations/analytics/mixpanel.ts src/integrations/analytics/openpanel.ts src/integrations/analytics/openreplay.ts src/integrations/analytics/pirsch.ts src/integrations/analytics/plausible.ts src/integrations/analytics/posthog.ts src/integrations/analytics/rybbit.ts src/integrations/analytics/swetrix.ts src/integrations/analytics/umami.ts src/integrations/support/chatwoot.ts src/integrations/support/chaskiq.ts src/integrations/support/front.ts src/integrations/support/intercom.ts src/integrations/support/papercups.ts src/integrations/support/typebot.ts src/integrations/support/zammad.ts src/integrations/consent/osano.ts src/integrations/consent/transcend.ts --outdir dist --target browser --production --external zod && bun build --root src src/vite.ts src/node.ts src/next.ts src/next-plugins.ts src/astro.ts src/config.ts --outdir dist --target node --production --external @mdx-js/mdx --external rehype-slug --external zod",
     "build:types": "tsc -p tsconfig.build.json",
     "copy:assets": "bun scripts/copy-theme-assets.ts",
     "typecheck": "tsc -p tsconfig.json",

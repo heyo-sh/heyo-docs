@@ -8,12 +8,39 @@ support tooling is loaded:
 integrations: {
   analytics: {
     adobe: { launchUrl: "https://assets.adobedtm.com/..." },
+    amplitude: { apiKey: "..." },
+    clarity: { projectId: "..." },
+    clearbit: { publishableKey: "pk_..." },
+    fathom: { siteId: "..." },
+    ga4: { measurementId: "G-..." },
+    gtm: { containerId: "GTM-..." },
+    heap: { environmentId: "..." },
+    hotjar: { siteId: 123456, snippetVersion: 6 },
+    logrocket: { appId: "organization/application" },
+    mixpanel: { projectToken: "..." },
+    openpanel: { clientId: "cl_..." },
+    openreplay: { projectKey: "..." },
+    pirsch: { identificationCode: "..." },
+    plausible: { domain: "docs.example.com" },
+    posthog: { projectApiKey: "phc_..." },
+    rybbit: { siteId: "..." },
+    swetrix: { projectId: "..." },
+    umami: {
+      websiteId: "...",
+      scriptUrl: "https://analytics.example.com/script.js",
+    },
   },
   support: {
+    chatwoot: {
+      baseUrl: "https://chat.example.com",
+      websiteToken: "...",
+    },
+    front: { chatId: "abc123" },
     intercom: { appId: "abc123" },
+    typebot: { typebot: "support-bot" },
   },
   consent: {
-    osano: { scriptUrl: "https://cmp.osano.com/.../osano.js" },
+    transcend: { bundleId: "..." },
   },
 }
 ```
@@ -48,10 +75,12 @@ script, script order, or SPA lifecycle behaviour.
 3. Import the provider's schema directly in `src/config.ts` and add it to the
    matching strict Zod object. The normalized config must always contain the
    `analytics`, `support`, and `consent` objects, even when they are empty.
-4. Wire the provider into the document head of all three application shells:
-   Next.js, React Router, and Astro. Preserve provider-specific script order
-   and loading behaviour; consent integrations run before analytics and support
-   integrations.
+4. Wire the provider into the location required by its official snippet in all
+   three application shells: Next.js, React Router, and Astro. Consent
+   integrations run first in the document head before analytics and support;
+   Front, Chatwoot, Intercom, and Zammad are emitted immediately before
+   `</body>` because their official browser snippets require or recommend that
+   placement. Preserve each provider's script order and loading behaviour.
 5. Add tests for config defaults and validation, the provider's emitted script,
    and the three generated templates. Run the complete project checks.
 
@@ -72,3 +101,29 @@ changing that order.
 Templates are the supported integration boundary for each framework. Existing
 projects should copy the small provider-specific imports and head markup from
 the corresponding current template when adopting a newly released integration.
+
+Heyo Docs does not currently support integrations that require an explicit
+client-side callback after every route transition in Next.js or React Router,
+such as Hightouch page tracking (`htevents.page()`), Segment page tracking
+(`analytics.page()`), or Formbricks website/app surveys
+(`formbricks.registerRouteChange()`). Matomo, GoatCounter, Ackee, Shynet, and
+Open Web Analytics have the same limitation because their SPA guidance requires
+a manual page-view call on navigation. Do not add any of these providers until
+framework-specific route-lifecycle support has been designed and implemented.
+
+Some support and consent products are deliberately not represented as a
+configuration entry. FreeScout's live chat is an optional marketplace module,
+so its client snippet is not a stable core integration. osTicket only exposes
+ticket creation through a server-authenticated API or an application-owned
+form; its API key must never be bundled in the browser. Zammad's generated
+ticket form similarly has instance-specific markup and a jQuery dependency;
+only its documented no-jQuery Chat channel is supported. Klaro,
+tarteaucitron.js, Vanilla CookieConsent, Osano CookieConsent by Insites, and
+Hightouch Consent Manager JS each require a bespoke service/category map and
+runtime gating or callbacks for every managed script. A banner alone would not
+enforce consent for the integrations emitted by these templates, so they must
+wait for first-class consent lifecycle and category support. The existing Osano
+integration is different: Osano publishes one configured, parser-blocking CMP
+script URL that owns its policy. `Consent Manager JS` is ambiguous as a product
+name; if it refers to Hightouch Consent Manager, the same Hightouch dependency
+and route-lifecycle limitation applies.
