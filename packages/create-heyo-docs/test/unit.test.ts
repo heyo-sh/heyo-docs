@@ -68,6 +68,123 @@ describe("creator utilities", () => {
         ) as { dependencies: Record<string, string> };
 
         expect(packageJson.dependencies["@heyo-sh/heyo-docs"]).toBe("latest");
+
+        const layoutPath =
+          template === "next"
+            ? join(projectPath, "app/layout.tsx")
+            : template === "react-router"
+              ? join(projectPath, "app/root.tsx")
+              : join(projectPath, "src/layouts/docs-layout.astro");
+        const layout = await readFile(layoutPath, "utf8");
+        expect(layout).toContain("integrations/analytics/adobe");
+        expect(layout).toContain("integrations/analytics/amplitude");
+        expect(layout).toContain("integrations/analytics/clarity");
+        expect(layout).toContain("integrations/analytics/clearbit");
+        expect(layout).toContain("integrations/analytics/fathom");
+        expect(layout).toContain("integrations/analytics/google-analytics");
+        expect(layout).toContain("integrations/analytics/google-tag-manager");
+        expect(layout).toContain("integrations/analytics/heap");
+        expect(layout).toContain("integrations/analytics/hotjar");
+        expect(layout).toContain("integrations/analytics/logrocket");
+        expect(layout).toContain("integrations/analytics/mixpanel");
+        expect(layout).toContain("integrations/analytics/openpanel");
+        expect(layout).toContain("integrations/analytics/openreplay");
+        expect(layout).toContain("integrations/analytics/pirsch");
+        expect(layout).toContain("integrations/analytics/plausible");
+        expect(layout).toContain("integrations/analytics/posthog");
+        expect(layout).toContain("integrations/analytics/rybbit");
+        expect(layout).toContain("integrations/analytics/swetrix");
+        expect(layout).toContain("integrations/analytics/umami");
+        expect(layout).toContain("integrations/support/chaskiq");
+        expect(layout).toContain("integrations/support/chatwoot");
+        expect(layout).toContain("integrations/support/front");
+        expect(layout).toContain("integrations/support/intercom");
+        expect(layout).toContain("integrations/support/papercups");
+        expect(layout).toContain("integrations/support/typebot");
+        expect(layout).toContain("integrations/support/zammad");
+        expect(layout).toContain("integrations/consent/osano");
+        expect(layout).toContain("integrations/consent/transcend");
+        expect(layout).toContain("config.integrations.consent.osano");
+        expect(layout).toContain("config.integrations.consent.transcend");
+        expect(layout).toContain("config.integrations.analytics.adobe");
+        expect(layout).toContain("config.integrations.analytics.amplitude");
+        expect(layout).toContain("config.integrations.analytics.clarity");
+        expect(layout).toContain("config.integrations.analytics.clearbit");
+        expect(layout).toContain("config.integrations.analytics.fathom");
+        expect(layout).toContain("config.integrations.analytics.ga4");
+        expect(layout).toContain("config.integrations.analytics.gtm");
+        expect(layout).toContain("config.integrations.analytics.heap");
+        expect(layout).toContain("config.integrations.analytics.hotjar");
+        expect(layout).toContain("config.integrations.analytics.logrocket");
+        expect(layout).toContain("config.integrations.analytics.mixpanel");
+        expect(layout).toContain("config.integrations.analytics.openpanel");
+        expect(layout).toContain("config.integrations.analytics.openreplay");
+        expect(layout).toContain("config.integrations.analytics.pirsch");
+        expect(layout).toContain("config.integrations.analytics.plausible");
+        expect(layout).toContain("config.integrations.analytics.posthog");
+        expect(layout).toContain("config.integrations.analytics.rybbit");
+        expect(layout).toContain("config.integrations.analytics.swetrix");
+        expect(layout).toContain("config.integrations.analytics.umami");
+        expect(layout).toContain("config.integrations.support.chaskiq");
+        expect(layout).toContain("config.integrations.support.chatwoot");
+        expect(layout).toContain("config.integrations.support.front");
+        expect(layout).toContain("config.integrations.support.intercom");
+        expect(layout).toContain("config.integrations.support.papercups");
+        expect(layout).toContain("config.integrations.support.typebot");
+        expect(layout).toContain("config.integrations.support.zammad");
+        expect(layout).toContain("data-intercom-app-id");
+        expect(layout).toContain("data-intercom-api-base");
+        expect(layout).toContain("data-front-chat-id");
+        expect(layout).toContain("data-chatwoot-website-token");
+        expect(layout).toContain("data-chaskiq-app-id");
+        expect(layout).toContain("data-papercups-token");
+        expect(layout).toContain("data-heyo-typebot");
+        expect(layout).toContain("data-zammad-chat-id");
+        expect(layout).toContain("data-google-tag-manager-container-id");
+        expect(layout).toContain("googleTagManagerNoScript");
+        expect(layout).toContain("data-google-analytics-measurement-id");
+        expect(layout).toContain("data-heap-environment-id");
+
+        const osanoScript =
+          template === "astro"
+            ? "{osano && <script is:inline src={osano.src} />}"
+            : "{osano && <script src={osano.src} />}";
+        const adobeScript =
+          template === "astro"
+            ? "{adobe && <script is:inline async src={adobe.src} />}"
+            : "{adobe && <script async={adobe.async} src={adobe.src} />}";
+        const osanoIndex = layout.indexOf(osanoScript);
+        const transcendIndex = layout.indexOf("transcend && (");
+        const transcendDefaultsIndex = layout.indexOf(
+          "transcendGoogleConsentDefaults && (",
+        );
+        const headIndex = layout.indexOf("<head>");
+        const firstMetadataIndex = layout.indexOf(
+          template === "astro"
+            ? '<meta charset="utf-8" />'
+            : template === "next"
+              ? '<meta name="color-scheme" content="light dark" />'
+              : '<meta charSet="utf-8" />',
+        );
+        const themeIndex = layout.lastIndexOf("getThemeScript(");
+        const adobeIndex = layout.indexOf(adobeScript);
+        const intercomIndex = layout.indexOf("intercom && (");
+
+        expect(osanoIndex).toBeGreaterThan(-1);
+        expect(transcendIndex).toBeGreaterThan(-1);
+        expect(transcendDefaultsIndex).toBeGreaterThan(-1);
+        expect(headIndex).toBeGreaterThan(-1);
+        expect(firstMetadataIndex).toBeGreaterThan(-1);
+        expect(themeIndex).toBeGreaterThan(-1);
+        expect(adobeIndex).toBeGreaterThan(-1);
+        expect(intercomIndex).toBeGreaterThan(-1);
+        expect(osanoIndex).toBeLessThan(themeIndex);
+        expect(transcendIndex).toBeLessThan(osanoIndex);
+        expect(headIndex).toBeLessThan(transcendDefaultsIndex);
+        expect(transcendDefaultsIndex).toBeLessThan(transcendIndex);
+        expect(transcendIndex).toBeLessThan(firstMetadataIndex);
+        expect(osanoIndex).toBeLessThan(adobeIndex);
+        expect(osanoIndex).toBeLessThan(intercomIndex);
       }
     } finally {
       await rm(cwd, { recursive: true, force: true });

@@ -17,6 +17,7 @@ describe("configuration", () => {
       content: "./docs",
       branding: { name: "Heyo Documentation" },
       siteUrl: undefined,
+      integrations: { analytics: {}, support: {}, consent: {} },
     });
   });
 

@@ -2,6 +2,34 @@ import { z } from "zod";
 import type { ReactNode } from "react";
 
 import { builtInThemeNames } from "./theme/names";
+import { adobeAnalyticsSchema } from "./integrations/analytics/adobe";
+import { amplitudeAnalyticsSchema } from "./integrations/analytics/amplitude";
+import { clarityAnalyticsSchema } from "./integrations/analytics/clarity";
+import { clearbitAnalyticsSchema } from "./integrations/analytics/clearbit";
+import { fathomAnalyticsSchema } from "./integrations/analytics/fathom";
+import { googleAnalyticsSchema } from "./integrations/analytics/google-analytics";
+import { googleTagManagerSchema } from "./integrations/analytics/google-tag-manager";
+import { heapAnalyticsSchema } from "./integrations/analytics/heap";
+import { hotjarAnalyticsSchema } from "./integrations/analytics/hotjar";
+import { logRocketAnalyticsSchema } from "./integrations/analytics/logrocket";
+import { mixpanelAnalyticsSchema } from "./integrations/analytics/mixpanel";
+import { openpanelAnalyticsSchema } from "./integrations/analytics/openpanel";
+import { openReplayAnalyticsSchema } from "./integrations/analytics/openreplay";
+import { osanoConsentSchema } from "./integrations/consent/osano";
+import { transcendConsentSchema } from "./integrations/consent/transcend";
+import { pirschAnalyticsSchema } from "./integrations/analytics/pirsch";
+import { plausibleAnalyticsSchema } from "./integrations/analytics/plausible";
+import { posthogAnalyticsSchema } from "./integrations/analytics/posthog";
+import { rybbitAnalyticsSchema } from "./integrations/analytics/rybbit";
+import { swetrixAnalyticsSchema } from "./integrations/analytics/swetrix";
+import { chaskiqSupportSchema } from "./integrations/support/chaskiq";
+import { chatwootSupportSchema } from "./integrations/support/chatwoot";
+import { frontSupportSchema } from "./integrations/support/front";
+import { intercomSupportSchema } from "./integrations/support/intercom";
+import { papercupsSupportSchema } from "./integrations/support/papercups";
+import { typebotSupportSchema } from "./integrations/support/typebot";
+import { zammadSupportSchema } from "./integrations/support/zammad";
+import { umamiAnalyticsSchema } from "./integrations/analytics/umami";
 import type {
   DocumentationSection,
   HeyoDocsConfig,
@@ -141,6 +169,60 @@ const configSchema = z
       .strict()
       .default({}),
     siteUrl: siteUrlSchema.optional(),
+    integrations: z
+      .object({
+        analytics: z
+          .object({
+            adobe: adobeAnalyticsSchema.optional(),
+            amplitude: amplitudeAnalyticsSchema.optional(),
+            clarity: clarityAnalyticsSchema.optional(),
+            clearbit: clearbitAnalyticsSchema.optional(),
+            fathom: fathomAnalyticsSchema.optional(),
+            ga4: googleAnalyticsSchema.optional(),
+            gtm: googleTagManagerSchema.optional(),
+            heap: heapAnalyticsSchema.optional(),
+            hotjar: hotjarAnalyticsSchema.optional(),
+            logrocket: logRocketAnalyticsSchema.optional(),
+            mixpanel: mixpanelAnalyticsSchema.optional(),
+            openpanel: openpanelAnalyticsSchema.optional(),
+            openreplay: openReplayAnalyticsSchema.optional(),
+            pirsch: pirschAnalyticsSchema.optional(),
+            plausible: plausibleAnalyticsSchema.optional(),
+            posthog: posthogAnalyticsSchema.optional(),
+            rybbit: rybbitAnalyticsSchema.optional(),
+            swetrix: swetrixAnalyticsSchema.optional(),
+            umami: umamiAnalyticsSchema.optional(),
+          })
+          .strict()
+          .default({}),
+        support: z
+          .object({
+            chaskiq: chaskiqSupportSchema.optional(),
+            chatwoot: chatwootSupportSchema.optional(),
+            front: frontSupportSchema.optional(),
+            intercom: intercomSupportSchema.optional(),
+            papercups: papercupsSupportSchema.optional(),
+            typebot: typebotSupportSchema.optional(),
+            zammad: zammadSupportSchema.optional(),
+          })
+          .strict()
+          .default({}),
+        consent: z
+          .object({
+            osano: osanoConsentSchema.optional(),
+            transcend: transcendConsentSchema.optional(),
+          })
+          .strict()
+          .refine(
+            (integrations) =>
+              Object.values(integrations).filter((integration) => integration)
+                .length <= 1,
+            "Only one consent manager may be configured at a time.",
+          )
+          .default({}),
+      })
+      .strict()
+      .default({ analytics: {}, support: {}, consent: {} }),
   })
   .strict();
 
@@ -161,6 +243,7 @@ export function validateConfig(config: UserHeyoDocsConfig): HeyoDocsConfig {
       logo: parsed.branding.logo,
     },
     siteUrl: parsed.siteUrl?.replace(/\/$/, ""),
+    integrations: parsed.integrations,
   };
 }
 

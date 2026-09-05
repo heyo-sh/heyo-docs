@@ -2,6 +2,34 @@ import type { ComponentProps, ComponentType, ReactNode } from "react";
 
 import type { BuiltInThemeName } from "./theme/names";
 import type { DocsLinkComponent } from "./components/docs-link";
+import type { AdobeAnalyticsConfig } from "./integrations/analytics/adobe";
+import type { AmplitudeAnalyticsConfig } from "./integrations/analytics/amplitude";
+import type { ClarityAnalyticsConfig } from "./integrations/analytics/clarity";
+import type { ClearbitAnalyticsConfig } from "./integrations/analytics/clearbit";
+import type { FathomAnalyticsConfig } from "./integrations/analytics/fathom";
+import type { GoogleAnalyticsConfig } from "./integrations/analytics/google-analytics";
+import type { GoogleTagManagerConfig } from "./integrations/analytics/google-tag-manager";
+import type { HeapAnalyticsConfig } from "./integrations/analytics/heap";
+import type { HotjarAnalyticsConfig } from "./integrations/analytics/hotjar";
+import type { LogRocketAnalyticsConfig } from "./integrations/analytics/logrocket";
+import type { MixpanelAnalyticsConfig } from "./integrations/analytics/mixpanel";
+import type { OpenpanelAnalyticsConfig } from "./integrations/analytics/openpanel";
+import type { OpenReplayAnalyticsConfig } from "./integrations/analytics/openreplay";
+import type { OsanoConsentConfig } from "./integrations/consent/osano";
+import type { TranscendConsentConfig } from "./integrations/consent/transcend";
+import type { PirschAnalyticsConfig } from "./integrations/analytics/pirsch";
+import type { PlausibleAnalyticsConfig } from "./integrations/analytics/plausible";
+import type { PosthogAnalyticsConfig } from "./integrations/analytics/posthog";
+import type { RybbitAnalyticsConfig } from "./integrations/analytics/rybbit";
+import type { SwetrixAnalyticsConfig } from "./integrations/analytics/swetrix";
+import type { ChaskiqSupportConfig } from "./integrations/support/chaskiq";
+import type { ChatwootSupportConfig } from "./integrations/support/chatwoot";
+import type { FrontSupportConfig } from "./integrations/support/front";
+import type { IntercomSupportConfig } from "./integrations/support/intercom";
+import type { PapercupsSupportConfig } from "./integrations/support/papercups";
+import type { TypebotSupportConfig } from "./integrations/support/typebot";
+import type { ZammadSupportConfig } from "./integrations/support/zammad";
+import type { UmamiAnalyticsConfig } from "./integrations/analytics/umami";
 
 export interface BrandingConfig {
   name: string;
@@ -16,6 +44,50 @@ export interface DocsColors {
 export interface FooterConfig {
   github?: string;
   website?: string;
+}
+
+export interface AnalyticsIntegrations {
+  adobe?: AdobeAnalyticsConfig;
+  amplitude?: AmplitudeAnalyticsConfig;
+  clarity?: ClarityAnalyticsConfig;
+  clearbit?: ClearbitAnalyticsConfig;
+  fathom?: FathomAnalyticsConfig;
+  ga4?: GoogleAnalyticsConfig;
+  gtm?: GoogleTagManagerConfig;
+  heap?: HeapAnalyticsConfig;
+  hotjar?: HotjarAnalyticsConfig;
+  logrocket?: LogRocketAnalyticsConfig;
+  mixpanel?: MixpanelAnalyticsConfig;
+  openpanel?: OpenpanelAnalyticsConfig;
+  openreplay?: OpenReplayAnalyticsConfig;
+  pirsch?: PirschAnalyticsConfig;
+  plausible?: PlausibleAnalyticsConfig;
+  posthog?: PosthogAnalyticsConfig;
+  rybbit?: RybbitAnalyticsConfig;
+  swetrix?: SwetrixAnalyticsConfig;
+  umami?: UmamiAnalyticsConfig;
+}
+
+export interface SupportIntegrations {
+  chaskiq?: ChaskiqSupportConfig;
+  chatwoot?: ChatwootSupportConfig;
+  front?: FrontSupportConfig;
+  intercom?: IntercomSupportConfig;
+  papercups?: PapercupsSupportConfig;
+  typebot?: TypebotSupportConfig;
+  zammad?: ZammadSupportConfig;
+}
+
+export interface ConsentIntegrations {
+  osano?: OsanoConsentConfig;
+  transcend?: TranscendConsentConfig;
+}
+
+/** Browser integrations grouped by their operational purpose. */
+export interface DocsIntegrations {
+  analytics: AnalyticsIntegrations;
+  support: SupportIntegrations;
+  consent: ConsentIntegrations;
 }
 
 export type DocsMode = "system" | "light" | "dark";
@@ -507,6 +579,7 @@ export interface HeyoDocsConfig {
   content: string;
   branding: BrandingConfig;
   siteUrl?: string;
+  integrations: DocsIntegrations;
 }
 
 export interface UserDocumentationSection {
@@ -566,4 +639,5 @@ export interface UserHeyoDocsConfig {
   content: string;
   branding?: Partial<BrandingConfig>;
   siteUrl?: string;
+  integrations?: Partial<DocsIntegrations>;
 }
