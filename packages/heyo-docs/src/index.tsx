@@ -16,6 +16,7 @@ import {
 import { resolveTheme } from "./theme";
 import { IconProvider } from "./components/icons";
 import { DocsLinkProvider } from "./components/docs-link";
+import { AiChat } from "./components/ai-chat";
 import { DocumentationContent } from "./theme/components/documentation/content";
 export {
   createSearchIndex,
@@ -184,6 +185,16 @@ function DocsAppContent({
   pages,
   pathname,
 }: DocsAppProps) {
+  const chatConfig = config.ai?.chat;
+  const chat = chatConfig
+    ? {
+        variant: chatConfig.variant,
+        icon: chatConfig.icon,
+        text: chatConfig.text,
+        name: chatConfig.name,
+        placeholder: chatConfig.placeholder,
+      }
+    : undefined;
   const currentPath = normaliseDocsPathname(pathname);
   const model = createDocsModel(
     config,
@@ -310,54 +321,48 @@ function DocsAppContent({
       tabs={tabs}
     />
   ) : undefined;
-  if (!page && !endpoint) {
-    return (
+  return (
+    <>
       <Layout
         colors={config.colors}
         sidebar={sidebar}
         topNavigation={topNavigation}
       >
-        <article className="heyo-docs-article">
-          <p className="heyo-docs-eyebrow">404</p>
-          <h1>Page not found</h1>
-          <p>The documentation page you requested does not exist.</p>
-        </article>
+        {!page && !endpoint ? (
+          <article className="heyo-docs-article">
+            <p className="heyo-docs-eyebrow">404</p>
+            <h1>Page not found</h1>
+            <p>The documentation page you requested does not exist.</p>
+          </article>
+        ) : endpoint ? (
+          <OpenApiPage
+            endpoint={endpoint}
+            key={endpoint.slug}
+            next={pageNavigation.next}
+            openApiRequestUrl={openApiRequestUrl}
+            previous={pageNavigation.previous}
+          />
+        ) : changelogGroup ? (
+          <ChangelogPage
+            group={changelogGroup}
+            mdxComponents={mdxComponents}
+            page={page!}
+          />
+        ) : (
+          <DocsPage
+            mdxComponents={mdxComponents}
+            next={pageNavigation.next}
+            page={page!}
+            previous={pageNavigation.previous}
+            tableOfContents={
+              TableOfContents ? (
+                <TableOfContents items={page!.tableOfContents} />
+              ) : undefined
+            }
+          />
+        )}
       </Layout>
-    );
-  }
-  return (
-    <Layout
-      colors={config.colors}
-      sidebar={sidebar}
-      topNavigation={topNavigation}
-    >
-      {endpoint ? (
-        <OpenApiPage
-          endpoint={endpoint}
-          key={endpoint.slug}
-          next={pageNavigation.next}
-          openApiRequestUrl={openApiRequestUrl}
-          previous={pageNavigation.previous}
-        />
-      ) : changelogGroup ? (
-        <ChangelogPage
-          group={changelogGroup}
-          mdxComponents={mdxComponents}
-          page={page!}
-        />
-      ) : (
-        <DocsPage
-          mdxComponents={mdxComponents}
-          next={pageNavigation.next}
-          page={page!}
-          previous={pageNavigation.previous}
-          tableOfContents={
-            TableOfContents ? (
-              <TableOfContents items={page!.tableOfContents} />
-            ) : undefined
-          }
-        />
-      )}
-    </Layout>
+      {chat ? <AiChat chatConfig={chat} theme={config.theme} /> : null}
+    </>
   );
 }

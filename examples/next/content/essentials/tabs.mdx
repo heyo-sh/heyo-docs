@@ -1,18 +1,14 @@
 ---
 title: Tabs
-description: Let readers choose between related commands or platform-specific instructions.
+description: Let readers switch between equivalent commands or platforms.
 ---
 
 # Tabs
 
-`Tabs` presents related content one panel at a time. It is useful for package
-manager commands, framework variants, and small comparisons where readers need
-only one option to complete the task.
+Use tabs for equivalent ways to complete the same task. Keep their labels
+short.
 
-## Label equivalent choices clearly
-
-Each `Tab` needs a concise title. Give a tab a stable `value` when you need
-to set a different initial panel with `defaultValue`.
+## Add tabs
 
 <Tabs defaultValue="typescript" variant="line">
   <Tab title="JavaScript" value="javascript">
@@ -23,11 +19,9 @@ to set a different initial panel with `defaultValue`.
   </Tab>
 </Tabs>
 
-## Keep the choices parallel
+## Compare platforms
 
-Tabs work when every panel solves the same problem in a different environment.
-Use headings or `Steps` for a sequence that every reader must complete; tabs
-can hide required information.
+Each tab should answer the same question for a different platform.
 
 <Tabs defaultValue="vercel" variant="line">
   <Tab title="Vercel" value="vercel">
@@ -40,3 +34,7 @@ can hide required information.
     Upload the build output to any host that serves static files.
   </Tab>
 </Tabs>
+
+<Callout type="tip" title="Use tabs sparingly">
+  Use headings or <code>Steps</code> for information that every reader needs.
+</Callout>

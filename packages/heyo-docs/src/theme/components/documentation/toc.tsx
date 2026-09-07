@@ -3,6 +3,7 @@
 import { createElement, useCallback, useEffect, useRef, useState } from "react";
 
 import type { TableOfContentsProps } from "../../../types";
+import { getDocumentationScrollViewport } from "./scroll";
 
 interface TocTrack {
   height: number;
@@ -97,21 +98,27 @@ export function DocumentationTableOfContents({ items }: TableOfContentsProps) {
       .map((item) => document.getElementById(item.id))
       .filter((heading): heading is HTMLElement => heading !== null);
     if (!headings.length) return;
+    const scrollViewport = getDocumentationScrollViewport();
 
     const updateActiveHeading = () => {
       const documentHeight = Math.max(
         document.body.scrollHeight,
         document.documentElement.scrollHeight,
       );
-      const isAtDocumentEnd =
-        window.scrollY + window.innerHeight >= documentHeight - 2;
+      const isAtDocumentEnd = scrollViewport
+        ? scrollViewport.scrollTop + scrollViewport.clientHeight >=
+          scrollViewport.scrollHeight - 2
+        : window.scrollY + window.innerHeight >= documentHeight - 2;
 
       if (isAtDocumentEnd) {
         setActiveId(headings.at(-1)!.id);
         return;
       }
 
-      const triggerLine = window.innerHeight * (2 / 3);
+      const triggerLine = scrollViewport
+        ? scrollViewport.getBoundingClientRect().top +
+          scrollViewport.clientHeight * (2 / 3)
+        : window.innerHeight * (2 / 3);
       let nextId = headings[0].id;
 
       for (const heading of headings) {
@@ -128,16 +135,19 @@ export function DocumentationTableOfContents({ items }: TableOfContentsProps) {
     });
 
     for (const heading of headings) observer.observe(heading);
+    const scrollTarget = scrollViewport ?? window;
     window.addEventListener("hashchange", updateActiveHeading);
     window.addEventListener("resize", updateActiveHeading);
-    window.addEventListener("scroll", updateActiveHeading, { passive: true });
+    scrollTarget.addEventListener("scroll", updateActiveHeading, {
+      passive: true,
+    });
     updateActiveHeading();
 
     return () => {
       observer.disconnect();
       window.removeEventListener("hashchange", updateActiveHeading);
       window.removeEventListener("resize", updateActiveHeading);
-      window.removeEventListener("scroll", updateActiveHeading);
+      scrollTarget.removeEventListener("scroll", updateActiveHeading);
     };
   }, [items]);
 
@@ -153,7 +163,7 @@ export function DocumentationTableOfContents({ items }: TableOfContentsProps) {
   return (
     <aside
       aria-label="On this page"
-      className="hidden h-[calc(100svh-6.5rem)] self-start xl:sticky xl:top-[6.5rem] xl:flex xl:w-68 xl:flex-col xl:pr-6"
+      className="hidden h-[calc(100svh-6.5rem)] self-start xl:sticky xl:top-12 xl:flex xl:w-68 xl:flex-col xl:pr-6"
     >
       <h2 className="inline-flex items-center gap-1.5 text-sm font-normal text-muted-foreground">
         <TocIcon />

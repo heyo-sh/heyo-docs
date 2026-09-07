@@ -32,7 +32,7 @@ function NavigationSection({
           key={
             isNavigationSection(item)
               ? `section-${item.section ?? "pages"}-${index}`
-              : `${item.link ? "link" : "page"}-${item.slug}-${index}`
+              : `page-${item.slug}-${index}`
           }
         />
       ))}
@@ -76,7 +76,7 @@ function NavigationPageItem({
   currentPath: string;
   page: NavigationPage;
 }) {
-  const active = !page.link && page.slug === currentPath;
+  const active = page.slug === currentPath;
 
   return (
     <li>
@@ -84,9 +84,7 @@ function NavigationPageItem({
         aria-current={active ? "page" : undefined}
         className="hover:bg-secondary hover:text-secondary-foreground"
         nativeButton={false}
-        render={
-          page.link ? <a href={page.slug} /> : <DocsLink href={page.slug} />
-        }
+        render={<DocsLink href={page.slug} />}
         variant={active ? "secondary" : "ghost"}
       >
         {page.method ? <OpenApiMethodBadge method={page.method} /> : null}

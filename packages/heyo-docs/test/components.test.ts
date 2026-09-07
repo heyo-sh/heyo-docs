@@ -83,6 +83,52 @@ test("renders the built-in theme components", () => {
   expect(html).toContain("Page body");
 });
 
+test("renders an AI chat trigger without exposing its server key", () => {
+  const html = renderToStaticMarkup(
+    createElement(DocsApp, {
+      config: heyoDocs({
+        ai: {
+          chat: {
+            provider: "openai",
+            key: "server-only-key",
+            model: "gpt-5-mini",
+            name: "Docs Assistant",
+          },
+        },
+      }),
+      iconSet,
+      pages,
+      pathname: "/",
+    }),
+  );
+
+  expect(html).toContain("AI Chat");
+  expect(html).not.toContain("server-only-key");
+});
+
+test("adapts the AI chat chrome to the selected theme", () => {
+  const html = renderToStaticMarkup(
+    createElement(DocsApp, {
+      config: heyoDocs({
+        ai: {
+          chat: {
+            provider: "openai",
+            key: "server-only-key",
+            model: "gpt-5-mini",
+          },
+        },
+        theme: "grain",
+      }),
+      iconSet,
+      pages,
+      pathname: "/",
+    }),
+  );
+
+  expect(html).toContain("rounded-none");
+  expect(html).toContain("border-foreground/5");
+});
+
 test("places Shade navigation controls in the header and uses native sidebar buttons", () => {
   const html = renderToStaticMarkup(
     createElement(DocsApp, {
@@ -288,8 +334,9 @@ test("uses a Sheet for mobile navigation while keeping the desktop sidebar separ
   expect(html).toContain('aria-label="Open documentation navigation"');
   expect(html).toContain('class="hidden min-w-0 flex-1 lg:flex"');
   expect(html).toContain(
-    'class="hidden lg:block heyo-docs-enter heyo-docs-enter--navigation"',
+    'class="hidden min-h-0 lg:block heyo-docs-enter heyo-docs-enter--navigation"',
   );
+  expect(html).toContain('id="heyo-docs-content-scroll-area"');
 });
 
 test("renders unsectioned pages directly in the Grain sidebar", () => {
@@ -352,32 +399,57 @@ test("renders the configured icon beside an individual documentation page", () =
   expect(html).toContain('aria-current="page"');
 });
 
-test("renders custom sidebar links with their configured destination", () => {
+test("renders configured group icons in every theme's group navigation", () => {
+  const GroupIcon: IconComponent = (props) =>
+    createElement("svg", { "data-group-icon": "true", ...props });
+
+  for (const theme of ["grain", "shade", "moss"] as const) {
+    const html = renderToStaticMarkup(
+      createElement(DocsApp, {
+        config: heyoDocs({
+          groups: [
+            {
+              group: "Documentation",
+              icon: "book",
+              sections: [{ pages: ["index"] }],
+            },
+          ],
+          theme,
+        }),
+        iconSet: { book: GroupIcon },
+        pages: [{ ...pages[0]!, sourcePath: "index.mdx" }],
+        pathname: "/",
+      }),
+    );
+
+    expect(html).toContain('data-group-icon="true"');
+  }
+});
+
+test("renders external documentation groups as regular links", () => {
   const html = renderToStaticMarkup(
     createElement(DocsApp, {
       config: heyoDocs({
         groups: [
           {
             group: "Documentation",
-            sections: [
-              {
-                section: "Guides",
-                pages: [
-                  "index",
-                  { title: "Admin panel", src: "https://app.example.com" },
-                ],
-              },
-            ],
+            icon: "book",
+            src: "https://docs.example.com",
+          },
+          {
+            group: "Guides",
+            sections: [{ pages: ["index"] }],
           },
         ],
+        theme: "shade",
       }),
       pages: [{ ...pages[0]!, sourcePath: "index.mdx" }],
       pathname: "/",
     }),
   );
 
-  expect(html).toContain('href="https://app.example.com"');
-  expect(html).toContain("Admin panel");
+  expect(html).toContain('href="https://docs.example.com"');
+  expect(html).toContain("Documentation");
 });
 
 test("uses the host router link for internal documentation navigation", () => {
@@ -438,13 +510,7 @@ test("renders nested sections in the Grain sidebar and breadcrumbs", () => {
                     pages: [
                       {
                         section: "Deployment",
-                        pages: [
-                          {
-                            title: "Deployment dashboard",
-                            src: "https://app.example.com/deployments",
-                          },
-                          "guides/deploy",
-                        ],
+                        pages: ["guides/deploy"],
                       },
                     ],
                   },
@@ -462,7 +528,6 @@ test("renders nested sections in the Grain sidebar and breadcrumbs", () => {
 
   expect(html).toContain("Advanced");
   expect(html).toContain("Deployment");
-  expect(html).toContain('href="https://app.example.com/deployments"');
   expect(html).toContain('style="padding-left:1.75rem"');
   expect(breadcrumb).toContain("Guides");
   expect(breadcrumb).toContain("Advanced");
@@ -712,6 +777,7 @@ test("uses changelog group metadata and renders tags below their dates", () => {
   );
 
   expect(html).toContain('aria-label="Changelog entries"');
+  expect(html).toContain("[&amp;&gt;[data-slot=scroll-area-scrollbar]]:hidden");
   expect(html).toContain(
     '<span class="min-w-0 flex-1 truncate">Release notes</span>',
   );

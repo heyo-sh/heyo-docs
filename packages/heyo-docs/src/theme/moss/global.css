@@ -238,7 +238,7 @@
 }
 
 .heyo-docs-enter {
-  animation-duration: 900ms;
+  animation-duration: 600ms;
   animation-fill-mode: both;
   animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   will-change: opacity, filter, transform;
@@ -250,15 +250,15 @@
 }
 
 .heyo-docs-enter--top-navigation {
-  animation-duration: 720ms;
+  animation-duration: 480ms;
 }
 
 .heyo-docs-enter--navigation {
-  animation-delay: 100ms;
+  animation-delay: 67ms;
 }
 
 .heyo-docs-enter--content {
-  animation-delay: 180ms;
+  animation-delay: 120ms;
   animation-name: heyo-docs-enter-from-right;
 }
 

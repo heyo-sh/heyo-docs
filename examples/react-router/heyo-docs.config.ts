@@ -1,28 +1,16 @@
 import { heyoDocs } from "@heyo-sh/heyo-docs";
 
-import { headerNavigation } from "./app/header-navigation";
-
 export default heyoDocs({
   siteUrl: "https://docs.heyo.sh",
   title: "Heyo Docs example",
   description: "The thin React Router shell around the Heyo Docs runtime.",
   content: "./content",
-  theme: "shade",
-  navigation: headerNavigation,
+  theme: "grain",
   groups: [
     {
       group: "Documentation",
       icon: "globe",
       sections: [
-        {
-          pages: [
-            {
-              title: "Documentation",
-              src: "https://docs.heyo.sh/introduction",
-              icon: "book",
-            },
-          ],
-        },
         {
           section: "Get Started",
           icon: "lightbulb",
@@ -43,12 +31,14 @@ export default heyoDocs({
       ],
     },
     {
-      group: "Square API",
+      group: "OpenAPI",
       icon: "code",
       sections: [
         {
-          schema:
-            "https://raw.githubusercontent.com/square/connect-api-specification/551af55f16fce178780e6556570973aaf660e52a/api.json",
+          pages: ["api-overview"],
+        },
+        {
+          schema: "./openapi.json",
         },
       ],
     },
@@ -64,5 +54,5 @@ export default heyoDocs({
     github: "https://github.com/heyo-sh/heyo-docs",
     website: "https://docs.heyo.sh",
   },
-  branding: { name: "Heyo Docs" },
+  branding: { name: "Heyo Docs", logo: "/logo.svg" },
 });

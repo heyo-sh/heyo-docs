@@ -45,7 +45,7 @@ export function ChangelogFilters({
   return (
     <aside
       aria-label="Filter changelog"
-      className="order-first mb-8 flex self-start xl:order-none xl:mb-0 xl:h-[calc(100svh-6.5rem)] xl:sticky xl:top-[6.5rem] xl:w-68 xl:flex-col xl:pr-6"
+      className="order-first mb-8 flex self-start xl:order-none xl:mb-0 xl:h-[calc(100svh-6.5rem)] xl:sticky xl:top-12 xl:w-68 xl:flex-col xl:pr-6"
     >
       <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
         <FilterIcon />

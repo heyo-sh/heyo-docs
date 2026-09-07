@@ -1,14 +1,6 @@
 <div align="center">
   <img src="./public/heyo-docs-hero.webp" alt="Heyo Docs Logo"/>
 
-  <h1>Heyo Docs</h1>
-
-  <p>
-    A themeable documentation toolkit for React Router, Next.js, and Astro.
-    Create a standalone documentation site with MDX content, navigation, search,
-    OpenAPI reference pages, and built-in SEO.
-  </p>
-
   <p>
     <a href="https://npmjs.com/package/@heyo-sh/heyo-docs"><img src="https://img.shields.io/npm/dm/%40heyo-sh%2Fheyo-docs?style=flat&amp;colorA=000000&amp;colorB=000000" alt="npm downloads"/></a>
     <a href="https://www.npmjs.com/package/@heyo-sh/heyo-docs"><img src="https://img.shields.io/npm/v/%40heyo-sh%2Fheyo-docs.svg?style=flat&amp;colorA=000000&amp;colorB=000000" alt="npm version"/></a>
@@ -25,6 +17,12 @@
     <a href="https://docs.heyo.sh/api-demo/overview">OpenAPI (Demo)</a>
   </p>
 </div>
+
+## Heyo Docs
+
+A themeable documentation toolkit for React Router, Next.js, and Astro.
+Create a standalone documentation site with MDX content, navigation, search,
+OpenAPI reference pages, and built-in SEO.
 
 ## Get started
 
@@ -78,15 +76,6 @@ export default heyoDocs({
   ],
 });
 ```
-
-| Option                             | Purpose                                                                   |
-| ---------------------------------- | ------------------------------------------------------------------------- |
-| `content`                          | Required directory containing your MDX files and local OpenAPI documents. |
-| `title`, `description`, `branding` | Site identity and default metadata.                                       |
-| `groups`                           | Sidebar structure and page order.                                         |
-| `theme`, `mode`, `colors`          | Built-in theme and visual preferences.                                    |
-| `siteUrl`                          | Public canonical URL for SEO, RSS, sitemap, and AI discovery files.       |
-| `footer`, `navigation`             | Optional footer links and application-owned header UI.                    |
 
 Read the [configuration guide](https://docs.heyo.sh/manage-website/configuration) for the complete reference, then add pages under `content/`. Built-in MDX components, OpenAPI, deployment, and styling guides live in the [documentation](https://docs.heyo.sh).
 

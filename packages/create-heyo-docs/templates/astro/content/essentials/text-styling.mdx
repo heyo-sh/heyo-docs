@@ -1,19 +1,16 @@
 ---
 title: Text Styling
-description: Structure documentation with clear headings, emphasis, links, and quotes.
+description: Use simple Markdown for headings, emphasis, links, and quotes.
 ---
 
 # Text Styling
 
-Good documentation is easy to scan before it is read in detail. Use the
-frontmatter title for the page's H1, then organize the body around short,
-descriptive H2 and H3 headings.
+Use regular Markdown for most documentation. Keep the text short and let
+headings show readers where to look next.
 
-## Build a clear hierarchy
+## Add headings
 
-Use `##` for the main tasks or ideas on a page. Add `###` only when a section
-has a meaningful subdivision. Headings should tell the reader what they will
-learn, not simply announce that more information follows.
+Use `##` for a main section and `###` only for a useful subsection.
 
 ```md
 ## Configure navigation
@@ -22,29 +19,25 @@ Add pages in the order readers should follow.
 
 ### Add an external resource
 
-Use a custom link for a separate destination.
+Link to a resource outside your documentation.
 ```
 
-## Emphasize the decision
+## Highlight important text
 
-Use **bold text** for an important choice and inline `code` for literal values
-such as file names, commands, and configuration keys. Keep the rest of the
-sentence plain so these signals remain useful.
+Use **bold** for an important choice and inline `code` for values readers need
+to copy.
 
 ```md
 Set `content: "content"` in `heyo-docs.config.ts`.
 
-Deploy **after** reviewing the production build.
+Run `bun run build` before you publish.
 ```
 
-## Link with context
+## Write useful links
 
-Describe where a link goes instead of pasting a raw URL. Relative links work
-well for another page in the same documentation, while full URLs are useful for
-external resources.
+Use the destination as the link text. It is easier to scan than a raw URL.
 
-Read the [Quickstart](/quickstart) before changing the
+Read the [Quickstart](/quickstart) before changing
 [site configuration](/configuration).
 
-> Keep each paragraph focused on one idea so readers can quickly find the
-> decision that applies to them.
+> Keep one idea in each short paragraph.

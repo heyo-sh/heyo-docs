@@ -158,7 +158,7 @@ export function ChangelogPage({
     <ChangelogFilterContext.Provider value={{ selectedTags }}>
       <div className="min-w-0">
         <div className="grid gap-y-10 xl:items-start xl:grid-cols-[minmax(0,50rem)_minmax(13rem,17rem)] xl:gap-x-16 xl:gap-y-0">
-          <article className="min-w-0 max-w-[50rem]">
+          <article className="min-w-0 max-w-[50rem] xl:mb-12">
             <header className="border-b border-foreground/[0.06] pb-8">
               <div className="flex items-start justify-between gap-4">
                 <h1 className="min-w-0 text-4xl font-semibold tracking-tight text-balance text-foreground sm:text-[2.625rem]">

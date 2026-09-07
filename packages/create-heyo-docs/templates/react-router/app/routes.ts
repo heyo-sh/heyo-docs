@@ -9,5 +9,6 @@ export default [
   route("llms-full.txt", "routes/llms-full.ts"),
   route("__heyo-docs/markdown/*", "routes/markdown.ts"),
   route("heyo-docs-internal/openapi-request", "routes/openapi-request.ts"),
+  route("heyo-docs-internal/ai-chat", "routes/ai-chat.ts"),
   route("*", "routes/page.tsx"),
 ] satisfies RouteConfig;

@@ -15,9 +15,9 @@ import {
   type MouseEvent,
 } from "react";
 
-import config from "../../heyo-docs.config";
 import { iconSet } from "../heyo-docs-icons";
 import { THEME_STORAGE_KEY } from "../lib/theme";
+import { config } from "virtual:heyo-docs-config";
 import { openApiEndpoints } from "virtual:heyo-docs-openapi/index";
 import { pages } from "virtual:heyo-docs-content";
 import { ThemeProvider, useTheme } from "./theme-provider";
