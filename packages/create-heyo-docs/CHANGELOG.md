@@ -1,5 +1,11 @@
 # @heyo-sh/create-heyo-docs
 
+## 0.3.0
+
+### Minor Changes
+
+- a86cebb: Add integrations
+
 ## 0.2.3
 
 ### Patch Changes
