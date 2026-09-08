@@ -15,7 +15,7 @@
     "@fontsource-variable/figtree": "^5.3.0",
     "@remixicon/react": "^4.9.0",
     "@heyo-sh/heyo-docs": "workspace:*",
-    "next": "16.3.2",
+    "next": "16.3.4",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "shadcn": "^4.19.0",
