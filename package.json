@@ -21,14 +21,14 @@
     "release": "changeset publish"
   },
   "devDependencies": {
-    "@changesets/cli": "3.0.1",
-    "@types/node": "26.4.0",
+    "@changesets/cli": "3.0.2",
+    "@types/node": "26.4.1",
     "@types/react": "19.2.18",
-    "@types/react-dom": "19.2.5",
-    "bun-types": "1.4.0",
+    "@types/react-dom": "19.2.7",
+    "bun-types": "1.4.2",
     "husky": "9.1.7",
-    "knip": "6.33.0",
-    "lint-staged": "17.4.1",
+    "knip": "6.34.0",
+    "lint-staged": "17.5.0",
     "prettier": "3.9.6",
     "prettier-plugin-astro": "^0.14.1",
     "typescript": "7.0.2"
