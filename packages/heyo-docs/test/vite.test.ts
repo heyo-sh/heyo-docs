@@ -32,6 +32,51 @@ test("resolves a bare content directory from an app root in a monorepo", async (
   }
 });
 
+test("exposes an AI configuration to the browser without its API key", async () => {
+  const root = await createFixture();
+  try {
+    const plugin = heyoDocs({
+      config: defineHeyoDocs({
+        content: "content",
+        ai: {
+          chat: {
+            provider: "openai",
+            key: "server-only-key",
+            model: "gpt-5-mini",
+          },
+        },
+      }),
+    });
+    plugin.configResolved({ command: "build", root });
+    const id = plugin.resolveId("virtual:heyo-docs-config");
+    const clientConfig = await plugin.load(id!);
+
+    expect(clientConfig).toContain('"ai":{"chat":');
+    expect(clientConfig).toContain('"model":"gpt-5-mini"');
+    expect(clientConfig).toContain('"key":""');
+    expect(clientConfig).not.toContain("server-only-key");
+  } finally {
+    await rm(root, { force: true, recursive: true });
+  }
+});
+
+test("selects the stylesheet from the configured theme", async () => {
+  const root = await createFixture();
+  try {
+    const plugin = heyoDocs({
+      config: defineHeyoDocs({ content: "content", theme: "moss" }),
+    });
+    plugin.configResolved({ command: "build", root });
+    const id = plugin.resolveId("virtual:heyo-docs-theme.css");
+
+    await expect(plugin.load(id!)).resolves.toBe(
+      '@import "@heyo-sh/heyo-docs/theme/moss.css";\n',
+    );
+  } finally {
+    await rm(root, { force: true, recursive: true });
+  }
+});
+
 async function createAssetFixture() {
   const root = await createFixture();
   await mkdir(join(root, "content", "assets"));

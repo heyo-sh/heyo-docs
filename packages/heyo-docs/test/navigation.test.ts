@@ -123,38 +123,28 @@ test("builds an unsectioned page list without adding it to the page ancestry", (
   });
 });
 
-test("keeps icons on custom sidebar links", () => {
+test("keeps external destinations on documentation groups", () => {
   const navigation = navigationFromGroups(
     [
       {
         group: "Documentation",
+        icon: "book",
         public: true,
         type: "documentation" as const,
-        sections: [
-          {
-            expanded: true,
-            pages: [
-              {
-                title: "Documentation",
-                src: "https://docs.example.com",
-                icon: "book",
-              },
-            ],
-          },
-        ],
+        src: "https://docs.example.com",
+        sections: [],
       },
     ],
     [],
   );
 
-  expect(navigation[0]?.sections[0]?.pages).toEqual([
-    {
-      slug: "https://docs.example.com",
-      title: "Documentation",
-      link: true,
-      icon: "book",
-    },
-  ]);
+  expect(navigation[0]).toEqual({
+    group: "Documentation",
+    icon: "book",
+    public: true,
+    src: "https://docs.example.com",
+    sections: [],
+  });
 });
 
 test("keeps icons on configured page references in their resolved order", () => {
@@ -417,7 +407,7 @@ test("builds, validates, and orders recursively nested navigation sections", () 
   );
 });
 
-test("supports every page reference form inside a nested section", () => {
+test("supports MDX page references inside nested sections", () => {
   const groups = [
     {
       group: "Documentation",
@@ -434,7 +424,6 @@ test("supports every page reference form inside a nested section", () => {
               icon: "folder",
               expanded: true,
               pages: [
-                { title: "Admin panel", src: "https://app.example.com" },
                 "guides",
                 { section: "Empty", expanded: false, pages: [] },
               ],
@@ -469,7 +458,6 @@ test("supports every page reference form inside a nested section", () => {
       icon: "folder",
       expanded: true,
       pages: [
-        { slug: "https://app.example.com", title: "Admin panel", link: true },
         { slug: "/guides/first", title: "First guide" },
         { slug: "/guides/second", title: "Second guide" },
         { section: "Empty", expanded: false, pages: [] },
@@ -479,7 +467,6 @@ test("supports every page reference form inside a nested section", () => {
   ]);
   expect(navigationPages(navigation[0]?.sections ?? [])).toEqual([
     { slug: "/", title: "Home" },
-    { slug: "https://app.example.com", title: "Admin panel", link: true },
     { slug: "/guides/first", title: "First guide" },
     { slug: "/guides/second", title: "Second guide" },
     { slug: "/after", title: "Afterword" },
@@ -518,54 +505,6 @@ test("fails clearly when a configured page or directory does not exist", () => {
       [{ slug: "/", sourcePath: "index.mdx", title: "Home" }],
     ),
   ).toThrow('could not resolve "missing"');
-});
-
-test("includes configured links without requiring a matching MDX page", () => {
-  const navigation = navigationFromGroups(
-    [
-      {
-        group: "Documentation",
-        public: true,
-        type: "documentation" as const,
-        sections: [
-          {
-            section: "Start",
-            expanded: true,
-            pages: [
-              { title: "Admin panel", src: "https://app.example.com" },
-              "index",
-            ],
-          },
-        ],
-      },
-    ],
-    [{ slug: "/", sourcePath: "index.mdx", title: "Home" }],
-  );
-
-  expect(navigation[0]?.sections[0]?.pages).toEqual([
-    { slug: "https://app.example.com", title: "Admin panel", link: true },
-    { slug: "/", title: "Home" },
-  ]);
-  expect(() =>
-    validateGroupPageReferences(
-      [
-        {
-          group: "Documentation",
-          public: true,
-          type: "documentation",
-          sections: [
-            {
-              section: "Start",
-              expanded: true,
-              pages: [{ title: "Admin panel", src: "https://app.example.com" }],
-            },
-          ],
-        },
-      ],
-      [],
-    ),
-  ).not.toThrow();
-  expect(adjacentPages(navigation, "/")).toEqual({});
 });
 
 test("includes changelog pages in navigation and recognises their configured group", () => {

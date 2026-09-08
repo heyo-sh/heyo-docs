@@ -94,14 +94,20 @@ describe.serial("generated React Router projects", () => {
         await Bun.file(join(projectPath, "app/routes/rss.ts")).text(),
       ).toContain("rssXml");
       expect(
-        await Bun.file(join(projectPath, "content/index.mdx")).exists(),
+        await Bun.file(join(projectPath, "content/quickstart.mdx")).exists(),
       ).toBe(true);
+      expect(
+        await Bun.file(join(projectPath, "content/index.mdx")).exists(),
+      ).toBe(false);
+      expect(
+        await Bun.file(join(projectPath, "app/routes/home.tsx")).text(),
+      ).toContain("return redirect(firstPage.slug)");
       expect(
         await Bun.file(join(projectPath, "components.json")).text(),
       ).toContain('"style": "base-mira"');
-      expect(await Bun.file(join(projectPath, "app/app.css")).text()).toContain(
-        "@heyo-sh/heyo-docs/theme/grain.css",
-      );
+      expect(
+        await Bun.file(join(projectPath, "app/root.tsx")).text(),
+      ).toContain('import "virtual:heyo-docs-theme.css"');
       expect(await Bun.file(join(projectPath, "app/app.css")).text()).toContain(
         '@import "@fontsource-variable/figtree"',
       );
@@ -212,14 +218,22 @@ describe.serial("generated Astro projects", () => {
         await Bun.file(join(projectPath, "astro.config.ts")).text(),
       ).toContain('output: "static"');
       expect(
-        await Bun.file(join(projectPath, "content/index.mdx")).exists(),
+        await Bun.file(join(projectPath, "content/quickstart.mdx")).exists(),
       ).toBe(true);
+      expect(
+        await Bun.file(join(projectPath, "content/index.mdx")).exists(),
+      ).toBe(false);
+      expect(
+        await Bun.file(join(projectPath, "src/pages/index.astro")).text(),
+      ).toContain("return Astro.redirect(firstPage.slug)");
       expect(
         await Bun.file(join(projectPath, "components.json")).text(),
       ).toContain('"style": "base-mira"');
       expect(
-        await Bun.file(join(projectPath, "src/styles/app.css")).text(),
-      ).toContain("@heyo-sh/heyo-docs/theme/grain.css");
+        await Bun.file(
+          join(projectPath, "src/layouts/docs-layout.astro"),
+        ).text(),
+      ).toContain('import "virtual:heyo-docs-theme.css"');
       expect(
         await Bun.file(join(projectPath, "src/heyo-docs-icons.tsx")).text(),
       ).toContain('from "@remixicon/react"');
@@ -332,17 +346,23 @@ describe.serial("generated Next.js projects", () => {
         ).text(),
       ).toContain("generateNextContent");
       expect(
-        await Bun.file(join(projectPath, "content/index.mdx")).exists(),
+        await Bun.file(join(projectPath, "content/quickstart.mdx")).exists(),
       ).toBe(true);
+      expect(
+        await Bun.file(join(projectPath, "content/index.mdx")).exists(),
+      ).toBe(false);
       expect(
         await Bun.file(join(projectPath, "components.json")).text(),
       ).toContain('"style": "base-mira"');
-      expect(await Bun.file(join(projectPath, "app/app.css")).text()).toContain(
-        "@heyo-sh/heyo-docs/theme/grain.css",
-      );
+      expect(
+        await Bun.file(join(projectPath, "app/layout.tsx")).text(),
+      ).toContain('import "./_heyo-docs/theme.css"');
       expect(
         await Bun.file(join(projectPath, "app/heyo-docs-icons.tsx")).text(),
       ).toContain('from "@remixicon/react"');
+      expect(
+        await Bun.file(join(projectPath, "app/[[...slug]]/page.tsx")).text(),
+      ).toContain("redirect(firstPage.slug)");
       expect(
         await Bun.file(join(projectPath, ".next/server/app/page.js")).exists(),
       ).toBe(false);

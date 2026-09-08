@@ -16,9 +16,9 @@ import {
 } from "react-router";
 import { forwardRef, type ComponentPropsWithoutRef } from "react";
 
-import config from "../../heyo-docs.config";
 import { iconSet } from "../heyo-docs-icons";
 import { useTheme } from "../components/theme-provider";
+import { config } from "virtual:heyo-docs-config";
 import { pages } from "virtual:heyo-docs-content";
 import { openApiDocuments } from "virtual:heyo-docs-openapi";
 import { openApiEndpoints } from "virtual:heyo-docs-openapi/index";

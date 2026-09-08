@@ -9,10 +9,24 @@ Every component below is available without an import. The examples show every vi
 
 ## Button
 
-`Button` supports the standard shadcn `variant` and `size` props. Add `href` to render it as a link, and use `align="left"`, `"center"`, or `"right"` to position it in the documentation column.
+`Button` uses the same shadcn component as the theme. It accepts `variant` and `size`, and uses `href` when the button should navigate. Use `align="left"`, `"center"`, or `"right"` to position it in the documentation column. Available variants are `default`, `secondary`, `outline`, `ghost`, `destructive`, and `link`; sizes are `xs`, `sm`, `default`, and `lg`.
 
 <Button href="/getting-started" variant="default" size="lg">
   Get started
+</Button>
+
+<Button align="center" href="/mdx-components" variant="outline" size="sm">
+  Centred outline button
+</Button>
+
+<Button
+  align="right"
+  href="https://github.com/heyo-sh/heyo-docs"
+  target="_blank"
+  variant="ghost"
+  size="xs"
+>
+  View on GitHub
 </Button>
 
 ## Tabs
@@ -57,10 +71,13 @@ Every component below is available without an import. The examples show every vi
 
 ## CodeBlock
 
-`CodeBlock` uses GitHub syntax highlighting. Use `showLineNumbers` when a reader may need to reference a line.
+`CodeBlock` uses GitHub syntax highlighting and preserves every newline as a
+hard code line. Use `showLineNumbers` when a reader may need to reference a
+line.
 
 <CodeBlock language="ts" showLineNumbers title="config.ts">
-  {"export const theme = 'github';"}
+  {`export const theme = "github";
+export const showLineNumbers = true;`}
 </CodeBlock>
 
 ## CodeSnippet
@@ -100,10 +117,10 @@ export function CompactExample() {
 
 <CodeBlockGroup variant="default">
   <CodeBlock language="bash" title="npm">
-    {"npm install @heyo-sh/heyo-docs"}
+    {"npm install your-package"}
   </CodeBlock>
   <CodeBlock language="bash" title="Bun">
-    {"bun add @heyo-sh/heyo-docs"}
+    {"bun add your-package"}
   </CodeBlock>
 </CodeBlockGroup>
 
@@ -146,73 +163,6 @@ export function CompactExample() {
   description="This action permanently removes the deployment."
 />
 
-## Badge
-
-`Badge` is the shadcn primitive. Use its variants to add a compact label inline with your content. All supported variants are shown below.
-
-<Badge variant="default">default</Badge>
-<Badge variant="secondary">secondary</Badge>
-<Badge variant="destructive">destructive</Badge>
-<Badge variant="outline">outline</Badge> <Badge variant="ghost">ghost</Badge>
-<Badge variant="link">link</Badge>
-
-It also accepts standard `span` attributes and `render` when the badge should use a different HTML element.
-
-<Badge
-  aria-label="Open the getting started guide"
-  render={<a href="/getting-started" />}
-  variant="outline"
->
-  Rendered as a link
-</Badge>
-
-## Properties
-
-`Properties` groups `Property` entries into an API-style reference. A property accepts the following attributes:
-
-| Attribute   | Required | Description                                                                   |
-| ----------- | -------- | ----------------------------------------------------------------------------- |
-| `name`      | Yes      | Name displayed in the property heading.                                       |
-| `type`      | No       | A type pill, for example `string`, `boolean`, or `object`.                    |
-| `required`  | No       | Shows the red `required` pill. Omit it, or set it to `false`, for `optional`. |
-| `className` | No       | Extra classes for the property or its enclosing `Properties` component.       |
-| `children`  | No       | Any MDX content displayed below the property heading.                         |
-
-The entries below cover the required and optional states, a property with and without a type, rich MDX content, and a property without a description.
-
-<Properties>
-  <Property name="colors" type="object" required>
-    The colors used across the documentation. At minimum, provide a primary
-    color.
-  </Property>
-  <Property name="favicon" type="string">
-    A path or URL for the favicon displayed in the browser tab.
-  </Property>
-  <Property name="rounded" type="boolean" required={false}>
-    Enables rounded surfaces throughout the documentation theme. Its default is
-    `true`.
-  </Property>
-  <Property name="analytics">
-    This optional property intentionally omits `type`.
-  </Property>
-  <Property
-    className="rounded-lg bg-muted/30 px-3"
-    name="experimental"
-    type="boolean"
-  />
-</Properties>
-
-<Properties>
-  <Property name="redirects" type="Record&lt;string, string&gt;" required>
-    Use an object to map an old route to its new destination.
-
-    ```json
-    { "/guides/old": "/guides/new" }
-    ```
-
-  </Property>
-</Properties>
-
 ## Columns
 
 `Columns` supports two or three columns, while `Column` supports `card` and `plain` variants. A `href` makes a card linkable.
@@ -253,33 +203,6 @@ The entries below cover the required and optional states, a property with and wi
     src="https://ui.shadcn.com/docs/components/base/hover-card"
   />
 </RelatedTopics>
-
-## Images, videos, and files
-
-Markdown images plus the `Image` and `Video` components support local paths relative to the current MDX file. They are copied into the production build, so the same source works during development and after deployment. Both components add an optional caption and the standard framed documentation treatment.
-
-![Local architecture diagram](./assets/local-architecture.svg)
-
-<Image
-  src="./assets/local-architecture.svg"
-  alt="Three layers: content, build, documentation"
-  caption="A local SVG stored next to the MDX content."
-/>
-
-`Video` uses the browser's native player, enables controls by default, and accepts native video props such as `loop`, `muted`, and `poster`.
-
-<Video
-  src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
-  caption="A video with the same framed treatment as an image."
-/>
-
-Use `File` with `src` or `href` to make a local download discoverable. Without a URL, `File` remains the compact item used by `Tree`.
-
-<File
-  src="./assets/quick-reference.txt"
-  name="Quick reference"
-  description="Local text file · opens as a download"
-/>
 
 ## Hover Card
 
@@ -343,30 +266,17 @@ Use `File` with `src` or `href` to make a local download discoverable. Without a
 
 ## Steps
 
-`Steps` automatically numbers each `Step` and keeps the connector centred on the markers, even when a step contains richer content. Pass `number` to a step when the sequence needs an explicit number.
+`Steps` automatically numbers each `Step`. Pass `number` to a step when the sequence needs an explicit number.
 
 <Steps>
-  <Step title="Install the package">
-    Add the documentation runtime to your React Router project.
-
-    <CodeBlock language="bash">
-      {"bun add @heyo-sh/heyo-docs"}
-    </CodeBlock>
-
+  <Step title="Create content">
+    Add an `.mdx` file to the configured content directory.
   </Step>
-  <Step title="Configure your docs">
-    Create `heyo-docs.config.ts` and point it at the directory that will hold your MDX pages.
+  <Step title="Use a component">
+    Write `Callout`, `GitHub`, or `Mermaid` directly in the file.
   </Step>
-  <Step title="Add a page">
-    Add an `.mdx` file to the configured content directory. Built-in components such as `Callout`, `GitHub`, and `Mermaid` are available without imports.
-  </Step>
-  <Step title="Start the app">
-    Run the development server and open the generated documentation route.
-
-    <CodeBlock language="bash">
-      {"bun run dev"}
-    </CodeBlock>
-
+  <Step number={4} title="Ship">
+    Override the number only when the sequence continues elsewhere.
   </Step>
 </Steps>
 

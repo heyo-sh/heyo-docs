@@ -97,6 +97,10 @@ export async function generateNextContent({
       join(generatedDirectory, "server.ts"),
       serverModule(pages, markdownPages, openApiDocuments),
     ),
+    writeFile(
+      join(generatedDirectory, "theme.css"),
+      `@import "@heyo-sh/heyo-docs/theme/${config.theme}.css";\n`,
+    ),
   ]);
 }
 
@@ -108,9 +112,13 @@ function clientModule(
   openApiEndpoints: OpenApiEndpoint[],
 ): string {
   // Navigation can contain a React element, which is intentionally not JSON
-  // serializable. Next's client shell imports the application config to add it
-  // back at runtime.
-  const { navigation: _navigation, ...serializableConfig } = config;
+  // serializable. The API key must stay server-only, so the client receives an
+  // empty placeholder; the UI only uses the remaining AI presentation fields.
+  const { navigation: _navigation, ai, ...serializableConfig } = config;
+  const clientConfig = {
+    ...serializableConfig,
+    ...(ai ? { ai: { chat: { ...ai.chat, key: "" } } } : {}),
+  };
   const imports = pages
     .map(
       (page, index) =>
@@ -140,7 +148,7 @@ function clientModule(
     )
     .join("\n");
 
-  return `${imports}\n\nimport type { DocsPage, HeyoDocsConfig, OpenApiEndpoint } from "@heyo-sh/heyo-docs";\n\nexport const docsConfig = ${JSON.stringify(serializableConfig)} satisfies HeyoDocsConfig;\n\nexport const pages = [\n${serializedPages}\n] satisfies DocsPage[];\n\n/** Navigation/search index only — detailed endpoint JSON is emitted to public/. */\nexport const openApiEndpoints: OpenApiEndpoint[] = ${JSON.stringify(openApiEndpoints)};\n`;
+  return `${imports}\n\nimport type { DocsPage, HeyoDocsConfig, OpenApiEndpoint } from "@heyo-sh/heyo-docs";\n\nexport const docsConfig = ${JSON.stringify(clientConfig)} satisfies HeyoDocsConfig;\n\nexport const pages = [\n${serializedPages}\n] satisfies DocsPage[];\n\n/** Navigation/search index only — detailed endpoint JSON is emitted to public/. */\nexport const openApiEndpoints: OpenApiEndpoint[] = ${JSON.stringify(openApiEndpoints)};\n`;
 }
 
 async function writeOpenApiEndpointAssets(
@@ -179,7 +187,7 @@ function serverModule(
     sourcePath: page.sourcePath,
     searchContent: searchTextFromMdx(page.raw),
   }));
-  return `import type { MarkdownPage, OpenApiDocumentSource } from "@heyo-sh/heyo-docs";\n\nexport const docsPages = ${JSON.stringify(docsPages)};\n\nexport const markdownPages = ${JSON.stringify(markdownPages)} satisfies MarkdownPage[];\n\nexport const openApiDocuments = ${JSON.stringify(openApiDocuments)} satisfies OpenApiDocumentSource[];\n`;
+  return `import type { MarkdownPage, OpenApiDocumentSource, SearchDocument } from "@heyo-sh/heyo-docs";\n\nexport const docsPages = ${JSON.stringify(docsPages)} as unknown as SearchDocument[];\n\nexport const markdownPages = ${JSON.stringify(markdownPages)} satisfies MarkdownPage[];\n\nexport const openApiDocuments = ${JSON.stringify(openApiDocuments)} satisfies OpenApiDocumentSource[];\n`;
 }
 
 function moduleSpecifier(from: string, to: string): string {

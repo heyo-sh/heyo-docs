@@ -1,0 +1,5 @@
+Heyo Docs quick reference
+
+- Put MDX pages and local assets in content.
+- Use a relative path to bundle an image or downloadable file.
+- Use /path for assets in public.

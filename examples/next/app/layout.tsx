@@ -62,6 +62,7 @@ import {
 
 import config from "../heyo-docs.config";
 import "./app.css";
+import "./_heyo-docs/theme.css";
 import { ThemeProvider } from "./components/theme-provider";
 import { getThemeScript, THEME_STORAGE_KEY } from "./lib/theme";
 

@@ -1,6 +1,8 @@
 import type { CSSProperties } from "react";
 
+import { ScrollArea } from "../../components/ui/scroll-area";
 import type { LayoutProps } from "../../types";
+import { documentationScrollAreaId } from "../components/documentation/scroll";
 
 export function MossLayout({
   children,
@@ -15,22 +17,24 @@ export function MossLayout({
 
   return (
     <div
-      className="min-h-svh bg-background text-foreground"
+      className="h-svh overflow-hidden bg-background text-foreground"
       style={colorVariables}
     >
       {topNavigation}
-      <div className="mx-auto grid min-h-[calc(100svh-3.5rem)] max-w-[1600px] lg:grid-cols-[minmax(16rem,17.5rem)_minmax(0,1fr)]">
+      <div className="mx-auto grid h-[calc(100svh-3.5rem)] min-h-0 max-w-[1600px] lg:grid-cols-[minmax(16rem,17.5rem)_minmax(0,1fr)]">
         {sidebar ? (
-          <div className="hidden lg:block heyo-docs-enter heyo-docs-enter--navigation">
+          <div className="hidden min-h-0 lg:block heyo-docs-enter heyo-docs-enter--navigation">
             {sidebar}
           </div>
         ) : null}
-        <main
-          id="content"
-          className="heyo-docs-enter heyo-docs-enter--content min-w-0 px-6 py-10 sm:px-10 lg:px-14 lg:py-14"
-        >
-          {children}
-        </main>
+        <ScrollArea className="min-h-0 min-w-0" id={documentationScrollAreaId}>
+          <main
+            id="content"
+            className="heyo-docs-enter heyo-docs-enter--content min-h-full min-w-0 px-6 pb-10 pt-10 sm:px-10 lg:px-14 lg:pb-14 lg:pt-14 xl:pb-0"
+          >
+            {children}
+          </main>
+        </ScrollArea>
       </div>
     </div>
   );

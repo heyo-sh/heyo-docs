@@ -18,7 +18,6 @@ import {
 } from "react";
 
 import { docsConfig, openApiEndpoints, pages } from "../_heyo-docs/content";
-import config from "../../heyo-docs.config";
 import { iconSet } from "../heyo-docs-icons";
 import { useTheme } from "./theme-provider";
 
@@ -119,7 +118,7 @@ export function NextDocsApp({
   return (
     <NextNavigationContext.Provider value={navigate}>
       <DocsApp
-        config={{ ...docsConfig, navigation: config.navigation }}
+        config={docsConfig}
         iconSet={iconSet}
         isDark={mounted ? resolvedTheme === "dark" : undefined}
         link={NextDocsLink}

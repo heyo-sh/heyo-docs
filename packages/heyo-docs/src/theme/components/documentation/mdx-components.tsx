@@ -28,6 +28,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "../../../components/ui/tabs";
+import { ScrollArea } from "../../../components/ui/scroll-area";
 import { Badge } from "../../../components/ui/badge";
 import {
   Button as ButtonPrimitive,
@@ -250,10 +251,12 @@ function HighlightedCode({
   source: string;
 }) {
   return (
-    <div
-      className={cn("overflow-x-auto bg-muted/50", className)}
-      dangerouslySetInnerHTML={{ __html: highlight(source, language) }}
-    />
+    <ScrollArea
+      className={cn("bg-muted/50", className)}
+      scrollbarOrientation="horizontal"
+    >
+      <div dangerouslySetInnerHTML={{ __html: highlight(source, language) }} />
+    </ScrollArea>
   );
 }
 

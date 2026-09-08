@@ -1,0 +1,13 @@
+---
+import { navigationPages } from "@heyo-sh/heyo-docs";
+
+import { docsContext } from "../lib/docs";
+
+const firstPage = docsContext("/")
+  .model.navigation.flatMap((group) => navigationPages(group.sections))
+  .at(0);
+
+if (!firstPage) throw new Error("No local documentation page is configured.");
+
+return Astro.redirect(firstPage.slug);
+---

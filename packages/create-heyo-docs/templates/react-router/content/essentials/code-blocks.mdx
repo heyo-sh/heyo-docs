@@ -1,29 +1,22 @@
 ---
 title: Code Blocks
-description: Write compact, copyable examples with syntax highlighting and context.
+description: Add clear, copyable commands and configuration examples.
 ---
 
 # Code Blocks
 
-A code example should answer one implementation question and be safe to copy.
-Use inline code for a literal value, then use a fenced block or `CodeBlock`
-when a reader needs more than one line.
+Show one task per example. Add a language so the code is easy to read.
 
-## Add a language to fenced code
-
-The language label enables syntax highlighting and tells readers what they are
-looking at. Use `bash` for commands, `ts` for configuration, and `json` for
-data.
+## Add a command
 
 ```bash
 bun run dev
 bun run build
 ```
 
-## Give configuration a title
+## Add a file name
 
-Use `CodeBlock` when a sample needs a filename or line numbers. Keep examples
-small enough that a reader can understand their effect before copying them.
+Use `CodeBlock` when the file name helps explain where the code belongs.
 
 <CodeBlock language="ts" title="heyo-docs.config.ts" showLineNumbers>
   {`export default heyoDocs({
@@ -33,10 +26,9 @@ small enough that a reader can understand their effect before copying them.
 });`}
 </CodeBlock>
 
-## Compare equivalent commands
+## Show alternatives
 
-Put package-manager variants in a `CodeBlockGroup` so readers can choose one
-command without scrolling past unrelated options.
+Use `CodeBlockGroup` for equivalent commands, such as package managers.
 
 <CodeBlockGroup defaultValue="bun" variant="line">
   <CodeBlock language="bash" title="bun">

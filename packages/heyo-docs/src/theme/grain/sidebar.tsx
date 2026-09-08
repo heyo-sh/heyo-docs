@@ -17,7 +17,13 @@ export function GrainSidebar({
       <div className="flex min-h-0 flex-1 flex-col divide-y divide-foreground/5">
         <div>{tabs}</div>
         <div>{search}</div>
-        <ScrollArea className="min-h-0 flex-1">
+        <ScrollArea
+          className={`min-h-0 flex-1${
+            changelogUpdates
+              ? " [&>[data-slot=scroll-area-scrollbar]]:hidden"
+              : ""
+          }`}
+        >
           {changelogUpdates ? (
             <ChangelogTableOfContents updates={changelogUpdates} />
           ) : (

@@ -40,7 +40,7 @@ function NavigationSection({
           key={
             isNavigationSection(item)
               ? `section-${item.section ?? "pages"}-${index}`
-              : `${item.link ? "link" : "page"}-${item.slug}-${index}`
+              : `page-${item.slug}-${index}`
           }
         />
       ))}
@@ -114,15 +114,14 @@ function NavigationPageItem({
   depth: number;
   page: NavigationPage;
 }) {
-  const active = !page.link && page.slug === currentPath;
-  const PageLink = page.link ? "a" : DocsLink;
+  const active = page.slug === currentPath;
   const pageIndentation = {
     paddingLeft: `${(direct ? 1 : 2.25) + depth * 0.75}rem`,
   };
 
   return (
     <li>
-      <PageLink
+      <DocsLink
         aria-current={active ? "page" : undefined}
         className={[
           "relative flex min-h-9 w-full items-center gap-2 px-4 py-1.5 text-sm transition-colors",
@@ -141,7 +140,7 @@ function NavigationPageItem({
           <Icon className="size-4 shrink-0" name={page.icon} />
         ) : null}
         <span className="min-w-0 truncate">{page.title}</span>
-      </PageLink>
+      </DocsLink>
     </li>
   );
 }

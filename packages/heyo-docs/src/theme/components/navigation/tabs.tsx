@@ -15,7 +15,7 @@ import {
 function firstPageHref(
   group: TabsProps["navigation"][number],
 ): string | undefined {
-  return navigationPages(group.sections)[0]?.slug;
+  return group.src ?? navigationPages(group.sections)[0]?.slug;
 }
 
 export function NavigationTabs({ currentPath, navigation }: TabsProps) {
@@ -45,6 +45,7 @@ export function NavigationTabs({ currentPath, navigation }: TabsProps) {
       >
         {navigation.map((group) => {
           const href = firstPageHref(group);
+          const GroupLink = group.src ? "a" : DocsLink;
           return (
             <DropdownMenuItem
               aria-current={
@@ -53,7 +54,7 @@ export function NavigationTabs({ currentPath, navigation }: TabsProps) {
               className="h-10 min-h-0 w-full rounded-none px-4 py-2.5 text-sm text-foreground/60 hover:bg-foreground/[0.03] hover:text-foreground/80 focus:bg-foreground/[0.03] focus:text-foreground/80 aria-current:bg-foreground/[0.03] aria-current:text-foreground/80"
               disabled={!href}
               key={group.group}
-              render={href ? <DocsLink href={href} /> : undefined}
+              render={href ? <GroupLink href={href} /> : undefined}
             >
               <Icon className="size-3.5" name={group.icon} />
               <span>{group.group}</span>

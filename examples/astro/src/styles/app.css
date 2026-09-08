@@ -1,8 +1,18 @@
 @import "@fontsource-variable/figtree";
-@import "@heyo-sh/heyo-docs/theme/moss.css";
 
 :root {
   --heyo-docs-font-family: "Figtree Variable", sans-serif;
 }
 
-/* Add project-specific token overrides and theme styles below this import. */
+/* Add project-specific token overrides and theme styles here. */
+@media (min-width: 1024px) {
+  header > a[aria-label] > img[src="/logo.svg"] {
+    height: 32px;
+    max-height: none;
+    width: auto;
+  }
+}
+
+.dark header > a[aria-label] > img[src="/logo.svg"] {
+  filter: invert(1);
+}

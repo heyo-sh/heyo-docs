@@ -64,6 +64,40 @@ The order is meaningful: it controls the sidebar and the previous/next links at
 the end of each article. Use a page object with `title` and `src` when a
 sidebar entry should point to a page outside the local documentation.
 
+## AI chat
+
+Add `ai.chat` to enable a documentation-aware chat. `openai`, `claude`, and `grok`
+use the OpenAI, Anthropic, and xAI adapters respectively. Keep the key in a
+server environment variable; Heyo Docs sends it only from the chat endpoint.
+
+<CodeBlock language="ts" title="heyo-docs.config.ts">
+  {`ai: {
+  chat: {
+    provider: "openai",
+    key: process.env.OPENAI_API_KEY!,
+    model: "gpt-5-mini",
+    variant: "right", // "center" shows the compact prompt first
+    icon: "chat",
+    text: "AI Chat",
+    name: "Docs Assistant", // name shown in the drawer and message labels
+    placeholder: "Ask AI about the docs", // used in the compact prompt and drawer
+  },
+},`}
+</CodeBlock>
+
+`provider`, `key`, and `model` are required. The model must be an actual model
+identifier, not the provider name. `variant` defaults to `right`. `name`
+defaults to `AI`; it is used for the drawer title and the assistant's message
+label. `placeholder` defaults to
+`Ask AI about the docs` and is shared by the compact prompt and drawer input.
+The drawer stays open while
+readers navigate between documentation pages and does not block the rest of the
+page.
+
+Its chrome follows the selected documentation theme. For example, `grain` uses
+a full-height right panel with a left border, while the other themes keep a
+floating panel treatment.
+
 ## Verify the result
 
 Run the project's typecheck and build commands after changing configuration.

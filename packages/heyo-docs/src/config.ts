@@ -38,6 +38,64 @@ import type {
 
 const nonEmptyString = z.string().trim().min(1);
 
+const semanticIconSchema = z.enum([
+  "book",
+  "changelog",
+  "code",
+  "file",
+  "github",
+  "globe",
+  "signIn",
+  "chevronDown",
+  "chevronRight",
+  "arrowDown",
+  "arrowUp",
+  "arrowRight",
+  "close",
+  "cornerDownLeft",
+  "menu",
+  "search",
+  "sun",
+  "moon",
+  "checkCircle",
+  "check",
+  "closeCircle",
+  "externalLink",
+  "folder",
+  "gitFork",
+  "gitRepository",
+  "information",
+  "lightbulb",
+  "copy",
+  "star",
+  "bot",
+  "cursor",
+  "chat",
+]);
+
+const chatSchema = z
+  .object({
+    provider: z.enum(["openai", "claude", "grok"]),
+    key: nonEmptyString,
+    model: nonEmptyString,
+    variant: z.enum(["center", "right"]).default("right"),
+    icon: semanticIconSchema.default("chat"),
+    text: nonEmptyString.default("AI Chat"),
+    name: nonEmptyString.default("AI"),
+    placeholder: nonEmptyString.default("Ask AI about the docs"),
+  })
+  .strict()
+  .refine(
+    (chat) => chat.model.toLowerCase() !== chat.provider,
+    "model must be a model identifier, not the provider name.",
+  );
+
+const aiSchema = z
+  .object({
+    chat: chatSchema,
+  })
+  .strict();
+
 const siteUrlSchema = z
   .string()
   .url()
@@ -58,13 +116,13 @@ const pageReferenceSchema = nonEmptyString.refine((reference) => {
   return !normalised.split("/").includes("..");
 }, "Page references must stay inside the content directory.");
 
-const pageLinkSchema = z
-  .object({
-    title: nonEmptyString,
-    src: nonEmptyString,
-    icon: nonEmptyString.optional(),
-  })
-  .strict();
+const externalGroupSourceSchema = z
+  .string()
+  .url()
+  .refine((value) => {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  }, "A group src must be an HTTP(S) URL.");
 
 const pageReferenceWithIconSchema = z
   .object({
@@ -83,7 +141,6 @@ const documentationSectionSchema: z.ZodType<DocumentationSection> = z.lazy(() =>
         .array(
           z.union([
             pageReferenceSchema,
-            pageLinkSchema,
             pageReferenceWithIconSchema,
             documentationSectionSchema,
           ]),
@@ -111,10 +168,19 @@ const documentationGroupSchema = z
     group: nonEmptyString,
     icon: nonEmptyString.optional(),
     public: z.boolean().default(true),
-    sections: z.array(docsSectionSchema).default([]),
+    src: externalGroupSourceSchema.optional(),
+    sections: z.array(docsSectionSchema).optional(),
   })
   .strict()
-  .transform((group) => ({ ...group, type: "documentation" as const }));
+  .refine(
+    (group) => group.src === undefined || group.sections === undefined,
+    "A documentation group with `src` cannot define `sections`.",
+  )
+  .transform(({ sections, ...group }) => ({
+    ...group,
+    type: "documentation" as const,
+    sections: sections ?? [],
+  }));
 
 const changelogGroupSchema = z
   .object({
@@ -169,6 +235,7 @@ const configSchema = z
       .strict()
       .default({}),
     siteUrl: siteUrlSchema.optional(),
+    ai: aiSchema.optional(),
     integrations: z
       .object({
         analytics: z
@@ -243,6 +310,7 @@ export function validateConfig(config: UserHeyoDocsConfig): HeyoDocsConfig {
       logo: parsed.branding.logo,
     },
     siteUrl: parsed.siteUrl?.replace(/\/$/, ""),
+    ai: parsed.ai,
     integrations: parsed.integrations,
   };
 }

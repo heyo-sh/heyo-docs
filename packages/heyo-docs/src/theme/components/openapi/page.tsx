@@ -434,7 +434,7 @@ export function OpenApiPage({
   return (
     <div className="min-w-0">
       <div className="grid gap-y-10 xl:grid-cols-[minmax(0,46rem)_minmax(15rem,22.5rem)] xl:gap-x-12">
-        <article className="min-w-0 max-w-[46rem]">
+        <article className="min-w-0 max-w-[46rem] xl:mb-12">
           <header className="border-b border-foreground/[0.06] pb-8">
             <div className="flex flex-wrap items-center gap-2.5">
               <Badge className="rounded-md px-2">
@@ -587,7 +587,7 @@ export function OpenApiPage({
           <DocumentedResponses endpoint={endpoint} />
           <PageNavigation next={next} previous={previous} />
         </article>
-        <div className="min-w-0 xl:sticky xl:top-20 xl:self-start">
+        <div className="min-w-0 xl:sticky xl:top-6 xl:self-start">
           <OpenApiExample
             bearerToken={bearerToken}
             body={body}

@@ -1,40 +1,36 @@
 ---
 title: Lists
-description: Use ordered, unordered, and task lists to make steps and choices easy to scan.
+description: Use lists to make choices and short steps easy to scan.
 ---
 
 # Lists
 
-Lists make a page easier to scan when readers need to compare options, follow a
-short sequence, or check completion. Keep every item parallel in structure and
-start it with the action or noun that matters most.
+Use a list when readers need to scan choices or follow a short sequence.
 
-## Use bullets for related options
+## Add a bullet list
 
-Use an unordered list when order does not change the result.
+Use bullets when the order does not matter.
 
 - Keep MDX pages in the `content` directory.
 - Add important routes to `heyo-docs.config.ts`.
 - Build the project before publishing.
 
-## Use numbers when sequence matters
+## Add numbered steps
 
-An ordered list makes dependencies explicit.
+Use numbers when the order matters.
 
 1. Create an MDX file.
 2. Add its path to a sidebar section.
 3. Start the development server.
 4. Review the rendered route.
 
-## Keep nested lists intentional
+## Add one level when needed
 
-Use a nested list only to clarify a direct relationship. Too many levels make
-the page harder to scan than a short heading and paragraph.
+Use a nested list only for a direct relationship.
 
 - Prepare the release:
   - Review the changed pages.
   - Confirm navigation order.
   - Run the production build.
 
-Use a `Steps` component instead when each item needs rich content such as a
-command, callout, or additional explanation.
+Use `Steps` when each step needs a command or more explanation.

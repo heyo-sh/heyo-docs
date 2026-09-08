@@ -71,9 +71,10 @@ import {
 import type { Route } from "./+types/root";
 
 import "./app.css";
+import "virtual:heyo-docs-theme.css";
 import { ThemeProvider } from "./components/theme-provider";
-import config from "../heyo-docs.config";
 import { getThemeScript, THEME_STORAGE_KEY } from "./lib/theme";
+import { config } from "virtual:heyo-docs-config";
 
 export const meta: MetaFunction = () => {
   const canonical = config.siteUrl ? `${config.siteUrl}/` : undefined;

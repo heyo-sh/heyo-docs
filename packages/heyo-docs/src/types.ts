@@ -92,6 +92,10 @@ export interface DocsIntegrations {
 
 export type DocsMode = "system" | "light" | "dark";
 
+export type AiProvider = "openai" | "claude" | "grok";
+
+export type AiChatVariant = "center" | "right";
+
 /** Names used by Heyo Docs' built-in UI and MDX components. */
 export type SemanticIcon =
   | "book"
@@ -142,6 +146,29 @@ export type MdxComponents = Record<string, ComponentType<any>>;
  */
 export type IconSet = Partial<Record<SemanticIcon, IconComponent>>;
 
+/** Settings for the documentation-aware AI chat. */
+export interface AiChatConfig {
+  provider: AiProvider;
+  key: string;
+  model: string;
+  variant: AiChatVariant;
+  icon: SemanticIcon;
+  text: string;
+  name: string;
+  placeholder: string;
+}
+
+/** Server-only AI settings. The API key must never be sent to the browser. */
+export interface AiConfig {
+  chat: AiChatConfig;
+}
+
+/** The browser-safe portion of the AI configuration. */
+export type PublicAiChatConfig = Omit<
+  AiChatConfig,
+  "key" | "model" | "provider"
+>;
+
 export interface DocumentationSection {
   /**
    * Optional sidebar heading. Omit it to render this page list directly,
@@ -153,26 +180,15 @@ export interface DocumentationSection {
   pages: DocumentationPageReference[];
 }
 
-/** A custom destination displayed alongside configured MDX pages. */
-export interface DocumentationPageLink {
-  title: string;
-  src: string;
-  /** Optional semantic icon displayed before the link title in the sidebar. */
-  icon?: string;
-}
-
 /** An MDX page/directory reference that displays a required sidebar icon. */
 export interface DocumentationPageReferenceWithIcon {
   page: string;
   icon: string;
 }
 
-/** An MDX page/directory reference, custom sidebar link, or nested section. */
+/** An MDX page/directory reference or nested section. */
 export type DocumentationPageReference =
-  | string
-  | DocumentationPageLink
-  | DocumentationPageReferenceWithIcon
-  | DocumentationSection;
+  string | DocumentationPageReferenceWithIcon | DocumentationSection;
 
 /** A section that generates endpoint pages from an OpenAPI document. */
 export interface OpenApiSection {
@@ -186,6 +202,8 @@ export interface DocumentationGroupConfig {
   group: string;
   icon?: string;
   public: boolean;
+  /** External destination. Link groups cannot contain sections. */
+  src?: string;
   sections: DocsSection[];
 }
 
@@ -380,8 +398,6 @@ export interface NavigationPage {
   icon?: string;
   /** Present only for generated OpenAPI endpoint navigation entries. */
   method?: OpenApiHttpMethod;
-  /** True when this entry is a configured link rather than a documentation page. */
-  link?: boolean;
 }
 
 /** A navigation section can appear alongside page links at any depth. */
@@ -391,6 +407,8 @@ export interface NavigationGroup {
   group: string;
   icon?: string;
   public: boolean;
+  /** An external destination; present only when the group has no sections. */
+  src?: string;
   sections: NavigationSection[];
 }
 
@@ -579,6 +597,7 @@ export interface HeyoDocsConfig {
   content: string;
   branding: BrandingConfig;
   siteUrl?: string;
+  ai?: AiConfig;
   integrations: DocsIntegrations;
 }
 
@@ -592,10 +611,7 @@ export interface UserDocumentationSection {
 
 /** Config-input variant of a recursively nested documentation section. */
 export type UserDocumentationPageReference =
-  | string
-  | DocumentationPageLink
-  | DocumentationPageReferenceWithIcon
-  | UserDocumentationSection;
+  string | DocumentationPageReferenceWithIcon | UserDocumentationSection;
 
 export interface UserOpenApiSection {
   schema: string;
@@ -603,13 +619,27 @@ export interface UserOpenApiSection {
 
 export type UserDocsSection = UserDocumentationSection | UserOpenApiSection;
 
-export interface UserDocumentationGroup {
+interface UserDocumentationContentGroup {
   type?: "documentation";
   group: string;
   icon?: string;
   public?: boolean;
   sections?: UserDocsSection[];
+  src?: never;
 }
+
+interface UserDocumentationLinkGroup {
+  type?: "documentation";
+  group: string;
+  icon?: string;
+  public?: boolean;
+  /** An HTTP(S) destination rendered as an external group link. */
+  src: string;
+  sections?: never;
+}
+
+export type UserDocumentationGroup =
+  UserDocumentationContentGroup | UserDocumentationLinkGroup;
 
 export interface UserChangelogGroup {
   type: "changelog";
@@ -639,5 +669,17 @@ export interface UserHeyoDocsConfig {
   content: string;
   branding?: Partial<BrandingConfig>;
   siteUrl?: string;
+  ai?: {
+    chat: {
+      provider: AiProvider;
+      key: string;
+      model: string;
+      variant?: AiChatVariant;
+      icon?: SemanticIcon;
+      text?: string;
+      name?: string;
+      placeholder?: string;
+    };
+  };
   integrations?: Partial<DocsIntegrations>;
 }

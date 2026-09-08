@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import { Button } from "../../components/ui/button";
 import type { ChangelogUpdate } from "../../types";
+import { getDocumentationScrollViewport } from "../components/documentation/scroll";
 
 export function ShadeChangelogNavigation({
   updates,
@@ -17,17 +18,23 @@ export function ShadeChangelogNavigation({
       .map((update) => document.getElementById(update.id))
       .filter((entry): entry is HTMLElement => entry !== null);
     if (!entries.length) return;
+    const scrollViewport = getDocumentationScrollViewport();
 
     const updateActiveEntry = () => {
-      const atDocumentEnd =
-        window.scrollY + window.innerHeight >=
-        document.documentElement.scrollHeight - 2;
+      const atDocumentEnd = scrollViewport
+        ? scrollViewport.scrollTop + scrollViewport.clientHeight >=
+          scrollViewport.scrollHeight - 2
+        : window.scrollY + window.innerHeight >=
+          document.documentElement.scrollHeight - 2;
       if (atDocumentEnd) {
         setActiveId(entries.at(-1)!.id);
         return;
       }
 
-      const triggerLine = window.innerHeight * (2 / 3);
+      const triggerLine = scrollViewport
+        ? scrollViewport.getBoundingClientRect().top +
+          scrollViewport.clientHeight * (2 / 3)
+        : window.innerHeight * (2 / 3);
       let nextId = entries[0]!.id;
       for (const entry of entries) {
         if (entry.getBoundingClientRect().top > triggerLine) break;
@@ -36,13 +43,16 @@ export function ShadeChangelogNavigation({
       setActiveId(nextId);
     };
 
-    window.addEventListener("scroll", updateActiveEntry, { passive: true });
+    const scrollTarget = scrollViewport ?? window;
+    scrollTarget.addEventListener("scroll", updateActiveEntry, {
+      passive: true,
+    });
     window.addEventListener("resize", updateActiveEntry);
     window.addEventListener("hashchange", updateActiveEntry);
     updateActiveEntry();
 
     return () => {
-      window.removeEventListener("scroll", updateActiveEntry);
+      scrollTarget.removeEventListener("scroll", updateActiveEntry);
       window.removeEventListener("resize", updateActiveEntry);
       window.removeEventListener("hashchange", updateActiveEntry);
     };

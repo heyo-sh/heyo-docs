@@ -1,0 +1,278 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Planet API",
+    "version": "1.0.0",
+    "description": "An example API used by the Heyo Docs React Router demo."
+  },
+  "servers": [
+    {
+      "url": "https://api.example.com/v1",
+      "description": "Example production API"
+    }
+  ],
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/organizations/{organizationId}/planets": {
+      "parameters": [
+        {
+          "name": "organizationId",
+          "in": "path",
+          "required": true,
+          "description": "The organization that owns the planets.",
+          "schema": {
+            "type": "string",
+            "example": "org_123"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "listPlanets",
+        "summary": "List planets",
+        "description": "Returns the planets that belong to an organization.",
+        "tags": ["Planets"],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of records to return.",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of planets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Planet"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createPlanet",
+        "summary": "Create a planet",
+        "description": "Creates a planet inside an organization.",
+        "tags": ["Planets"],
+        "requestBody": {
+          "required": true,
+          "description": "The planet to create.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanetInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The newly created planet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Planet"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/organizations/{organizationId}/planets/{planetId}": {
+      "parameters": [
+        {
+          "name": "organizationId",
+          "in": "path",
+          "required": true,
+          "description": "The organization that owns the planet.",
+          "schema": {
+            "type": "string",
+            "example": "org_123"
+          }
+        },
+        {
+          "name": "planetId",
+          "in": "path",
+          "required": true,
+          "description": "The planet identifier.",
+          "schema": {
+            "type": "string",
+            "example": "planet_earth"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "getPlanet",
+        "summary": "Get a planet",
+        "description": "Returns one planet by ID.",
+        "tags": ["Planets"],
+        "responses": {
+          "200": {
+            "description": "The requested planet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Planet"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Planet not found."
+          }
+        }
+      },
+      "put": {
+        "operationId": "replacePlanet",
+        "summary": "Replace a planet",
+        "description": "Replaces all editable planet values.",
+        "tags": ["Planets"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanetInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated planet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Planet"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updatePlanet",
+        "summary": "Update a planet",
+        "description": "Updates one or more planet fields.",
+        "tags": ["Planets"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanetPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated planet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Planet"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deletePlanet",
+        "summary": "Delete a planet",
+        "description": "Permanently removes a planet from an organization.",
+        "tags": ["Planets"],
+        "parameters": [
+          {
+            "name": "hardDelete",
+            "in": "query",
+            "description": "Also remove historical records.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Planet deleted."
+          },
+          "404": {
+            "description": "Planet not found."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Planet": {
+        "type": "object",
+        "required": ["id", "name", "classification"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "planet_earth"
+          },
+          "name": {
+            "type": "string",
+            "example": "Earth"
+          },
+          "classification": {
+            "type": "string",
+            "enum": ["terrestrial", "gas-giant", "ice-giant"]
+          }
+        }
+      },
+      "PlanetInput": {
+        "type": "object",
+        "required": ["name", "classification"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Mars"
+          },
+          "classification": {
+            "type": "string",
+            "enum": ["terrestrial", "gas-giant", "ice-giant"]
+          }
+        }
+      },
+      "PlanetPatch": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "New Mars"
+          },
+          "classification": {
+            "type": "string",
+            "enum": ["terrestrial", "gas-giant", "ice-giant"]
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,11 +1,12 @@
 import { DocsLink } from "../../components/docs-link";
+import { Icon } from "../../components/icons";
 import { navigationGroupContainsPath, navigationPages } from "../../navigation";
 import type { TabsProps } from "../../types";
 
 function firstPageHref(
   group: TabsProps["navigation"][number],
 ): string | undefined {
-  return navigationPages(group.sections)[0]?.slug;
+  return group.src ?? navigationPages(group.sections)[0]?.slug;
 }
 
 /** Group navigation presented as centered horizontal header tabs. */
@@ -21,9 +22,10 @@ export function MossNavigationTabs({ currentPath, navigation }: TabsProps) {
     <nav aria-label="Documentation groups" className="flex items-center gap-1">
       {navigation.map((group) => {
         const href = firstPageHref(group);
+        const GroupLink = group.src ? "a" : DocsLink;
         const active = group.group === currentGroup.group;
         const className = [
-          "relative inline-flex h-9 items-center justify-center rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+          "relative inline-flex h-9 items-center justify-center gap-1.5 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
           active
             ? "bg-muted text-foreground"
             : "text-muted-foreground hover:bg-muted/70 hover:text-foreground",
@@ -31,16 +33,18 @@ export function MossNavigationTabs({ currentPath, navigation }: TabsProps) {
         ].join(" ");
 
         return href ? (
-          <DocsLink
+          <GroupLink
             aria-current={active ? "page" : undefined}
             className={className}
             href={href}
             key={group.group}
           >
+            <Icon className="size-4 shrink-0" name={group.icon} />
             {group.group}
-          </DocsLink>
+          </GroupLink>
         ) : (
           <span aria-disabled="true" className={className} key={group.group}>
+            <Icon className="size-4 shrink-0" name={group.icon} />
             {group.group}
           </span>
         );

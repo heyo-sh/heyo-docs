@@ -28,6 +28,8 @@ import type {
 
 const CONTENT_MODULE = "virtual:heyo-docs-content";
 const CONTENT_SERVER_MODULE = "virtual:heyo-docs-content/server";
+const CONFIG_MODULE = "virtual:heyo-docs-config";
+const THEME_CSS_MODULE = "virtual:heyo-docs-theme.css";
 const OPENAPI_MODULE = "virtual:heyo-docs-openapi";
 const OPENAPI_INDEX_MODULE = "virtual:heyo-docs-openapi/index";
 const MDX_MODULE_PREFIX = "virtual:heyo-docs-mdx:";
@@ -177,6 +179,8 @@ export function heyoDocs(options: HeyoDocsViteOptions): HeyoDocsVitePlugin {
       if (
         id === CONTENT_MODULE ||
         id === CONTENT_SERVER_MODULE ||
+        id === CONFIG_MODULE ||
+        id === THEME_CSS_MODULE ||
         id === OPENAPI_MODULE ||
         id === OPENAPI_INDEX_MODULE ||
         id.startsWith(MDX_MODULE_PREFIX)
@@ -189,6 +193,10 @@ export function heyoDocs(options: HeyoDocsViteOptions): HeyoDocsVitePlugin {
       if (isHeyoDocsVirtualModule(virtualId)) loadedVirtualModuleIds.add(id);
       if (virtualId === CONTENT_MODULE)
         return createContentModule(await pages(), options.config);
+      if (virtualId === CONFIG_MODULE)
+        return createClientConfigModule(options.config);
+      if (virtualId === THEME_CSS_MODULE)
+        return `@import "@heyo-sh/heyo-docs/theme/${options.config.theme}.css";\n`;
       if (virtualId === CONTENT_SERVER_MODULE) {
         const [scannedPages, documents] = await Promise.all([
           pages(),
@@ -296,10 +304,21 @@ function isHeyoDocsVirtualModule(id: string) {
   return (
     id === CONTENT_MODULE ||
     id === CONTENT_SERVER_MODULE ||
+    id === CONFIG_MODULE ||
+    id === THEME_CSS_MODULE ||
     id === OPENAPI_MODULE ||
     id === OPENAPI_INDEX_MODULE ||
     id.startsWith(MDX_MODULE_PREFIX)
   );
+}
+
+function createClientConfigModule(config: HeyoDocsConfig): string {
+  const { navigation: _navigation, ai, ...clientConfig } = config;
+  const safeConfig = {
+    ...clientConfig,
+    ...(ai ? { ai: { chat: { ...ai.chat, key: "" } } } : {}),
+  };
+  return `export const config = ${JSON.stringify(safeConfig)};\n`;
 }
 
 function createOpenApiModule(documents: OpenApiDocumentSource[]): string {

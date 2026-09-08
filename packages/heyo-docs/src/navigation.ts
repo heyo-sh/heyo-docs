@@ -98,6 +98,7 @@ export function navigationFromGroups(
         group: group.group,
         icon: group.icon,
         public: group.public,
+        src: group.src,
         sections: group.sections.flatMap((section, sectionIndex) => {
           if ("schema" in section) {
             return openApiSections(
@@ -175,9 +176,10 @@ export function adjacentPages(
   previous?: PageNavigationItem;
 } {
   const pages = navigation.flatMap((group) =>
-    navigationPages(group.sections)
-      .filter((page) => !page.link)
-      .map((page) => ({ href: page.slug, title: page.title })),
+    navigationPages(group.sections).map((page) => ({
+      href: page.slug,
+      title: page.title,
+    })),
   );
   const index = pages.findIndex((page) => page.href === currentPath);
 
@@ -215,7 +217,7 @@ export function navigationSectionPathForPath(
   return undefined;
 }
 
-/** Whether a group contains a non-link page at the supplied path. */
+/** Whether a group contains a page at the supplied path. */
 export function navigationGroupContainsPath(
   group: NavigationGroup,
   currentPath: string,
@@ -275,16 +277,6 @@ function navigationItemsForReferences(
       );
       continue;
     }
-
-    const key = `link:${reference.src}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    selected.push({
-      slug: reference.src,
-      title: reference.title,
-      link: true,
-      ...(reference.icon ? { icon: reference.icon } : {}),
-    });
   }
 
   return selected;
@@ -306,7 +298,7 @@ function navigationSectionPathForItems(
       if (path) return [item, ...path];
       continue;
     }
-    if (!item.link && item.slug === currentPath) return [];
+    if (item.slug === currentPath) return [];
   }
   return undefined;
 }

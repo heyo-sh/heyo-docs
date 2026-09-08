@@ -17,6 +17,7 @@ describe("configuration", () => {
       content: "./docs",
       branding: { name: "Heyo Documentation" },
       siteUrl: undefined,
+      ai: undefined,
       integrations: { analytics: {}, support: {}, consent: {} },
     });
   });
@@ -73,6 +74,78 @@ describe("configuration", () => {
         siteUrl: "https://docs.example.com/api/",
       }).siteUrl,
     ).toBe("https://docs.example.com/api");
+  });
+
+  test("normalises configured AI chat defaults", () => {
+    expect(
+      heyoDocs({
+        content: "./content",
+        ai: {
+          chat: {
+            provider: "openai",
+            key: "server-only-key",
+            model: "gpt-5-mini",
+          },
+        },
+      }).ai,
+    ).toEqual({
+      chat: {
+        provider: "openai",
+        key: "server-only-key",
+        model: "gpt-5-mini",
+        variant: "right",
+        icon: "chat",
+        text: "AI Chat",
+        name: "AI",
+        placeholder: "Ask AI about the docs",
+      },
+    });
+  });
+
+  test("requires a complete AI provider configuration", () => {
+    expect(() =>
+      validateConfig({
+        content: "./content",
+        ai: { chat: { provider: "claude", key: "key" } },
+      } as never),
+    ).toThrow();
+    expect(() =>
+      validateConfig({
+        content: "./content",
+        ai: { chat: { provider: "grok", key: "key", model: "grok" } },
+      }),
+    ).toThrow(/model.*provider/i);
+  });
+
+  test("keeps custom AI chat display settings", () => {
+    const chat = heyoDocs({
+      content: "./content",
+      ai: {
+        chat: {
+          provider: "openai",
+          key: "server-only-key",
+          model: "gpt-5-mini",
+          name: "Docs Assistant",
+          placeholder: "Ask Acme Docs",
+        },
+      },
+    }).ai?.chat;
+
+    expect(chat?.name).toBe("Docs Assistant");
+    expect(chat?.placeholder).toBe("Ask Acme Docs");
+  });
+
+  test("rejects the former aiChat configuration key", () => {
+    expect(() =>
+      validateConfig({
+        content: "./content",
+        aiChat: {
+          provider: "openai",
+          key: "server-only-key",
+          model: "gpt-5-mini",
+        },
+      } as never),
+    ).toThrow();
   });
 
   test("accepts only the built-in theme", () => {
@@ -137,44 +210,64 @@ describe("configuration", () => {
     ]);
   });
 
-  test("accepts icon-bearing custom sidebar links alongside MDX page references", () => {
+  test("accepts an external documentation group without sections", () => {
     const group = heyoDocs({
       content: "./content",
       groups: [
         {
           group: "Documentation",
-          sections: [
-            {
-              section: "Start here",
-              pages: [
-                "getting-started",
-                {
-                  title: "Admin panel",
-                  src: "https://app.example.com",
-                  icon: "externalLink",
-                },
-              ],
-            },
-          ],
+          icon: "book",
+          src: "https://docs.example.com",
         },
       ],
     }).groups[0];
 
-    expect(group?.type).toBe("documentation");
-    expect(
-      group?.type === "documentation" ? group.sections[0] : undefined,
-    ).toEqual({
-      section: "Start here",
-      expanded: true,
-      pages: [
-        "getting-started",
-        {
-          title: "Admin panel",
-          src: "https://app.example.com",
-          icon: "externalLink",
-        },
-      ],
+    expect(group).toEqual({
+      group: "Documentation",
+      icon: "book",
+      public: true,
+      src: "https://docs.example.com",
+      type: "documentation",
+      sections: [],
     });
+  });
+
+  test("rejects links inside sections and sections on external groups", () => {
+    expect(() =>
+      validateConfig({
+        content: "./content",
+        groups: [
+          {
+            group: "Documentation",
+            sections: [
+              {
+                pages: [
+                  { title: "Admin panel", src: "https://app.example.com" },
+                ],
+              },
+            ],
+          },
+        ],
+      } as never),
+    ).toThrow();
+    expect(() =>
+      validateConfig({
+        content: "./content",
+        groups: [
+          {
+            group: "Documentation",
+            src: "https://docs.example.com",
+            sections: [{ pages: ["index"] }],
+          },
+        ],
+      } as never),
+    ).toThrow(/src.*sections/i);
+    expect(() =>
+      validateConfig({
+        content: "./content",
+        groups: [{ group: "Documentation", src: "mailto:docs@example.com" }],
+      } as never),
+    ).toThrow(/src.*HTTP\(S\)/i);
   });
 
   test("accepts a page list without a section heading or icon", () => {
