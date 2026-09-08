@@ -1,5 +1,11 @@
 # @heyo-sh/heyo-docs
 
+## 0.3.0
+
+### Minor Changes
+
+- a86cebb: Add AI chat support
+
 ## 0.2.0
 
 ### Minor Changes
