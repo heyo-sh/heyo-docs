@@ -187,21 +187,47 @@ export function tableOfContentsFromMdx(source: string): TableOfContentsItem[] {
       continue;
     }
     if (inCodeFence) continue;
-    const match = line.match(/^(#{2,3})\s+(.+?)\s*#*$/);
-    if (!match) continue;
-    const title = match[2].replace(/[`*_]/g, "");
+    const heading = headingFromLine(line);
+    if (!heading) continue;
+    const title = heading.title.replace(/[`*_]/g, "");
     const baseId = slugify(title);
     let id = baseId;
     let duplicate = 1;
     while (usedIds.has(id)) id = `${baseId}-${duplicate++}`;
     usedIds.add(id);
     headings.push({
-      depth: match[1].length as 2 | 3,
+      depth: heading.depth,
       title,
       id,
     });
   }
   return headings;
+}
+
+function headingFromLine(
+  line: string,
+): { depth: 2 | 3 | 4 | 5 | 6; title: string } | undefined {
+  let index = 0;
+  while (line[index] === "#" && index < 6) index++;
+  if (index < 2 || !isWhitespace(line[index])) return undefined;
+  const depth = index as 2 | 3 | 4 | 5 | 6;
+
+  while (isWhitespace(line[index])) index++;
+  if (index === line.length) return undefined;
+
+  let end = line.length;
+  // A heading needs at least one title character, even if it consists of '#'.
+  while (end > index + 1 && line[end - 1] === "#") end--;
+  while (end > index + 1 && isWhitespace(line[end - 1])) end--;
+
+  return {
+    depth,
+    title: line.slice(index, end),
+  };
+}
+
+function isWhitespace(character: string | undefined): boolean {
+  return character !== undefined && character.trim().length === 0;
 }
 
 /** Converts MDX into the plain text stored in the browser search index. */

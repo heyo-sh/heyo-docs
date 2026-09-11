@@ -47,6 +47,22 @@ describe("content paths", () => {
       { id: "create-a-project-1", title: "Create a project", depth: 3 },
       { id: "manual-setup-1", title: "Manual setup", depth: 3 },
     ]);
+    expect(
+      tableOfContentsFromMdx(
+        "# Page title\n## Section\n### Subsection\n#### Detail\n##### More detail\n###### Fine detail",
+      ),
+    ).toEqual([
+      { id: "section", title: "Section", depth: 2 },
+      { id: "subsection", title: "Subsection", depth: 3 },
+      { id: "detail", title: "Detail", depth: 4 },
+      { id: "more-detail", title: "More detail", depth: 5 },
+      { id: "fine-detail", title: "Fine detail", depth: 6 },
+    ]);
+    expect(
+      tableOfContentsFromMdx(
+        `## ${" ".repeat(10_000)}Heading${"#".repeat(10_000)}`,
+      ),
+    ).toEqual([{ id: "heading", title: "Heading", depth: 2 }]);
   });
 
   test("extracts readable text for local search", () => {

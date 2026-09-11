@@ -227,7 +227,7 @@ export interface SeoData {
 export interface TableOfContentsItem {
   id: string;
   title: string;
-  depth: 2 | 3;
+  depth: 2 | 3 | 4 | 5 | 6;
 }
 
 /** Metadata collected from an MDX `<Update>` component on a changelog page. */
