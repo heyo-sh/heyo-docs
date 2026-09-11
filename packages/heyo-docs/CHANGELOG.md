@@ -1,5 +1,11 @@
 # @heyo-sh/heyo-docs
 
+## 0.3.1
+
+### Patch Changes
+
+- c202dd5: Fix scroll tracking
+
 ## 0.3.0
 
 ### Minor Changes
