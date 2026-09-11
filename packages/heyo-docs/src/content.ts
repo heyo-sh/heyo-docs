@@ -187,7 +187,7 @@ export function tableOfContentsFromMdx(source: string): TableOfContentsItem[] {
       continue;
     }
     if (inCodeFence) continue;
-    const match = line.match(/^(#{2,3})\s+(.+?)\s*#*$/);
+    const match = line.match(/^(#{2,6})\s+(.+?)\s*#*$/);
     if (!match) continue;
     const title = match[2].replace(/[`*_]/g, "");
     const baseId = slugify(title);
@@ -196,7 +196,7 @@ export function tableOfContentsFromMdx(source: string): TableOfContentsItem[] {
     while (usedIds.has(id)) id = `${baseId}-${duplicate++}`;
     usedIds.add(id);
     headings.push({
-      depth: match[1].length as 2 | 3,
+      depth: match[1].length as 2 | 3 | 4 | 5 | 6,
       title,
       id,
     });

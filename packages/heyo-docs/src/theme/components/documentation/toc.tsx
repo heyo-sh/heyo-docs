@@ -1,6 +1,13 @@
 "use client";
 
-import { createElement, useCallback, useEffect, useRef, useState } from "react";
+import {
+  createElement,
+  type CSSProperties,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import type { TableOfContentsProps } from "../../../types";
 import { getDocumentationScrollViewport } from "./scroll";
@@ -29,7 +36,85 @@ function TocIcon() {
 }
 
 function lineOffset(depth: number) {
-  return depth === 3 ? 16 : 8;
+  if (depth <= 2) return 8;
+  if (depth === 3) return 16;
+  return 24;
+}
+
+function itemIndentation(depth: number) {
+  if (depth <= 2) return "pl-5";
+  if (depth === 3) return "pl-8";
+  return "pl-11";
+}
+
+type TrackStyle = CSSProperties & Record<`--${string}`, string>;
+const activePathEndOffset = 2;
+
+function trackStyle(track: TocTrack, activeIndex: number): TrackStyle {
+  if (activeIndex < 0) {
+    return {
+      "--toc-path-bottom": "0px",
+      "--toc-path-top": "0px",
+    };
+  }
+
+  return {
+    "--toc-path-bottom": `${track.positions[activeIndex]!.bottom + activePathEndOffset}px`,
+    "--toc-path-top": `${track.positions[0]!.top}px`,
+  };
+}
+
+function ActiveTocTrack({
+  activeIndex,
+  track,
+}: {
+  activeIndex: number;
+  track: TocTrack;
+}) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const initialStyle = useRef(trackStyle(track, activeIndex));
+
+  useEffect(() => {
+    const element = trackRef.current;
+    if (!element) return;
+
+    for (const [property, value] of Object.entries(
+      trackStyle(track, activeIndex),
+    )) {
+      element.style.setProperty(property, value);
+    }
+  }, [activeIndex, track]);
+
+  return (
+    <div
+      ref={trackRef}
+      className="pointer-events-none absolute left-0 top-0"
+      style={{
+        height: track.height,
+        width: track.width,
+        ...initialStyle.current,
+      }}
+    >
+      <svg
+        aria-hidden="true"
+        className="absolute transition-[clip-path]"
+        height={track.height}
+        style={{
+          clipPath:
+            "polygon(0 var(--toc-path-top, 0), 100% var(--toc-path-top, 0), 100% var(--toc-path-bottom, 0), 0 var(--toc-path-bottom, 0))",
+        }}
+        viewBox={`0 0 ${track.width} ${track.height}`}
+        width={track.width}
+      >
+        <path
+          d={track.path}
+          fill="none"
+          className="stroke-primary"
+          strokeWidth="1.5"
+        />
+      </svg>
+    </div>
+  );
 }
 
 export function DocumentationTableOfContents({ items }: TableOfContentsProps) {
@@ -159,8 +244,6 @@ export function DocumentationTableOfContents({ items }: TableOfContentsProps) {
   if (!items.length) return null;
 
   const activeIndex = items.findIndex((item) => item.id === activeId);
-  const activePosition =
-    activeIndex === -1 ? undefined : track?.positions[activeIndex];
 
   return (
     <aside
@@ -177,28 +260,23 @@ export function DocumentationTableOfContents({ items }: TableOfContentsProps) {
       >
         <div ref={listRef} className="relative flex flex-col py-1">
           {track ? (
-            <svg
-              aria-hidden="true"
-              className="pointer-events-none absolute left-0 top-0 overflow-visible"
-              height={track.height}
-              viewBox={`0 0 ${track.width} ${track.height}`}
-              width={track.width}
-            >
-              <path
-                d={track.path}
-                fill="none"
-                className="stroke-foreground/10"
-                strokeWidth="1"
-              />
-              {activePosition ? (
+            <>
+              <svg
+                aria-hidden="true"
+                className="pointer-events-none absolute left-0 top-0 overflow-visible"
+                height={track.height}
+                viewBox={`0 0 ${track.width} ${track.height}`}
+                width={track.width}
+              >
                 <path
-                  d={`M ${activePosition.x} ${activePosition.top} L ${activePosition.x} ${activePosition.bottom}`}
+                  d={track.path}
                   fill="none"
-                  className="stroke-primary"
-                  strokeWidth="1.5"
+                  className="stroke-foreground/10"
+                  strokeWidth="1"
                 />
-              ) : null}
-            </svg>
+              </svg>
+              <ActiveTocTrack activeIndex={activeIndex} track={track} />
+            </>
           ) : null}
           {items.map((item) => {
             const active = item.id === activeId;
@@ -208,9 +286,9 @@ export function DocumentationTableOfContents({ items }: TableOfContentsProps) {
                 key={item.id}
                 ref={setItemRef(item.id)}
                 aria-current={active ? "location" : undefined}
-                className={`relative py-1.5 pr-2 text-sm leading-5 transition-colors ${
-                  item.depth === 3 ? "pl-7" : "pl-5"
-                } ${
+                className={`relative py-1.5 pr-2 text-sm leading-5 transition-colors ${itemIndentation(
+                  item.depth,
+                )} ${
                   active
                     ? "text-primary"
                     : "text-muted-foreground hover:text-foreground"
