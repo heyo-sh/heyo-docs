@@ -58,6 +58,11 @@ describe("content paths", () => {
       { id: "more-detail", title: "More detail", depth: 5 },
       { id: "fine-detail", title: "Fine detail", depth: 6 },
     ]);
+    expect(
+      tableOfContentsFromMdx(
+        `## ${" ".repeat(10_000)}Heading${"#".repeat(10_000)}`,
+      ),
+    ).toEqual([{ id: "heading", title: "Heading", depth: 2 }]);
   });
 
   test("extracts readable text for local search", () => {
