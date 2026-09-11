@@ -111,7 +111,8 @@ export function DocumentationTableOfContents({ items }: TableOfContentsProps) {
         : window.scrollY + window.innerHeight >= documentHeight - 2;
 
       if (isAtDocumentEnd) {
-        setActiveId(headings.at(-1)!.id);
+        const nextId = headings.at(-1)!.id;
+        setActiveId((currentId) => (currentId === nextId ? currentId : nextId));
         return;
       }
 
@@ -126,10 +127,14 @@ export function DocumentationTableOfContents({ items }: TableOfContentsProps) {
         nextId = heading.id;
       }
 
-      setActiveId(nextId);
+      setActiveId((currentId) => (currentId === nextId ? currentId : nextId));
     };
 
     const observer = new IntersectionObserver(updateActiveHeading, {
+      // The documentation page scrolls inside this viewport, not the window.
+      // Keeping the observer rooted here prevents stale window intersections
+      // from re-running the active-item animation after a container scroll.
+      root: scrollViewport,
       rootMargin: "0px 0px -33.333% 0px",
       threshold: [0, 1],
     });
@@ -156,9 +161,6 @@ export function DocumentationTableOfContents({ items }: TableOfContentsProps) {
   const activeIndex = items.findIndex((item) => item.id === activeId);
   const activePosition =
     activeIndex === -1 ? undefined : track?.positions[activeIndex];
-  const clipPath = activePosition
-    ? `inset(0 0 ${track!.height - activePosition.bottom}px 0)`
-    : `inset(0 0 ${track?.height ?? 0}px 0)`;
 
   return (
     <aside
@@ -188,13 +190,14 @@ export function DocumentationTableOfContents({ items }: TableOfContentsProps) {
                 className="stroke-foreground/10"
                 strokeWidth="1"
               />
-              <path
-                d={track.path}
-                fill="none"
-                className="stroke-primary transition-[clip-path] duration-300 ease-out"
-                strokeWidth="1.5"
-                style={{ clipPath }}
-              />
+              {activePosition ? (
+                <path
+                  d={`M ${activePosition.x} ${activePosition.top} L ${activePosition.x} ${activePosition.bottom}`}
+                  fill="none"
+                  className="stroke-primary"
+                  strokeWidth="1.5"
+                />
+              ) : null}
             </svg>
           ) : null}
           {items.map((item) => {
