@@ -3,3 +3,6 @@ node_modules/
 app/_heyo-docs/
 public/_heyo-docs/openapi/
 *.tsbuildinfo
+.dev.vars
+.dev.vars.*
+!.dev.vars.example

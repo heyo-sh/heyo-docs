@@ -1,5 +1,6 @@
 import { createAiChatResponse } from "@heyo-sh/heyo-docs/ai";
 import type { APIRoute } from "astro";
+import { env } from "cloudflare:workers";
 
 import config from "../../../heyo-docs.config";
 import { pages as markdownPages } from "virtual:heyo-docs-content/server";
@@ -7,10 +8,10 @@ import { pages as markdownPages } from "virtual:heyo-docs-content/server";
 export const prerender = false;
 
 export const POST: APIRoute = ({ request }) => {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = env.OPENAI_API_KEY;
   if (!apiKey)
     return Response.json(
-      { error: "OPENAI_API_KEY is not configured." },
+      { error: "The OPENAI_API_KEY Worker secret is not configured." },
       { status: 500 },
     );
 

@@ -153,8 +153,10 @@ export type AiOAuthTokenResolver = () => string | Promise<string>;
 /**
  * Server-only authentication for the documentation-aware Pi chat.
  *
- * API-key providers receive `token` as Pi's `apiKey`. OAuth resolvers run for
- * every model request so callers can refresh short-lived provider tokens.
+ * API-key providers receive `token` as Pi's `apiKey`. Pass it directly to
+ * `createAiChatResponse` when the platform resolves credentials per request.
+ * OAuth resolvers run for every model request so callers can refresh
+ * short-lived provider tokens.
  * Bedrock deliberately uses AWS's credential chain or its bearer-token API;
  * it never treats an API key as AWS credentials.
  */
@@ -168,7 +170,8 @@ export type AiChatAuth =
 export interface AiChatConfig {
   provider: AiProvider;
   model: string;
-  auth: AiChatAuth;
+  /** Optional fallback authentication for non-binding-based deployments. */
+  auth?: AiChatAuth;
   variant: AiChatVariant;
   icon: SemanticIcon;
   text: string;
@@ -701,7 +704,7 @@ export interface UserHeyoDocsConfig {
     chat: {
       provider: AiProvider;
       model: string;
-      auth: AiChatAuth;
+      auth?: AiChatAuth;
       variant?: AiChatVariant;
       icon?: SemanticIcon;
       text?: string;

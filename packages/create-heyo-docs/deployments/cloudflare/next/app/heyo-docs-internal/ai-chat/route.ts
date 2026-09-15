@@ -1,4 +1,5 @@
 import { createAiChatResponse } from "@heyo-sh/heyo-docs/ai";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 import config from "../../../heyo-docs.config";
 import { docsPages, markdownPages } from "../../_heyo-docs/server";
@@ -6,10 +7,11 @@ import { docsPages, markdownPages } from "../../_heyo-docs/server";
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const { env } = getCloudflareContext();
+  const apiKey = env.OPENAI_API_KEY;
   if (!apiKey)
     return Response.json(
-      { error: "OPENAI_API_KEY is not configured." },
+      { error: "The OPENAI_API_KEY Worker secret is not configured." },
       { status: 500 },
     );
 

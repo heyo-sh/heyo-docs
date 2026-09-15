@@ -113,6 +113,20 @@ describe("configuration", () => {
     });
   });
 
+  test("allows chat credentials to be supplied by a request handler", () => {
+    expect(
+      heyoDocs({
+        content: "./content",
+        ai: {
+          chat: {
+            provider: "openai",
+            model: "gpt-5-mini",
+          },
+        },
+      }).ai?.chat.auth,
+    ).toBeUndefined();
+  });
+
   test("requires a complete AI provider configuration", () => {
     expect(() =>
       validateConfig({
@@ -122,12 +136,6 @@ describe("configuration", () => {
         },
       } as never),
     ).toThrow();
-    expect(() =>
-      validateConfig({
-        content: "./content",
-        ai: { chat: { provider: "openai", model: "gpt-5-mini" } },
-      } as never),
-    ).toThrow(/auth/i);
     expect(() =>
       validateConfig({
         content: "./content",

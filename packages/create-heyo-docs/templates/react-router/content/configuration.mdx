@@ -69,14 +69,13 @@ sidebar entry should point to a page outside the local documentation.
 Add `ai.chat` to enable a documentation-aware chat through [Pi](https://github.com/badlogic/pi-mono).
 Use any provider identifier bundled with the installed Pi version, such as
 `openai`, `anthropic`, `google`, `openrouter`, or `xai`. Authentication stays
-server-only and is selected explicitly for the provider.
+server-only and is supplied by the route that handles the chat request.
 
 <CodeBlock language="ts" title="heyo-docs.config.ts">
   {`ai: {
   chat: {
     provider: "openai",
     model: "gpt-5-mini",
-    auth: { type: "api-key", token: process.env.OPENAI_API_KEY! },
     variant: "right", // "center" shows the compact prompt first
     icon: "chat",
     text: "AI Chat",
@@ -86,10 +85,11 @@ server-only and is selected explicitly for the provider.
 },`}
 </CodeBlock>
 
-`provider`, `model`, and `auth` are required. API-key providers use
-`{ type: "api-key", token }`. GitHub Copilot and OpenAI Codex use
-`{ type: "oauth", getAccessToken }`; the resolver runs before each Pi request,
-so it can refresh a short-lived token. Amazon Bedrock uses either
+`provider` and `model` are required. Keep the credential out of this
+configuration and pass it as `auth` to `createAiChatResponse` in the server
+route. Cloudflare routes obtain the key from the Worker `env` binding; Node.js
+routes can read their server environment there. GitHub Copilot and OpenAI Codex
+use `auth: { type: "oauth", getAccessToken }`; Amazon Bedrock uses either
 `{ type: "aws", region?, profile? }` and the AWS credential chain, or
 `{ type: "bedrock-bearer", token, region? }`. The model must be an actual model
 identifier, not the provider name. Amazon Bedrock requires a Node.js chat

@@ -14,9 +14,11 @@ import {
 } from "@mariozechner/pi-ai";
 import { Type } from "typebox";
 
+import { authTypesForAiProvider } from "./ai-auth";
 import { markdownForPage } from "./llm";
 import { searchPages } from "./search";
 import type {
+  AiChatAuth,
   AiChatConfig,
   AiConfig,
   MarkdownPage,
@@ -29,6 +31,11 @@ const MAX_TOOL_CALLS = 8;
 
 export interface AiChatOptions {
   ai?: AiConfig;
+  /**
+   * Credentials resolved by the framework for this request. Use this for
+   * platform bindings such as Cloudflare Worker secrets.
+   */
+  auth?: AiChatAuth;
   pages: SearchDocument[];
   markdownPages: MarkdownPage[];
   title: string;
@@ -49,14 +56,29 @@ type ChatStreamEvent =
  */
 export async function createAiChatResponse(
   request: Request,
-  { ai, pages, markdownPages, title }: AiChatOptions,
+  options: AiChatOptions,
 ): Promise<Response> {
-  const chat = ai?.chat;
-  if (!chat)
+  const configuredChat = options.ai?.chat;
+  if (!configuredChat)
     return Response.json(
       { error: "AI chat is not configured." },
       { status: 404 },
     );
+  const auth = options.auth ?? configuredChat.auth;
+  if (!auth)
+    return Response.json(
+      { error: "AI chat authentication is not configured." },
+      { status: 500 },
+    );
+  const authTypes = authTypesForAiProvider(configuredChat.provider);
+  if (!authTypes.includes(auth.type))
+    return Response.json(
+      {
+        error: `Pi provider '${configuredChat.provider}' requires auth.type ${authTypes.map((type) => `'${type}'`).join(" or ")}.`,
+      },
+      { status: 500 },
+    );
+  const chat = { ...configuredChat, auth };
 
   const messages = await chatMessagesFrom(request);
   if (!messages)
@@ -73,15 +95,15 @@ export async function createAiChatResponse(
   }
 
   const markdownByPath = new Map(
-    markdownPages.map((page) => [page.slug, page]),
+    options.markdownPages.map((page) => [page.slug, page]),
   );
   return piChatStream(request, {
     chat,
     markdownByPath,
     messages,
     model,
-    pages,
-    title,
+    pages: options.pages,
+    title: options.title,
   });
 }
 
@@ -127,7 +149,7 @@ async function chatMessagesFrom(
 function piChatStream(
   request: Request,
   options: {
-    chat: NonNullable<AiConfig["chat"]>;
+    chat: AiChatConfig & { auth: AiChatAuth };
     markdownByPath: Map<string, MarkdownPage>;
     messages: ChatMessage[];
     model: Model<Api>;
@@ -253,7 +275,7 @@ function piChatStream(
 }
 
 function piAgentAuthOptions(
-  chat: AiChatConfig,
+  chat: AiChatConfig & { auth: AiChatAuth },
 ): Pick<AgentOptions, "getApiKey" | "streamFn"> {
   const auth = chat.auth;
   switch (auth.type) {

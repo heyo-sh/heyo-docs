@@ -87,6 +87,77 @@ test("streams a Pi response through the Heyo Docs chat protocol", async () => {
   );
 });
 
+test("uses API keys supplied by the request handler", async () => {
+  registration = registerFauxProvider({
+    api: "openai-responses",
+    provider: "openai",
+  });
+  registration.setResponses([fauxAssistantMessage("Resolved at runtime.")]);
+  const response = await createAiChatResponse(
+    new Request("http://localhost/heyo-docs-internal/ai-chat", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        messages: [{ role: "user", text: "Hello" }],
+      }),
+    }),
+    {
+      ai: {
+        chat: {
+          provider: "openai",
+          model: "gpt-5-mini",
+          variant: "right",
+          icon: "chat",
+          text: "AI Chat",
+          name: "AI",
+          placeholder: "Ask AI about the docs",
+        },
+      },
+      auth: { type: "api-key", token: "runtime-key" },
+      markdownPages: [],
+      pages: [],
+      title: "Test docs",
+    },
+  );
+
+  await response.text();
+  expect(response.status).toBe(200);
+});
+
+test("rejects request credentials incompatible with the provider", async () => {
+  const response = await createAiChatResponse(
+    new Request("http://localhost/heyo-docs-internal/ai-chat", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        messages: [{ role: "user", text: "Hello" }],
+      }),
+    }),
+    {
+      ai: {
+        chat: {
+          provider: "github-copilot",
+          model: "gpt-5-mini",
+          variant: "right",
+          icon: "chat",
+          text: "AI Chat",
+          name: "AI",
+          placeholder: "Ask AI about the docs",
+        },
+      },
+      auth: { type: "api-key", token: "not-an-oauth-token" },
+      markdownPages: [],
+      pages: [],
+      title: "Test docs",
+    },
+  );
+
+  expect(response.status).toBe(500);
+  await expect(response.json()).resolves.toMatchObject({
+    error: expect.stringContaining("auth.type 'oauth'"),
+  });
+});
+
 test("resolves every installed Pi model to its registered API executor", () => {
   const models = getProviders().flatMap((provider) =>
     getModels(provider).map((model) => ({ model, provider })),
