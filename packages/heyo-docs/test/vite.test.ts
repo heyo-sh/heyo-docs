@@ -32,7 +32,7 @@ test("resolves a bare content directory from an app root in a monorepo", async (
   }
 });
 
-test("exposes an AI configuration to the browser without its API key", async () => {
+test("exposes an AI configuration to the browser without authentication", async () => {
   const root = await createFixture();
   try {
     const plugin = heyoDocs({
@@ -41,8 +41,8 @@ test("exposes an AI configuration to the browser without its API key", async () 
         ai: {
           chat: {
             provider: "openai",
-            key: "server-only-key",
             model: "gpt-5-mini",
+            auth: { type: "api-key", token: "server-only-authentication" },
           },
         },
       }),
@@ -52,9 +52,10 @@ test("exposes an AI configuration to the browser without its API key", async () 
     const clientConfig = await plugin.load(id!);
 
     expect(clientConfig).toContain('"ai":{"chat":');
-    expect(clientConfig).toContain('"model":"gpt-5-mini"');
-    expect(clientConfig).toContain('"key":""');
-    expect(clientConfig).not.toContain("server-only-key");
+    expect(clientConfig).not.toContain('"provider":"openai"');
+    expect(clientConfig).not.toContain('"model":"gpt-5-mini"');
+    expect(clientConfig).not.toContain('"auth":');
+    expect(clientConfig).not.toContain("server-only-authentication");
   } finally {
     await rm(root, { force: true, recursive: true });
   }

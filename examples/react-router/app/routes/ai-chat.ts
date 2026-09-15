@@ -1,4 +1,3 @@
-import { createAiChatResponse } from "@heyo-sh/heyo-docs/ai";
 import type { ActionFunctionArgs } from "react-router";
 
 import config from "../../heyo-docs.config";
@@ -12,6 +11,7 @@ export async function action({ request }: ActionFunctionArgs) {
       status: 405,
     });
 
+  const { createAiChatResponse } = await import("@heyo-sh/heyo-docs/ai");
   return createAiChatResponse(request, {
     ai: config.ai,
     markdownPages,

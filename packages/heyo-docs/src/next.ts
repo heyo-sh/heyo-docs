@@ -112,12 +112,23 @@ function clientModule(
   openApiEndpoints: OpenApiEndpoint[],
 ): string {
   // Navigation can contain a React element, which is intentionally not JSON
-  // serializable. The API key must stay server-only, so the client receives an
-  // empty placeholder; the UI only uses the remaining AI presentation fields.
+  // serializable. The client needs only AI presentation settings: authentication
+  // and model selection remain exclusively in the server configuration.
   const { navigation: _navigation, ai, ...serializableConfig } = config;
+  const publicAi = ai
+    ? (() => {
+        const {
+          auth: _auth,
+          model: _model,
+          provider: _provider,
+          ...chat
+        } = ai.chat;
+        return { chat };
+      })()
+    : undefined;
   const clientConfig = {
     ...serializableConfig,
-    ...(ai ? { ai: { chat: { ...ai.chat, key: "" } } } : {}),
+    ...(publicAi ? { ai: publicAi } : {}),
   };
   const imports = pages
     .map(
@@ -148,7 +159,7 @@ function clientModule(
     )
     .join("\n");
 
-  return `${imports}\n\nimport type { DocsPage, HeyoDocsConfig, OpenApiEndpoint } from "@heyo-sh/heyo-docs";\n\nexport const docsConfig = ${JSON.stringify(clientConfig)} satisfies HeyoDocsConfig;\n\nexport const pages = [\n${serializedPages}\n] satisfies DocsPage[];\n\n/** Navigation/search index only — detailed endpoint JSON is emitted to public/. */\nexport const openApiEndpoints: OpenApiEndpoint[] = ${JSON.stringify(openApiEndpoints)};\n`;
+  return `${imports}\n\nimport type { ClientHeyoDocsConfig, DocsPage, OpenApiEndpoint } from "@heyo-sh/heyo-docs";\n\nexport const docsConfig = ${JSON.stringify(clientConfig)} satisfies ClientHeyoDocsConfig;\n\nexport const pages = [\n${serializedPages}\n] satisfies DocsPage[];\n\n/** Navigation/search index only — detailed endpoint JSON is emitted to public/. */\nexport const openApiEndpoints: OpenApiEndpoint[] = ${JSON.stringify(openApiEndpoints)};\n`;
 }
 
 async function writeOpenApiEndpointAssets(

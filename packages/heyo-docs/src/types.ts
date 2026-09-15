@@ -92,7 +92,8 @@ export interface DocsIntegrations {
 
 export type DocsMode = "system" | "light" | "dark";
 
-export type AiProvider = "openai" | "claude" | "grok";
+/** A provider identifier supported by the installed version of Pi. */
+export type AiProvider = string;
 
 export type AiChatVariant = "center" | "right";
 
@@ -146,11 +147,28 @@ export type MdxComponents = Record<string, ComponentType<any>>;
  */
 export type IconSet = Partial<Record<SemanticIcon, IconComponent>>;
 
+/** Resolves a fresh OAuth access token before every Pi request. */
+export type AiOAuthTokenResolver = () => string | Promise<string>;
+
+/**
+ * Server-only authentication for the documentation-aware Pi chat.
+ *
+ * API-key providers receive `token` as Pi's `apiKey`. OAuth resolvers run for
+ * every model request so callers can refresh short-lived provider tokens.
+ * Bedrock deliberately uses AWS's credential chain or its bearer-token API;
+ * it never treats an API key as AWS credentials.
+ */
+export type AiChatAuth =
+  | { type: "api-key"; token: string }
+  | { type: "oauth"; getAccessToken: AiOAuthTokenResolver }
+  | { type: "aws"; region?: string; profile?: string }
+  | { type: "bedrock-bearer"; token: string; region?: string };
+
 /** Settings for the documentation-aware AI chat. */
 export interface AiChatConfig {
   provider: AiProvider;
-  key: string;
   model: string;
+  auth: AiChatAuth;
   variant: AiChatVariant;
   icon: SemanticIcon;
   text: string;
@@ -158,7 +176,7 @@ export interface AiChatConfig {
   placeholder: string;
 }
 
-/** Server-only AI settings. The API key must never be sent to the browser. */
+/** Server-only AI settings. Authentication must never be sent to the browser. */
 export interface AiConfig {
   chat: AiChatConfig;
 }
@@ -166,8 +184,13 @@ export interface AiConfig {
 /** The browser-safe portion of the AI configuration. */
 export type PublicAiChatConfig = Omit<
   AiChatConfig,
-  "key" | "model" | "provider"
+  "auth" | "model" | "provider"
 >;
+
+/** AI configuration that is safe to embed in browser bundles. */
+export interface PublicAiConfig {
+  chat: PublicAiChatConfig;
+}
 
 export interface DocumentationSection {
   /**
@@ -545,7 +568,7 @@ export interface HeyoDocsTheme {
 }
 
 export interface DocsAppProps {
-  config: HeyoDocsConfig;
+  config: ClientHeyoDocsConfig;
   /** Statically imported icon set owned by the application template. */
   iconSet?: IconSet;
   pages: DocsPage[];
@@ -600,6 +623,11 @@ export interface HeyoDocsConfig {
   ai?: AiConfig;
   integrations: DocsIntegrations;
 }
+
+/** The browser-safe form of a validated Heyo Docs configuration. */
+export type ClientHeyoDocsConfig = Omit<HeyoDocsConfig, "ai"> & {
+  ai?: PublicAiConfig;
+};
 
 export interface UserDocumentationSection {
   /** Omit to place `pages` directly in the group, without a sidebar section. */
@@ -672,8 +700,8 @@ export interface UserHeyoDocsConfig {
   ai?: {
     chat: {
       provider: AiProvider;
-      key: string;
       model: string;
+      auth: AiChatAuth;
       variant?: AiChatVariant;
       icon?: SemanticIcon;
       text?: string;
