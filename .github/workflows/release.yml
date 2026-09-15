@@ -41,7 +41,7 @@ jobs:
 
   version:
     name: Create release pull request
-    needs: select-mode
+    needs: [verify, select-mode]
     if: needs.select-mode.outputs.mode == 'version'
     runs-on: ubuntu-latest
     permissions:
