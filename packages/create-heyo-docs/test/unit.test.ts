@@ -147,11 +147,11 @@ describe("creator utilities", () => {
 
         const osanoScript =
           template === "astro"
-            ? "{osano && <script is:inline src={osano.src} />}"
+            ? "{osano && <script is:inline src={osano.src}></script>}"
             : "{osano && <script src={osano.src} />}";
         const adobeScript =
           template === "astro"
-            ? "{adobe && <script is:inline async src={adobe.src} />}"
+            ? "{adobe && <script is:inline async src={adobe.src}></script>}"
             : "{adobe && <script async={adobe.async} src={adobe.src} />}";
         const osanoIndex = layout.indexOf(osanoScript);
         const transcendIndex = layout.indexOf("transcend && (");

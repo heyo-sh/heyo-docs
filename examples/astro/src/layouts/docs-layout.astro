@@ -188,20 +188,16 @@ const zammadBootstrap = zammad ? zammadBootstrapScript() : undefined;
 <!doctype html>
 <html lang="en">
   <head>
-    {
-      transcendGoogleConsentDefaults && (
-        <script is:inline set:html={transcendGoogleConsentDefaults} />
-      )
-    }
-    {
-      transcend && (
-        <script
-          is:inline
-          data-cfasync={transcend.dataCfasync}
-          src={transcend.src}
-        />
-      )
-    }
+    {transcendGoogleConsentDefaults && (
+      <script is:inline set:html={transcendGoogleConsentDefaults}></script>
+    )}
+    {transcend && (
+      <script
+        is:inline
+        data-cfasync={transcend.dataCfasync}
+        src={transcend.src}
+      ></script>
+    )}
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
@@ -223,334 +219,280 @@ const zammadBootstrap = zammad ? zammadBootstrapScript() : undefined;
     <link rel="icon" href="/favicon-96x96.png" sizes="96x96" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
     <link rel="manifest" href="/site.webmanifest" />
-    {
-      hasChangelog && (
-        <link
-          rel="alternate"
-          href="/rss.xml"
-          type="application/rss+xml"
-          title={`${config.title} updates`}
-        />
-      )
-    }
-    {osano && <script is:inline src={osano.src} />}
-    {
-      googleTagManager && (
-        <script
-          is:inline
-          data-google-tag-manager-container-id={
-            config.integrations.analytics.gtm?.containerId
-          }
-          set:html={googleTagManager}
-        />
-      )
-    }
+    {hasChangelog && (
+      <link
+        rel="alternate"
+        href="/rss.xml"
+        type="application/rss+xml"
+        title={`${config.title} updates`}
+      />
+    )}
+    {osano && <script is:inline src={osano.src}></script>}
+    {googleTagManager && (
+      <script
+        is:inline
+        data-google-tag-manager-container-id={
+          config.integrations.analytics.gtm?.containerId
+        }
+        set:html={googleTagManager}
+      ></script>
+    )}
     <script
       is:inline
       set:html={getThemeScript(THEME_STORAGE_KEY, config.mode)}
-    />
-    {adobe && <script is:inline async src={adobe.src} />}
-    {amplitude && <script is:inline src={amplitude.src} />}
-    {
-      clarity && (
+    ></script>
+    {adobe && <script is:inline async src={adobe.src}></script>}
+    {amplitude && <script is:inline src={amplitude.src}></script>}
+    {clarity && (
+      <script
+        is:inline
+        data-clarity-project-id={
+          config.integrations.analytics.clarity?.projectId
+        }
+        set:html={clarity}
+      ></script>
+    )}
+    {clearbit && <script is:inline src={clearbit.src}></script>}
+    {fathom && (
+      <script
+        is:inline
+        data-site={fathom.siteId}
+        data-spa={fathom.spa}
+        defer={fathom.defer}
+        src={fathom.src}
+      ></script>
+    )}
+    {googleAnalytics && googleAnalyticsBootstrap && (
+      <>
         <script
           is:inline
-          data-clarity-project-id={
-            config.integrations.analytics.clarity?.projectId
+          async={googleAnalytics.async}
+          src={googleAnalytics.src}
+        ></script>
+        <script
+          is:inline
+          data-google-analytics-measurement-id={
+            config.integrations.analytics.ga4?.measurementId
           }
-          set:html={clarity}
-        />
-      )
-    }
-    {clearbit && <script is:inline src={clearbit.src} />}
-    {
-      fathom && (
+          set:html={googleAnalyticsBootstrap}
+        ></script>
+      </>
+    )}
+    {heap && (
+      <script
+        is:inline
+        data-heap-environment-id={
+          config.integrations.analytics.heap?.environmentId
+        }
+        set:html={heap}
+      ></script>
+    )}
+    {hotjar && (
+      <script
+        is:inline
+        data-hotjar-site-id={config.integrations.analytics.hotjar?.siteId}
+        data-hotjar-snippet-version={
+          config.integrations.analytics.hotjar?.snippetVersion
+        }
+        set:html={hotjar}
+      ></script>
+    )}
+    {logRocket && logRocketBootstrap && (
+      <>
         <script
           is:inline
-          data-site={fathom.siteId}
-          data-spa={fathom.spa}
-          defer={fathom.defer}
-          src={fathom.src}
-        />
-      )
-    }
-    {
-      googleAnalytics && googleAnalyticsBootstrap && (
-        <>
-          <script
-            is:inline
-            async={googleAnalytics.async}
-            src={googleAnalytics.src}
-          />
-          <script
-            is:inline
-            data-google-analytics-measurement-id={
-              config.integrations.analytics.ga4?.measurementId
-            }
-            set:html={googleAnalyticsBootstrap}
-          />
-        </>
-      )
-    }
-    {
-      heap && (
+          crossorigin={logRocket.crossOrigin}
+          src={logRocket.src}
+        ></script>
         <script
           is:inline
-          data-heap-environment-id={
-            config.integrations.analytics.heap?.environmentId
+          data-logrocket-app-id={config.integrations.analytics.logrocket?.appId}
+          set:html={logRocketBootstrap}
+        ></script>
+      </>
+    )}
+    {mixpanel && mixpanelBootstrap && (
+      <>
+        <script is:inline src={mixpanel.src}></script>
+        <script
+          is:inline
+          data-mixpanel-project-token={
+            config.integrations.analytics.mixpanel?.projectToken
           }
-          set:html={heap}
-        />
-      )
-    }
-    {
-      hotjar && (
+          set:html={mixpanelBootstrap}
+        ></script>
+      </>
+    )}
+    {openpanel && openpanelBootstrap && (
+      <>
         <script
           is:inline
-          data-hotjar-site-id={config.integrations.analytics.hotjar?.siteId}
-          data-hotjar-snippet-version={
-            config.integrations.analytics.hotjar?.snippetVersion
+          data-openpanel-api-url={
+            config.integrations.analytics.openpanel?.apiUrl
           }
-          set:html={hotjar}
-        />
-      )
-    }
-    {
-      logRocket && logRocketBootstrap && (
-        <>
-          <script
-            is:inline
-            crossorigin={logRocket.crossOrigin}
-            src={logRocket.src}
-          />
-          <script
-            is:inline
-            data-logrocket-app-id={
-              config.integrations.analytics.logrocket?.appId
-            }
-            set:html={logRocketBootstrap}
-          />
-        </>
-      )
-    }
-    {
-      mixpanel && mixpanelBootstrap && (
-        <>
-          <script is:inline src={mixpanel.src} />
-          <script
-            is:inline
-            data-mixpanel-project-token={
-              config.integrations.analytics.mixpanel?.projectToken
-            }
-            set:html={mixpanelBootstrap}
-          />
-        </>
-      )
-    }
-    {
-      openpanel && openpanelBootstrap && (
-        <>
-          <script
-            is:inline
-            data-openpanel-api-url={
-              config.integrations.analytics.openpanel?.apiUrl
-            }
-            data-openpanel-client-id={
-              config.integrations.analytics.openpanel?.clientId
-            }
-            set:html={openpanelBootstrap}
-          />
-          <script
-            is:inline
-            async={openpanel.async}
-            defer={openpanel.defer}
-            src={openpanel.src}
-          />
-        </>
-      )
-    }
-    {
-      openReplay && (
-        <script
-          is:inline
-          data-openreplay-ingest-point={
-            config.integrations.analytics.openreplay?.ingestPoint
+          data-openpanel-client-id={
+            config.integrations.analytics.openpanel?.clientId
           }
-          data-openreplay-project-key={
-            config.integrations.analytics.openreplay?.projectKey
+          set:html={openpanelBootstrap}
+        ></script>
+        <script
+          is:inline
+          async={openpanel.async}
+          defer={openpanel.defer}
+          src={openpanel.src}
+        ></script>
+      </>
+    )}
+    {openReplay && (
+      <script
+        is:inline
+        data-openreplay-ingest-point={
+          config.integrations.analytics.openreplay?.ingestPoint
+        }
+        data-openreplay-project-key={
+          config.integrations.analytics.openreplay?.projectKey
+        }
+        set:html={openReplay}
+      ></script>
+    )}
+    {pirsch && (
+      <script
+        is:inline
+        data-code={pirsch.code}
+        defer={pirsch.defer}
+        src={pirsch.src}
+      ></script>
+    )}
+    {plausible && (
+      <script
+        is:inline
+        data-domain={plausible.domain}
+        defer={plausible.defer}
+        src={plausible.src}
+      ></script>
+    )}
+    {posthog && posthogBootstrap && posthogHost && (
+      <>
+        <script is:inline src={posthog.src}></script>
+        <script
+          is:inline
+          data-posthog-api-host={posthogHost}
+          data-posthog-project-api-key={
+            config.integrations.analytics.posthog?.projectApiKey
           }
-          set:html={openReplay}
-        />
-      )
-    }
-    {
-      pirsch && (
-        <script
-          is:inline
-          data-code={pirsch.code}
-          defer={pirsch.defer}
-          src={pirsch.src}
-        />
-      )
-    }
-    {
-      plausible && (
-        <script
-          is:inline
-          data-domain={plausible.domain}
-          defer={plausible.defer}
-          src={plausible.src}
-        />
-      )
-    }
-    {
-      posthog && posthogBootstrap && posthogHost && (
-        <>
-          <script is:inline src={posthog.src} />
-          <script
-            is:inline
-            data-posthog-api-host={posthogHost}
-            data-posthog-project-api-key={
-              config.integrations.analytics.posthog?.projectApiKey
-            }
-            set:html={posthogBootstrap}
-          />
-        </>
-      )
-    }
-    {
-      rybbit && (
-        <script
-          is:inline
-          data-site-id={rybbit.siteId}
-          defer={rybbit.defer}
-          src={rybbit.src}
-        />
-      )
-    }
-    {
-      umami && (
-        <script
-          is:inline
-          data-website-id={umami.websiteId}
-          defer={umami.defer}
-          src={umami.src}
-        />
-      )
-    }
-    {
-      chaskiq && (
-        <script
-          is:inline
-          data-chaskiq-app-id={config.integrations.support.chaskiq?.appId}
-          data-chaskiq-base-url={config.integrations.support.chaskiq?.baseUrl}
-          data-chaskiq-ws-url={config.integrations.support.chaskiq?.wsUrl}
-          set:html={chaskiq}
-        />
-      )
-    }
-    {
-      papercups && (
-        <script
-          is:inline
-          data-papercups-base-url={
-            config.integrations.support.papercups?.baseUrl
-          }
-          data-papercups-inbox={config.integrations.support.papercups?.inbox}
-          data-papercups-token={config.integrations.support.papercups?.token}
-          set:html={papercups}
-        />
-      )
-    }
-    {
-      typebot && (
-        <script
-          is:inline
-          data-heyo-typebot
-          data-typebot-api-host={config.integrations.support.typebot?.apiHost}
-          data-typebot-id={config.integrations.support.typebot?.typebot}
-          set:html={typebot}
-          type="module"
-        />
-      )
-    }
-    <script is:inline type="application/ld+json" set:html={jsonLd} />
+          set:html={posthogBootstrap}
+        ></script>
+      </>
+    )}
+    {rybbit && (
+      <script
+        is:inline
+        data-site-id={rybbit.siteId}
+        defer={rybbit.defer}
+        src={rybbit.src}
+      ></script>
+    )}
+    {umami && (
+      <script
+        is:inline
+        data-website-id={umami.websiteId}
+        defer={umami.defer}
+        src={umami.src}
+      ></script>
+    )}
+    {chaskiq && (
+      <script
+        is:inline
+        data-chaskiq-app-id={config.integrations.support.chaskiq?.appId}
+        data-chaskiq-base-url={config.integrations.support.chaskiq?.baseUrl}
+        data-chaskiq-ws-url={config.integrations.support.chaskiq?.wsUrl}
+        set:html={chaskiq}
+      ></script>
+    )}
+    {papercups && (
+      <script
+        is:inline
+        data-papercups-base-url={config.integrations.support.papercups?.baseUrl}
+        data-papercups-inbox={config.integrations.support.papercups?.inbox}
+        data-papercups-token={config.integrations.support.papercups?.token}
+        set:html={papercups}
+      ></script>
+    )}
+    {typebot && (
+      <script
+        is:inline
+        data-heyo-typebot
+        data-typebot-api-host={config.integrations.support.typebot?.apiHost}
+        data-typebot-id={config.integrations.support.typebot?.typebot}
+        set:html={typebot}
+        type="module"
+      ></script>
+    )}
+    <script is:inline type="application/ld+json" set:html={jsonLd}></script>
   </head>
   <body>
-    {
-      googleTagManagerNoScript && (
-        <noscript>
-          <iframe
-            height="0"
-            src={googleTagManagerNoScript}
-            style="display:none;visibility:hidden"
-            title="Google Tag Manager"
-            width="0"
-          />
-        </noscript>
-      )
-    }
+    {googleTagManagerNoScript && (
+      <noscript>
+        <iframe
+          height="0"
+          src={googleTagManagerNoScript}
+          style="display:none;visibility:hidden"
+          title="Google Tag Manager"
+          width="0"
+        ></iframe>
+      </noscript>
+    )}
     <slot />
-    {
-      swetrix && swetrixBootstrap && (
-        <>
-          <script is:inline defer={swetrix.defer} src={swetrix.src} />
-          <script
-            is:inline
-            data-swetrix-api-url={config.integrations.analytics.swetrix?.apiUrl}
-            data-swetrix-project-id={
-              config.integrations.analytics.swetrix?.projectId
-            }
-            set:html={swetrixBootstrap}
-          />
-        </>
-      )
-    }
-    {
-      intercom && (
+    {swetrix && swetrixBootstrap && (
+      <>
+        <script is:inline defer={swetrix.defer} src={swetrix.src}></script>
         <script
           is:inline
-          data-intercom-app-id={config.integrations.support.intercom?.appId}
-          data-intercom-api-base={config.integrations.support.intercom?.apiBase}
-          set:html={intercom}
-        />
-      )
-    }
-    {
-      front && frontBootstrap && (
-        <>
-          <script is:inline src={front.src} />
-          <script
-            is:inline
-            data-front-chat-id={config.integrations.support.front?.chatId}
-            set:html={frontBootstrap}
-          />
-        </>
-      )
-    }
-    {
-      chatwoot && (
-        <script
-          is:inline
-          data-chatwoot-base-url={config.integrations.support.chatwoot?.baseUrl}
-          data-chatwoot-website-token={
-            config.integrations.support.chatwoot?.websiteToken
+          data-swetrix-api-url={config.integrations.analytics.swetrix?.apiUrl}
+          data-swetrix-project-id={
+            config.integrations.analytics.swetrix?.projectId
           }
-          set:html={chatwoot}
-        />
-      )
-    }
-    {
-      zammad && zammadBootstrap && (
-        <>
-          <script is:inline src={zammad.src} />
-          <script
-            is:inline
-            data-zammad-chat-id={config.integrations.support.zammad?.chatId}
-            set:html={zammadBootstrap}
-          />
-        </>
-      )
-    }
+          set:html={swetrixBootstrap}
+        ></script>
+      </>
+    )}
+    {intercom && (
+      <script
+        is:inline
+        data-intercom-app-id={config.integrations.support.intercom?.appId}
+        data-intercom-api-base={config.integrations.support.intercom?.apiBase}
+        set:html={intercom}
+      ></script>
+    )}
+    {front && frontBootstrap && (
+      <>
+        <script is:inline src={front.src}></script>
+        <script
+          is:inline
+          data-front-chat-id={config.integrations.support.front?.chatId}
+          set:html={frontBootstrap}
+        ></script>
+      </>
+    )}
+    {chatwoot && (
+      <script
+        is:inline
+        data-chatwoot-base-url={config.integrations.support.chatwoot?.baseUrl}
+        data-chatwoot-website-token={
+          config.integrations.support.chatwoot?.websiteToken
+        }
+        set:html={chatwoot}
+      ></script>
+    )}
+    {zammad && zammadBootstrap && (
+      <>
+        <script is:inline src={zammad.src}></script>
+        <script
+          is:inline
+          data-zammad-chat-id={config.integrations.support.zammad?.chatId}
+          set:html={zammadBootstrap}
+        ></script>
+      </>
+    )}
   </body>
 </html>
