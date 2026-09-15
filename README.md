@@ -9,7 +9,7 @@
     <img src="https://img.shields.io/badge/AI--First-000000?style=flat&amp;colorA=000000&amp;colorB=000000" alt="AI-First"/>
   </p>
 
-  <p>
+  <p style="margin-top: 0.375rem;">
     <a href="https://docs.heyo.sh/introduction/">Documentation</a>
     ·
     <a href="https://docs.heyo.sh/changelog">Changelog (Demo)</a>
