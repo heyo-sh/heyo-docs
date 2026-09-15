@@ -3,4 +3,6 @@ dist/
 .astro/
 .wrangler/
 .vercel/
-
+.dev.vars
+.dev.vars.*
+!.dev.vars.example

@@ -30,6 +30,7 @@ import { papercupsSupportSchema } from "./integrations/support/papercups";
 import { typebotSupportSchema } from "./integrations/support/typebot";
 import { zammadSupportSchema } from "./integrations/support/zammad";
 import { umamiAnalyticsSchema } from "./integrations/analytics/umami";
+import { authTypesForAiProvider } from "./ai-auth";
 import type {
   AiChatAuth,
   AiOAuthTokenResolver,
@@ -47,18 +48,12 @@ const piProviderSchema = z
   )
   .max(100);
 
-const API_KEY_AUTH_TYPES = ["api-key"] as const;
-const OAUTH_AUTH_TYPES = ["oauth"] as const;
-const BEDROCK_AUTH_TYPES = ["aws", "bedrock-bearer"] as const;
-const OAUTH_PROVIDERS = new Set(["github-copilot", "openai-codex"]);
-const BEDROCK_PROVIDER = "amazon-bedrock";
-
 const oauthTokenResolverSchema = z.custom<AiOAuthTokenResolver>(
   (value): value is AiOAuthTokenResolver => typeof value === "function",
   "auth.getAccessToken must be a function.",
 );
 
-const chatAuthSchema: z.ZodType<AiChatAuth> = z.discriminatedUnion("type", [
+const chatAuthSchema: z.ZodType<AiChatAuth> = z.union([
   z.object({ type: z.literal("api-key"), token: nonEmptyString }).strict(),
   z
     .object({
@@ -121,7 +116,7 @@ const chatSchema = z
   .object({
     provider: piProviderSchema,
     model: nonEmptyString,
-    auth: chatAuthSchema,
+    auth: chatAuthSchema.optional(),
     variant: z.enum(["center", "right"]).default("right"),
     icon: semanticIconSchema.default("chat"),
     text: nonEmptyString.default("AI Chat"),
@@ -137,20 +132,14 @@ const chatSchema = z
         message: "model must be a model identifier, not the provider name.",
       });
 
-    const authTypes = authTypesForProvider(chat.provider);
-    if (!authTypes.includes(chat.auth.type))
+    const authTypes = authTypesForAiProvider(chat.provider);
+    if (chat.auth && !authTypes.includes(chat.auth.type))
       context.addIssue({
         code: "custom",
         path: ["auth", "type"],
         message: `Pi provider '${chat.provider}' requires auth.type ${authTypes.map((type) => `'${type}'`).join(" or ")}.`,
       });
   });
-
-function authTypesForProvider(provider: string): readonly AiChatAuth["type"][] {
-  if (provider === BEDROCK_PROVIDER) return BEDROCK_AUTH_TYPES;
-  if (OAUTH_PROVIDERS.has(provider)) return OAUTH_AUTH_TYPES;
-  return API_KEY_AUTH_TYPES;
-}
 
 const aiSchema = z
   .object({

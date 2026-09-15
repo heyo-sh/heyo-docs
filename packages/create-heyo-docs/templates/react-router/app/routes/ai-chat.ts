@@ -11,9 +11,17 @@ export async function action({ request }: ActionFunctionArgs) {
       status: 405,
     });
 
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey)
+    return Response.json(
+      { error: "OPENAI_API_KEY is not configured." },
+      { status: 500 },
+    );
+
   const { createAiChatResponse } = await import("@heyo-sh/heyo-docs/ai");
   return createAiChatResponse(request, {
     ai: config.ai,
+    auth: { type: "api-key", token: apiKey },
     markdownPages,
     pages,
     title: config.title,

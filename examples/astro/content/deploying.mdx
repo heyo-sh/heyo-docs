@@ -30,6 +30,19 @@ the sitemap, RSS feed, robots file, and AI-facing documentation endpoints.
 Use the equivalent `npm run build`, `pnpm build`, or `yarn build` command
 when the project uses a different package manager.
 
+## Cloudflare secrets
+
+For AI chat, save the provider key as a Worker secret:
+
+<CodeBlock language="bash" title="Terminal">
+  {"bunx wrangler secret put OPENAI_API_KEY"}
+</CodeBlock>
+
+Keep the credential out of `heyo-docs.config.ts`. The Cloudflare overlay reads
+the native Worker `env.OPENAI_API_KEY` binding in the AI route, after the
+request reaches the Worker. It is never part of the documentation build or the
+browser bundle.
+
 <Callout type="tip" title="Set the canonical URL">
   Add the final public origin as <code>siteUrl</code> in
   <code>heyo-docs.config.ts</code> before the first production release. It keeps
