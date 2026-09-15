@@ -1,6 +1,6 @@
 {
   "name": "@heyo-sh/create-heyo-docs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Create a standalone Heyo Docs documentation project.",
   "homepage": "https://heyo.sh",
   "repository": {

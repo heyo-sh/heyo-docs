@@ -1,5 +1,16 @@
 # @heyo-sh/heyo-docs
 
+## 1.0.1
+
+### Patch Changes
+
+- 1e5477b: Allow AI credentials to be supplied directly to `createAiChatResponse` for the
+  current request, so Cloudflare routes can use native Worker bindings instead of
+  reading secrets while documentation configuration is built.
+
+  Generate Cloudflare templates that read AI credentials from their native Worker
+  bindings.
+
 ## 1.0.0
 
 ### Major Changes
