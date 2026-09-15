@@ -20,7 +20,12 @@
         "test/**/*.ts"
       ],
       "ignoreFiles": ["src/theme/**/*.css", "src/theme/grain/brand-mark.tsx"],
-      "ignoreDependencies": ["shadcn", "tailwindcss", "tw-animate-css"]
+      "ignoreDependencies": [
+        "@opentelemetry/api",
+        "shadcn",
+        "tailwindcss",
+        "tw-animate-css"
+      ]
     },
     "packages/create-heyo-docs": {
       "entry": ["src/index.ts", "test/**/*.test.ts"],
