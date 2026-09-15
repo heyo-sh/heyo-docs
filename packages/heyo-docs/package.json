@@ -1,6 +1,6 @@
 {
   "name": "@heyo-sh/heyo-docs",
-  "version": "0.3.1",
+  "version": "1.0.0",
   "dependencies": {
     "@base-ui/react": "^1.7.0",
     "@mdx-js/mdx": "3.1.1",
@@ -17,7 +17,7 @@
     "rehype-slug": "6.0.0",
     "remark-frontmatter": "5.0.0",
     "remark-gfm": "^4.0.1",
-    "shadcn": "^4.19.0",
+    "shadcn": "^4.21.0",
     "shiki": "^4.4.3",
     "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.1.14",
