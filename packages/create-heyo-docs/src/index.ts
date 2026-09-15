@@ -163,13 +163,14 @@ export function parseArguments(argv: string[]): {
 
 async function askQuestions(defaults: CreateOptions): Promise<CreateOptions> {
   p.intro("Create Heyo Docs");
-  const projectName = await p.text({
-    message: "Project name",
-    placeholder: "my-docs",
-    defaultValue: "my-docs",
-    validate: projectNameError,
-  });
-  if (p.isCancel(projectName)) cancelCreation();
+  const projectName = promptValue(
+    await p.text({
+      message: "Project name",
+      placeholder: "my-docs",
+      defaultValue: "my-docs",
+      validate: projectNameError,
+    }),
+  );
 
   const template = await selectAvailable("Template", TEMPLATE_OPTIONS, [
     "react-router",
@@ -188,11 +189,12 @@ async function askQuestions(defaults: CreateOptions): Promise<CreateOptions> {
     ["bun", "pnpm", "npm", "yarn"] as const,
     defaults.packageManager,
   );
-  const install = await p.confirm({
-    message: "Install dependencies?",
-    initialValue: true,
-  });
-  if (p.isCancel(install)) cancelCreation();
+  const install = promptValue(
+    await p.confirm({
+      message: "Install dependencies?",
+      initialValue: true,
+    }),
+  );
 
   return {
     projectName,
@@ -228,11 +230,18 @@ async function selectAvailable<T extends string>(
   initialValue?: T,
 ): Promise<T> {
   for (;;) {
-    const answer = await p.select<string>({ message, options, initialValue });
-    if (p.isCancel(answer)) cancelCreation();
+    const answer = promptValue(
+      await p.select<string>({ message, options, initialValue }),
+    );
     if (isOneOf(answer, available)) return answer;
     p.log.warn("That option is planned but not available in this MVP.");
   }
+}
+
+function promptValue<T extends string | boolean>(value: T | symbol): T {
+  if (typeof value !== "symbol") return value;
+  if (p.isCancel(value)) cancelCreation();
+  throw new Error("Prompt did not return a value.");
 }
 
 function isOneOf<T extends string>(
