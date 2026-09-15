@@ -83,15 +83,15 @@ test("renders the built-in theme components", () => {
   expect(html).toContain("Page body");
 });
 
-test("renders an AI chat trigger without exposing its server key", () => {
+test("renders an AI chat trigger without exposing server authentication", () => {
   const html = renderToStaticMarkup(
     createElement(DocsApp, {
       config: heyoDocs({
         ai: {
           chat: {
             provider: "openai",
-            key: "server-only-key",
             model: "gpt-5-mini",
+            auth: { type: "api-key", token: "server-only-authentication" },
             name: "Docs Assistant",
           },
         },
@@ -103,7 +103,7 @@ test("renders an AI chat trigger without exposing its server key", () => {
   );
 
   expect(html).toContain("AI Chat");
-  expect(html).not.toContain("server-only-key");
+  expect(html).not.toContain("server-only-authentication");
 });
 
 test("adapts the AI chat chrome to the selected theme", () => {
@@ -113,8 +113,8 @@ test("adapts the AI chat chrome to the selected theme", () => {
         ai: {
           chat: {
             provider: "openai",
-            key: "server-only-key",
             model: "gpt-5-mini",
+            auth: { type: "api-key", token: "server-only-authentication" },
           },
         },
         theme: "grain",

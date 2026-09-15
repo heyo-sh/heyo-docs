@@ -1,7 +1,18 @@
 import { describe, expect, test } from "bun:test";
+import { getProviders } from "@mariozechner/pi-ai";
 import { createElement } from "react";
 
 import { heyoDocs, validateConfig } from "../src/config";
+
+function authForProvider(provider: string) {
+  if (provider === "amazon-bedrock") return { type: "aws" as const };
+  if (provider === "github-copilot" || provider === "openai-codex")
+    return { type: "oauth" as const, getAccessToken: () => "test-token" };
+  return {
+    type: "api-key" as const,
+    token: "configured-provider-authentication",
+  };
+}
 
 describe("configuration", () => {
   test("applies stable defaults around the required content directory", () => {
@@ -83,16 +94,16 @@ describe("configuration", () => {
         ai: {
           chat: {
             provider: "openai",
-            key: "server-only-key",
             model: "gpt-5-mini",
+            auth: { type: "api-key", token: "server-only-authentication" },
           },
         },
       }).ai,
     ).toEqual({
       chat: {
         provider: "openai",
-        key: "server-only-key",
         model: "gpt-5-mini",
+        auth: { type: "api-key", token: "server-only-authentication" },
         variant: "right",
         icon: "chat",
         text: "AI Chat",
@@ -106,15 +117,114 @@ describe("configuration", () => {
     expect(() =>
       validateConfig({
         content: "./content",
-        ai: { chat: { provider: "claude", key: "key" } },
+        ai: {
+          chat: { provider: "openai", auth: { type: "api-key", token: "key" } },
+        },
       } as never),
     ).toThrow();
     expect(() =>
       validateConfig({
         content: "./content",
-        ai: { chat: { provider: "grok", key: "key", model: "grok" } },
+        ai: { chat: { provider: "openai", model: "gpt-5-mini" } },
+      } as never),
+    ).toThrow(/auth/i);
+    expect(() =>
+      validateConfig({
+        content: "./content",
+        ai: {
+          chat: {
+            provider: "openai",
+            model: "openai",
+            auth: { type: "api-key", token: "key" },
+          },
+        },
       }),
     ).toThrow(/model.*provider/i);
+    expect(() =>
+      validateConfig({
+        content: "./content",
+        ai: {
+          chat: {
+            provider: "OpenAI",
+            model: "gpt-5-mini",
+            auth: { type: "api-key", token: "key" },
+          },
+        },
+      }),
+    ).toThrow(/Pi provider identifier/i);
+  });
+
+  test("accepts every provider bundled with Pi", () => {
+    for (const provider of getProviders()) {
+      const auth = authForProvider(provider);
+      expect(
+        heyoDocs({
+          content: "./content",
+          ai: {
+            chat: {
+              provider,
+              model: "configured-model",
+              auth,
+            },
+          },
+        }).ai?.chat,
+      ).toMatchObject({
+        provider,
+        model: "configured-model",
+        auth: { type: auth.type },
+      });
+    }
+    expect(() =>
+      validateConfig({
+        content: "./content",
+        ai: {
+          chat: {
+            provider: "not/a-provider",
+            model: "configured-model",
+            auth: { type: "api-key", token: "configured-provider-key" },
+          },
+        },
+      }),
+    ).toThrow(/Pi provider identifier/i);
+  });
+
+  test("requires the authentication mechanism expected by Pi providers", () => {
+    expect(() =>
+      validateConfig({
+        content: "./content",
+        ai: {
+          chat: {
+            provider: "amazon-bedrock",
+            model: "amazon.nova-lite-v1:0",
+            auth: { type: "api-key", token: "not-aws-credentials" },
+          },
+        },
+      }),
+    ).toThrow(/auth.type.*aws/i);
+    expect(() =>
+      validateConfig({
+        content: "./content",
+        ai: {
+          chat: {
+            provider: "amazon-bedrock",
+            model: "amazon.nova-lite-v1:0",
+            auth: { type: "aws", region: "eu-central-1" },
+          },
+        },
+      }),
+    ).not.toThrow();
+    expect(() =>
+      validateConfig({
+        content: "./content",
+        ai: {
+          chat: {
+            provider: "github-copilot",
+            model: "gpt-5-mini",
+            auth: { type: "oauth", getAccessToken: () => "fresh-token" },
+          },
+        },
+      }),
+    ).not.toThrow();
   });
 
   test("keeps custom AI chat display settings", () => {
@@ -123,8 +233,8 @@ describe("configuration", () => {
       ai: {
         chat: {
           provider: "openai",
-          key: "server-only-key",
           model: "gpt-5-mini",
+          auth: { type: "api-key", token: "server-only-authentication" },
           name: "Docs Assistant",
           placeholder: "Ask Acme Docs",
         },
@@ -133,19 +243,6 @@ describe("configuration", () => {
 
     expect(chat?.name).toBe("Docs Assistant");
     expect(chat?.placeholder).toBe("Ask Acme Docs");
-  });
-
-  test("rejects the former aiChat configuration key", () => {
-    expect(() =>
-      validateConfig({
-        content: "./content",
-        aiChat: {
-          provider: "openai",
-          key: "server-only-key",
-          model: "gpt-5-mini",
-        },
-      } as never),
-    ).toThrow();
   });
 
   test("accepts only the built-in theme", () => {

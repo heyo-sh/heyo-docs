@@ -1,5 +1,3 @@
-import { Chat, useChat } from "@ai-sdk/react";
-import { DefaultChatTransport, type UIMessage } from "ai";
 import {
   RiCloseLine,
   RiDeleteBinLine,
@@ -7,8 +5,8 @@ import {
   RiSendPlane2Line,
 } from "@remixicon/react";
 import {
+  useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
   type ChangeEvent,
@@ -42,7 +40,180 @@ import {
 import { ScrollArea } from "./ui/scroll-area";
 
 const AI_CHAT_ENDPOINT = "/heyo-docs-internal/ai-chat";
-const AI_CHAT_HISTORY_KEY = "heyo-docs:ai-chat:messages";
+const PI_CHAT_HISTORY_KEY = "heyo-docs:pi-chat:messages";
+
+type ChatStatus = "ready" | "submitted" | "streaming" | "error";
+
+interface ChatMessage {
+  id: string;
+  role: "user" | "assistant";
+  text: string;
+}
+
+type ChatStreamEvent =
+  { type: "text-delta"; text: string } | { type: "done" } | { type: "error" };
+
+function messageId() {
+  return (
+    globalThis.crypto?.randomUUID?.() ??
+    `heyo-docs-${Date.now()}-${Math.random().toString(36).slice(2)}`
+  );
+}
+
+function textMessage(role: ChatMessage["role"], text: string): ChatMessage {
+  return { id: messageId(), role, text };
+}
+
+function chatHistoryFrom(value: unknown): ChatMessage[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const messages: ChatMessage[] = [];
+  for (const message of value) {
+    if (
+      !isRecord(message) ||
+      typeof message.id !== "string" ||
+      (message.role !== "user" && message.role !== "assistant") ||
+      typeof message.text !== "string" ||
+      !message.text.trim()
+    )
+      return undefined;
+    messages.push({ id: message.id, role: message.role, text: message.text });
+  }
+  return messages;
+}
+
+function chatEvents(frame: string): ChatStreamEvent[] {
+  const data = frame
+    .split(/\r?\n/)
+    .filter((line) => line.startsWith("data:"))
+    .map((line) => line.slice(5).trimStart())
+    .join("\n");
+  if (!data) return [];
+  try {
+    const event: unknown = JSON.parse(data);
+    if (!isRecord(event) || typeof event.type !== "string") return [];
+    if (event.type === "text-delta" && typeof event.text === "string")
+      return [{ type: "text-delta", text: event.text }];
+    if (event.type === "done" || event.type === "error")
+      return [{ type: event.type }];
+  } catch {
+    // Ignore a malformed stream frame and wait for a valid terminal frame.
+  }
+  return [];
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function usePiChat() {
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [status, setStatus] = useState<ChatStatus>("ready");
+  const [error, setError] = useState<Error>();
+  const messagesRef = useRef(messages);
+  const requestRef = useRef<AbortController | undefined>(undefined);
+
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+
+  const replaceMessages = useCallback((nextMessages: ChatMessage[]) => {
+    messagesRef.current = nextMessages;
+    setMessages(nextMessages);
+  }, []);
+
+  const stop = useCallback(() => {
+    requestRef.current?.abort();
+    requestRef.current = undefined;
+    setStatus("ready");
+  }, []);
+
+  const sendMessage = useCallback(async (text: string) => {
+    if (requestRef.current) return;
+
+    const userMessage = textMessage("user", text);
+    const assistantMessage = textMessage("assistant", "");
+    const requestMessages = [...messagesRef.current, userMessage];
+    const nextMessages = [...requestMessages, assistantMessage];
+    messagesRef.current = nextMessages;
+    setMessages(nextMessages);
+    setError(undefined);
+    setStatus("submitted");
+
+    const request = new AbortController();
+    requestRef.current = request;
+    const appendText = (delta: string) => {
+      setMessages((currentMessages) => {
+        const updated = currentMessages.map((message) =>
+          message.id === assistantMessage.id
+            ? {
+                ...message,
+                text: `${message.text}${delta}`,
+              }
+            : message,
+        );
+        messagesRef.current = updated;
+        return updated;
+      });
+    };
+
+    try {
+      const response = await fetch(AI_CHAT_ENDPOINT, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          messages: requestMessages.map(({ role, text }) => ({ role, text })),
+        }),
+        signal: request.signal,
+      });
+      if (!response.ok || !response.body)
+        throw new Error("AI chat request could not be completed.");
+
+      setStatus("streaming");
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let pending = "";
+      let streamError = false;
+      const consume = (value: string) => {
+        pending += value;
+        const frames = pending.split(/\r?\n\r?\n/);
+        pending = frames.pop() ?? "";
+        for (const frame of frames) {
+          for (const event of chatEvents(frame)) {
+            if (event.type === "text-delta") appendText(event.text);
+            if (event.type === "error") streamError = true;
+          }
+        }
+      };
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (value) consume(decoder.decode(value, { stream: !done }));
+        if (done) break;
+      }
+      consume(decoder.decode());
+      if (streamError) throw new Error("AI chat stream could not complete.");
+      setStatus("ready");
+    } catch {
+      if (!request.signal.aborted) {
+        setError(new Error("AI chat request could not be completed."));
+        setStatus("error");
+        setMessages((currentMessages) => {
+          const updated = currentMessages.filter(
+            (message) =>
+              message.id !== assistantMessage.id ||
+              Boolean(message.text.trim()),
+          );
+          messagesRef.current = updated;
+          return updated;
+        });
+      }
+    } finally {
+      if (requestRef.current === request) requestRef.current = undefined;
+    }
+  }, []);
+
+  return { error, messages, replaceMessages, sendMessage, status, stop };
+}
 
 function scrollToLinkedPageTop(
   href: string,
@@ -222,7 +393,7 @@ function MessageList({
   assistantName: string;
   error: Error | undefined;
   loading: boolean;
-  messages: UIMessage[];
+  messages: ChatMessage[];
 }) {
   const scrollEndRef = useRef<HTMLDivElement>(null);
 
@@ -241,11 +412,7 @@ function MessageList({
         <div className="flex flex-col gap-5">
           {messages.map((message) => {
             const isPendingAssistantMessage =
-              loading &&
-              message.role === "assistant" &&
-              !message.parts.some(
-                (part) => part.type === "text" && part.text.trim(),
-              );
+              loading && message.role === "assistant" && !message.text.trim();
 
             return (
               <div key={message.id}>
@@ -256,46 +423,36 @@ function MessageList({
                     <p className="mb-1 text-xs/relaxed font-medium text-muted-foreground">
                       {message.role === "user" ? "You" : assistantName}
                     </p>
-                    {message.parts.map((part, index) =>
-                      part.type === "text" ? (
-                        message.role === "user" ? (
-                          <p
-                            className="whitespace-pre-wrap text-sm"
-                            key={`${message.id}-${index}`}
-                          >
-                            {part.text}
-                          </p>
-                        ) : (
-                          <div
-                            className="space-y-3 break-words text-sm [&_a]:text-primary [&_a]:underline [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_pre]:overflow-x-auto [&_pre]:rounded-md [&_pre]:bg-muted [&_pre]:p-3"
-                            key={`${message.id}-${index}`}
-                          >
-                            <ReactMarkdown
-                              components={{
-                                a: ({ children, href, ...props }) =>
-                                  href?.startsWith("/") &&
-                                  !href.startsWith("//") ? (
-                                    <DocsLink
-                                      href={href}
-                                      {...props}
-                                      onClick={(event) =>
-                                        scrollToLinkedPageTop(href, event)
-                                      }
-                                    >
-                                      {children}
-                                    </DocsLink>
-                                  ) : (
-                                    <a href={href} {...props}>
-                                      {children}
-                                    </a>
-                                  ),
-                              }}
-                            >
-                              {part.text}
-                            </ReactMarkdown>
-                          </div>
-                        )
-                      ) : null,
+                    {message.role === "user" ? (
+                      <p className="whitespace-pre-wrap text-sm">
+                        {message.text}
+                      </p>
+                    ) : (
+                      <div className="space-y-3 break-words text-sm [&_a]:text-primary [&_a]:underline [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_pre]:overflow-x-auto [&_pre]:rounded-md [&_pre]:bg-muted [&_pre]:p-3">
+                        <ReactMarkdown
+                          components={{
+                            a: ({ children, href, ...props }) =>
+                              href?.startsWith("/") &&
+                              !href.startsWith("//") ? (
+                                <DocsLink
+                                  href={href}
+                                  {...props}
+                                  onClick={(event) =>
+                                    scrollToLinkedPageTop(href, event)
+                                  }
+                                >
+                                  {children}
+                                </DocsLink>
+                              ) : (
+                                <a href={href} {...props}>
+                                  {children}
+                                </a>
+                              ),
+                          }}
+                        >
+                          {message.text}
+                        </ReactMarkdown>
+                      </div>
                     )}
                   </>
                 )}
@@ -327,54 +484,44 @@ export function AiChat({
   const [open, setOpen] = useState(false);
   const [historyReady, setHistoryReady] = useState(false);
   const styles = aiChatThemeStyles[theme];
-  const chat = useMemo(
-    () =>
-      new Chat({
-        id: "heyo-docs-ai-chat",
-        transport: new DefaultChatTransport({ api: AI_CHAT_ENDPOINT }),
-      }),
-    [],
-  );
-  const { error, messages, sendMessage, setMessages, status, stop } = useChat({
-    chat,
-  });
+  const { error, messages, replaceMessages, sendMessage, status, stop } =
+    usePiChat();
 
   useEffect(() => {
-    const history = window.sessionStorage.getItem(AI_CHAT_HISTORY_KEY);
+    const history = window.sessionStorage.getItem(PI_CHAT_HISTORY_KEY);
     if (history) {
       try {
-        const storedMessages = JSON.parse(history);
-        if (Array.isArray(storedMessages))
-          setMessages(storedMessages as UIMessage[]);
-        else window.sessionStorage.removeItem(AI_CHAT_HISTORY_KEY);
+        const storedMessages = chatHistoryFrom(JSON.parse(history));
+        if (storedMessages) replaceMessages(storedMessages);
+        else window.sessionStorage.removeItem(PI_CHAT_HISTORY_KEY);
       } catch {
-        window.sessionStorage.removeItem(AI_CHAT_HISTORY_KEY);
+        window.sessionStorage.removeItem(PI_CHAT_HISTORY_KEY);
       }
     }
     setHistoryReady(true);
-  }, [setMessages]);
+  }, [replaceMessages]);
 
   useEffect(() => {
     if (!historyReady) return;
     if (!messages.length) {
-      window.sessionStorage.removeItem(AI_CHAT_HISTORY_KEY);
+      window.sessionStorage.removeItem(PI_CHAT_HISTORY_KEY);
       return;
     }
     window.sessionStorage.setItem(
-      AI_CHAT_HISTORY_KEY,
+      PI_CHAT_HISTORY_KEY,
       JSON.stringify(messages),
     );
   }, [historyReady, messages]);
 
   function send(text: string) {
     setOpen(true);
-    void sendMessage({ text });
+    void sendMessage(text);
   }
 
   function clearHistory() {
     void stop();
-    setMessages([]);
-    window.sessionStorage.removeItem(AI_CHAT_HISTORY_KEY);
+    replaceMessages([]);
+    window.sessionStorage.removeItem(PI_CHAT_HISTORY_KEY);
   }
 
   function handleOpenChange(nextOpen: boolean) {
