@@ -19,11 +19,7 @@
         "scripts/**/*.ts",
         "test/**/*.ts"
       ],
-      "ignoreFiles": [
-        "src/components/ui/input-group.tsx",
-        "src/theme/**/*.css",
-        "src/theme/grain/brand-mark.tsx"
-      ],
+      "ignoreFiles": ["src/theme/**/*.css", "src/theme/grain/brand-mark.tsx"],
       "ignoreDependencies": ["shadcn", "tailwindcss", "tw-animate-css"]
     },
     "packages/create-heyo-docs": {
