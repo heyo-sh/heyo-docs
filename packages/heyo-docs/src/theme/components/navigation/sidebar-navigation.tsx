@@ -128,7 +128,7 @@ function NavigationPageItem({
 }) {
   const active = page.slug === currentPath;
   const pageIndentation = {
-    paddingLeft: `${(direct ? 1 : 2.5) + depth * 0.75}rem`,
+    paddingLeft: `${page.method ? 1 : (direct ? 1 : 2.5) + depth * 0.75}rem`,
   };
 
   return (

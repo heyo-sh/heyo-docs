@@ -1002,6 +1002,9 @@ test("renders an interactive OpenAPI endpoint with Bearer auth and request body"
   expect(html).toContain('data-slot="properties"');
   expect(html).toContain('<span class="min-w-0 flex-1 truncate">API</span>');
   expect(html).toContain('aria-current="page"');
+  expect(html).toContain(
+    'href="/api/planets/create-planet" style="padding-left:1rem"',
+  );
   expect(html).toContain('data-slot="textarea"');
   expect(html).toContain("min-h-12 max-h-52");
   const apiServerProperty = html.slice(
