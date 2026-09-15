@@ -314,9 +314,20 @@ function isHeyoDocsVirtualModule(id: string) {
 
 function createClientConfigModule(config: HeyoDocsConfig): string {
   const { navigation: _navigation, ai, ...clientConfig } = config;
+  const publicAi = ai
+    ? (() => {
+        const {
+          auth: _auth,
+          model: _model,
+          provider: _provider,
+          ...chat
+        } = ai.chat;
+        return { chat };
+      })()
+    : undefined;
   const safeConfig = {
     ...clientConfig,
-    ...(ai ? { ai: { chat: { ...ai.chat, key: "" } } } : {}),
+    ...(publicAi ? { ai: publicAi } : {}),
   };
   return `export const config = ${JSON.stringify(safeConfig)};\n`;
 }

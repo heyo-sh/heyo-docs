@@ -2,16 +2,19 @@ import { changelogGroupForPage, navigationFromGroups } from "./navigation";
 import { endpointsFromOpenApiDocuments } from "./openapi";
 import { seoForPage } from "./seo";
 import type {
+  ClientHeyoDocsConfig,
   DocsModel,
   DocsPage,
-  HeyoDocsConfig,
   OpenApiDocumentSource,
   OpenApiEndpoint,
 } from "./types";
 
 /** Builds the framework-neutral documentation model used by every shell. */
 export function createDocsModel(
-  config: HeyoDocsConfig,
+  config: Pick<
+    ClientHeyoDocsConfig,
+    "title" | "description" | "groups" | "siteUrl"
+  >,
   pages: DocsPage[],
   openApiDocuments: OpenApiDocumentSource[] = [],
   openApiEndpoints?: OpenApiEndpoint[],

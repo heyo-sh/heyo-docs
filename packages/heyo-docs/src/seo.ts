@@ -1,7 +1,7 @@
-import type { HeyoDocsConfig, SeoData } from "./types";
+import type { ClientHeyoDocsConfig, SeoData } from "./types";
 
 export function seoForPage(
-  config: HeyoDocsConfig,
+  config: Pick<ClientHeyoDocsConfig, "title" | "description" | "siteUrl">,
   page: Pick<SeoData, "title" | "description"> & { slug: string },
 ): SeoData {
   return {

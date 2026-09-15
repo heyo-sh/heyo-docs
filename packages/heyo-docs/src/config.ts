@@ -31,12 +31,56 @@ import { typebotSupportSchema } from "./integrations/support/typebot";
 import { zammadSupportSchema } from "./integrations/support/zammad";
 import { umamiAnalyticsSchema } from "./integrations/analytics/umami";
 import type {
+  AiChatAuth,
+  AiOAuthTokenResolver,
   DocumentationSection,
   HeyoDocsConfig,
   UserHeyoDocsConfig,
 } from "./types";
 
 const nonEmptyString = z.string().trim().min(1);
+const piProviderSchema = z
+  .string()
+  .regex(
+    /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+    "provider must be a Pi provider identifier using lowercase letters, numbers, and hyphens.",
+  )
+  .max(100);
+
+const API_KEY_AUTH_TYPES = ["api-key"] as const;
+const OAUTH_AUTH_TYPES = ["oauth"] as const;
+const BEDROCK_AUTH_TYPES = ["aws", "bedrock-bearer"] as const;
+const OAUTH_PROVIDERS = new Set(["github-copilot", "openai-codex"]);
+const BEDROCK_PROVIDER = "amazon-bedrock";
+
+const oauthTokenResolverSchema = z.custom<AiOAuthTokenResolver>(
+  (value): value is AiOAuthTokenResolver => typeof value === "function",
+  "auth.getAccessToken must be a function.",
+);
+
+const chatAuthSchema: z.ZodType<AiChatAuth> = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("api-key"), token: nonEmptyString }).strict(),
+  z
+    .object({
+      type: z.literal("oauth"),
+      getAccessToken: oauthTokenResolverSchema,
+    })
+    .strict(),
+  z
+    .object({
+      type: z.literal("aws"),
+      region: nonEmptyString.optional(),
+      profile: nonEmptyString.optional(),
+    })
+    .strict(),
+  z
+    .object({
+      type: z.literal("bedrock-bearer"),
+      token: nonEmptyString,
+      region: nonEmptyString.optional(),
+    })
+    .strict(),
+]);
 
 const semanticIconSchema = z.enum([
   "book",
@@ -75,9 +119,9 @@ const semanticIconSchema = z.enum([
 
 const chatSchema = z
   .object({
-    provider: z.enum(["openai", "claude", "grok"]),
-    key: nonEmptyString,
+    provider: piProviderSchema,
     model: nonEmptyString,
+    auth: chatAuthSchema,
     variant: z.enum(["center", "right"]).default("right"),
     icon: semanticIconSchema.default("chat"),
     text: nonEmptyString.default("AI Chat"),
@@ -85,10 +129,28 @@ const chatSchema = z
     placeholder: nonEmptyString.default("Ask AI about the docs"),
   })
   .strict()
-  .refine(
-    (chat) => chat.model.toLowerCase() !== chat.provider,
-    "model must be a model identifier, not the provider name.",
-  );
+  .superRefine((chat, context) => {
+    if (chat.model.toLowerCase() === chat.provider)
+      context.addIssue({
+        code: "custom",
+        path: ["model"],
+        message: "model must be a model identifier, not the provider name.",
+      });
+
+    const authTypes = authTypesForProvider(chat.provider);
+    if (!authTypes.includes(chat.auth.type))
+      context.addIssue({
+        code: "custom",
+        path: ["auth", "type"],
+        message: `Pi provider '${chat.provider}' requires auth.type ${authTypes.map((type) => `'${type}'`).join(" or ")}.`,
+      });
+  });
+
+function authTypesForProvider(provider: string): readonly AiChatAuth["type"][] {
+  if (provider === BEDROCK_PROVIDER) return BEDROCK_AUTH_TYPES;
+  if (OAUTH_PROVIDERS.has(provider)) return OAUTH_AUTH_TYPES;
+  return API_KEY_AUTH_TYPES;
+}
 
 const aiSchema = z
   .object({
