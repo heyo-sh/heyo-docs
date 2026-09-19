@@ -83,6 +83,20 @@ test("renders the built-in theme components", () => {
   expect(html).toContain("Page body");
 });
 
+test("renders Grain branding logos at the shared size and with dark-mode inversion", () => {
+  const html = renderToStaticMarkup(
+    createElement(DocsApp, {
+      config: heyoDocs({ branding: { logo: "/logo.svg" } }),
+      pages,
+      pathname: "/",
+    }),
+  );
+
+  expect(html).toContain(
+    '<img class="h-7 w-auto dark:invert" src="/logo.svg" alt=""/>',
+  );
+});
+
 test("renders an AI chat trigger without exposing server authentication", () => {
   const html = renderToStaticMarkup(
     createElement(DocsApp, {
