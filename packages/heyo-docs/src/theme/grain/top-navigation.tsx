@@ -52,7 +52,7 @@ export function GrainTopNavigation({
         href="/"
       >
         {branding.logo ? (
-          <img className="max-h-6" src={branding.logo} alt="" />
+          <img className="h-7 w-auto dark:invert" src={branding.logo} alt="" />
         ) : (
           <HeyoDocsLogo />
         )}
