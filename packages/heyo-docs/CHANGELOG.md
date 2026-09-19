@@ -1,5 +1,11 @@
 # @heyo-sh/heyo-docs
 
+## 1.0.2
+
+### Patch Changes
+
+- eb58b25: Fix Grain theme branding logos so they match the shared logo size and remain visible in dark mode.
+
 ## 1.0.1
 
 ### Patch Changes
