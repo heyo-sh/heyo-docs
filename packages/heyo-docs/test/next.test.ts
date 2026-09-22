@@ -131,6 +131,32 @@ test("generates browser-safe Next data, server data, endpoint shards, and local 
   }
 });
 
+test("escapes unsafe paths in generated Next dynamic imports", async () => {
+  const root = await mkdtemp(join(tmpdir(), "heyo-docs-next-"));
+  await mkdir(join(root, "content", "<", "script>"), { recursive: true });
+  await writeFile(
+    join(root, "content", "<", "script>", "index.mdx"),
+    "# Unsafe path\n",
+  );
+
+  try {
+    await generateNextContent({
+      root,
+      config: heyoDocs({ content: "content", groups: [] }),
+    });
+
+    const client = await readFile(
+      join(root, "app", "_heyo-docs", "content.tsx"),
+      "utf8",
+    );
+    expect(client).toContain(
+      String.raw`lazy(() => import("../../content/\u003C/script\u003E/index.mdx"))`,
+    );
+  } finally {
+    await rm(root, { force: true, recursive: true });
+  }
+});
+
 test("configures Next MDX compilation with portable absolute plugins and content root", () => {
   const options = heyoDocsMdxOptions({
     root: "/workspace/docs",

@@ -104,10 +104,7 @@ function requestUrl(
   parameters: Record<string, string>,
   requestUrl: string,
 ) {
-  let path = endpoint.path.replace(/\{([^}]+)\}/g, (match, name: string) => {
-    const value = parameters[`path:${name}`];
-    return value ? encodeURIComponent(value) : match;
-  });
+  let path = substitutePathParameters(endpoint.path, parameters);
   const query = new URLSearchParams();
   for (const parameter of endpoint.parameters) {
     if (parameter.in !== "query") continue;
@@ -119,6 +116,36 @@ function requestUrl(
   return server
     ? `${server.replace(/\/$/, "")}${path}`
     : new URL(path, requestUrl).toString();
+}
+
+/**
+ * Replaces OpenAPI `{parameter}` placeholders without a backtracking regular
+ * expression. Endpoint paths can come from a remote schema, so this remains
+ * linear even for malformed input containing many unmatched braces.
+ */
+function substitutePathParameters(
+  path: string,
+  parameters: Record<string, string>,
+): string {
+  let output = "";
+  let cursor = 0;
+
+  while (cursor < path.length) {
+    const openingBrace = path.indexOf("{", cursor);
+    if (openingBrace === -1) return `${output}${path.slice(cursor)}`;
+
+    const closingBrace = path.indexOf("}", openingBrace + 1);
+    if (closingBrace === -1) return `${output}${path.slice(cursor)}`;
+
+    const placeholder = path.slice(openingBrace, closingBrace + 1);
+    const name = path.slice(openingBrace + 1, closingBrace);
+    const value = name ? parameters[`path:${name}`] : undefined;
+    output += path.slice(cursor, openingBrace);
+    output += value ? encodeURIComponent(value) : placeholder;
+    cursor = closingBrace + 1;
+  }
+
+  return output;
 }
 
 function requestHeaders(

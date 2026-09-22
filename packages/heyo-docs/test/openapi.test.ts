@@ -426,6 +426,51 @@ test("forwards only declared parameters to a same-origin endpoint without server
   }
 });
 
+test("forwards malformed endpoint paths without backtracking", async () => {
+  const originalFetch = globalThis.fetch;
+  const path = `{{${"{{|".repeat(10_000)}`;
+  let forwardedUrl = "";
+  Object.defineProperty(globalThis, "fetch", {
+    configurable: true,
+    value: async (input: URL | RequestInfo) => {
+      forwardedUrl = String(input);
+      return new Response(null, { status: 204 });
+    },
+    writable: true,
+  });
+
+  try {
+    const response = await handleOpenApiRequest(
+      new Request(
+        "https://docs.example.com/heyo-docs-internal/openapi-request",
+        {
+          body: JSON.stringify({
+            endpointSlug: "malformed-path",
+            parameters: {},
+            server: "https://api.example.com",
+          }),
+          headers: { "content-type": "application/json" },
+          method: "POST",
+        },
+      ),
+      [
+        {
+          method: "get",
+          parameters: [],
+          path,
+          servers: ["https://api.example.com"],
+          slug: "malformed-path",
+        },
+      ],
+    );
+
+    expect(response.status).toBe(204);
+    expect(forwardedUrl).toBe(`https://api.example.com${path}`);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test("rejects malformed Try It requests before forwarding them", async () => {
   const endpoints = [
     {

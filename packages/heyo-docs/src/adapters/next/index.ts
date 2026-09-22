@@ -10,6 +10,7 @@ import { createRequire } from "node:module";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { javascriptStringLiteral } from "../javascript";
 import { themeSourceDirectories, themeStylesheet } from "../theme-css";
 import { markdownPageForOpenApiEndpoint } from "../../llm";
 import { scanContent, searchTextFromMdx } from "../../content";
@@ -133,7 +134,7 @@ function clientModule(
   const imports = pages
     .map(
       (page, index) =>
-        `const Page${index} = lazy(() => import(${JSON.stringify(
+        `const Page${index} = lazy(() => import(${javascriptStringLiteral(
           moduleSpecifier(
             generatedDirectory,
             resolve(contentDirectory, page.sourcePath),

@@ -4,6 +4,7 @@ import { dirname, isAbsolute, relative, resolve } from "node:path";
 
 import { compile } from "@mdx-js/mdx";
 
+import { javascriptStringLiteral } from "../javascript";
 import { themeSourceDirectories, themeStylesheet } from "../theme-css";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
@@ -484,7 +485,7 @@ function createContentModule(
 ): string {
   const modules = pages
     .map((page, index) => {
-      const source = JSON.stringify(
+      const source = javascriptStringLiteral(
         `${MDX_MODULE_PREFIX}${encodeURIComponent(page.sourcePath)}`,
       );
       // SSR receives ordinary imports so static renderers never suspend while
