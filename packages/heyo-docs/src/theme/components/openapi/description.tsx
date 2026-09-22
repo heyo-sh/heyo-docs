@@ -9,9 +9,7 @@ import type { OpenApiDocument } from "../../../types";
 import { OpenApiSchemaPopover } from "./schema";
 
 function schemaReference(href: string | undefined): string | undefined {
-  return href?.match(/^#\/(?:components\/schemas|definitions)\/[^/]+$/)
-    ? href
-    : undefined;
+  return href?.match(/^#\/components\/schemas\/[^/]+$/) ? href : undefined;
 }
 
 function schemaReferenceLabel(reference: string): string {

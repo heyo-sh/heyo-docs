@@ -28,9 +28,7 @@ function asString(value: unknown): string | undefined {
 }
 
 function referenceName(schema: OpenApiSchema): string | undefined {
-  const match = schema.$ref?.match(
-    /^#\/(?:components\/schemas|definitions)\/(.+)$/,
-  );
+  const match = schema.$ref?.match(/^#\/components\/schemas\/(.+)$/);
   if (!match?.[1]) return undefined;
   return match[1].replaceAll("~1", "/").replaceAll("~0", "~");
 }

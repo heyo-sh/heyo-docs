@@ -69,11 +69,7 @@ export interface HeyoDocsVitePlugin {
     };
   }): void;
   resolveId(id: string): string | undefined;
-  load(
-    this: unknown,
-    id: string,
-    options?: { ssr?: boolean },
-  ): Promise<string | undefined>;
+  load(this: unknown, id: string): Promise<string | undefined>;
   handleHotUpdate?(context: {
     file: string;
     server: {
@@ -91,13 +87,9 @@ export interface HeyoDocsVitePlugin {
   }): Promise<void>;
 }
 
-/**
- * The small part of Vite's per-environment plugin context we need. Vite 6+
- * exposes this in all module hooks; the optional legacy argument keeps the
- * plugin compatible with Vite 5 consumers.
- */
+/** The small part of Vite's per-environment plugin context we need. */
 interface HeyoDocsVitePluginContext {
-  environment?: { config?: { consumer?: "client" | "server" } };
+  environment: { config: { consumer: "client" | "server" } };
 }
 
 export interface HeyoDocsViteOptions {
@@ -219,14 +211,12 @@ export function heyoDocs(options: HeyoDocsViteOptions): HeyoDocsVitePlugin {
         return `${RESOLVED_PREFIX}${id}`;
       return undefined;
     },
-    async load(this: unknown, id, loadOptions) {
+    async load(this: unknown, id) {
       const virtualId = id.startsWith(RESOLVED_PREFIX) ? id.slice(1) : id;
       if (isHeyoDocsVirtualModule(virtualId)) loadedVirtualModuleIds.add(id);
       if (virtualId === CONTENT_MODULE) {
         const environment = (this as HeyoDocsVitePluginContext).environment;
-        const isServer =
-          environment?.config?.consumer === "server" ||
-          loadOptions?.ssr === true;
+        const isServer = environment.config.consumer === "server";
         return createContentModule(await pages(), options.config, isServer);
       }
       if (virtualId === CONFIG_MODULE)
@@ -252,9 +242,7 @@ export function heyoDocs(options: HeyoDocsViteOptions): HeyoDocsVitePlugin {
         // cannot pull multi-megabyte OpenAPI JSON into the shared client chunk
         // merely because a server-only route imports this virtual module.
         const environment = (this as HeyoDocsVitePluginContext).environment;
-        const isClient =
-          environment?.config?.consumer === "client" ||
-          loadOptions?.ssr === false;
+        const isClient = environment.config.consumer === "client";
         if (isClient) return createOpenApiModule([]);
         return createOpenApiModule(await openApiDocuments());
       }
@@ -309,11 +297,11 @@ export function heyoDocs(options: HeyoDocsViteOptions): HeyoDocsVitePlugin {
     },
     async generateBundle(this: {
       emitFile(file: { type: "asset"; fileName: string; source: string }): void;
-      environment?: { config?: { consumer?: "client" | "server" } };
+      environment: { config: { consumer: "client" | "server" } };
     }) {
       // Frameworks that use Vite build separate server and browser bundles.
       // Static endpoint JSON belongs only in the browser/public output.
-      if (this.environment?.config?.consumer === "server") return;
+      if (this.environment.config.consumer === "server") return;
       const [scannedPages, documents] = await Promise.all([
         pages(),
         openApiDocuments(),

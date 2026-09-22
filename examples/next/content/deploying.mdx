@@ -35,11 +35,11 @@ when the project uses a different package manager.
 For AI chat, save the provider key as a Worker secret:
 
 <CodeBlock language="bash" title="Terminal">
-  {"bunx wrangler secret put OPENAI_API_KEY"}
+  {"bunx wrangler secret put HEYO_DOCS_AI_API_KEY"}
 </CodeBlock>
 
 Keep the credential out of `heyo-docs.config.ts`. The Cloudflare overlay reads
-the native Worker `env.OPENAI_API_KEY` binding in the AI route, after the
+the native Worker `env.HEYO_DOCS_AI_API_KEY` binding in the AI route, after the
 request reaches the Worker. It is never part of the documentation build or the
 browser bundle.
 

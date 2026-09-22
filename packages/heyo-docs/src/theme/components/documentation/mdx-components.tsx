@@ -145,7 +145,7 @@ function MdxButton({
   rel,
   size = "default",
   target,
-  variant = "default",
+  variant = "primary",
   ...props
 }: MdxButtonProps) {
   return (
@@ -412,7 +412,7 @@ function MdxCodeSnippet({
                 onClick={() => setIsOpen(true)}
                 size="sm"
                 type="button"
-                variant="default"
+                variant="primary"
               >
                 View Code
               </ButtonPrimitive>

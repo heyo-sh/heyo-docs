@@ -124,7 +124,7 @@ function parseOpenApiDocument(schema: string, source: string) {
   }
   if (!isOpenApiDocument(document))
     throw new Error(
-      `Heyo Docs OpenAPI schema \"${schema}\" must contain a top-level \"paths\" object.`,
+      `Heyo Docs OpenAPI schema \"${schema}\" must be an OpenAPI 3 document with a top-level \"paths\" object.`,
     );
   return document;
 }
