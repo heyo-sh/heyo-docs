@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { getProviders } from "@mariozechner/pi-ai";
 
 import { heyoDocs, validateConfig } from "../src/config";
+import { buttonVariantNames } from "../src/components/ui/button-variants";
 
 function authForProvider(provider: string) {
   if (provider === "amazon-bedrock") return { type: "aws" as const };
@@ -463,13 +464,41 @@ describe("configuration", () => {
     ).toBe("documentation");
   });
 
-  test("accepts browser-safe declarative navigation links", () => {
-    const navigation = [{ label: "GitHub", href: "https://github.com/acme" }];
-    expect(heyoDocs({ content: "./content", navigation }).navigation).toEqual(
-      navigation,
-    );
+  test("normalises declarative header navigation buttons", () => {
+    expect(
+      heyoDocs({
+        content: "./content",
+        navigation: [
+          { label: "GitHub", href: "https://github.com/acme" },
+          { label: "Sign in", href: "/sign-in", variant: "primary" },
+        ],
+      }).navigation,
+    ).toEqual([
+      { label: "GitHub", href: "https://github.com/acme", variant: "link" },
+      { label: "Sign in", href: "/sign-in", variant: "primary" },
+    ]);
+  });
+
+  test("accepts every Button variant for header navigation", () => {
+    for (const variant of buttonVariantNames) {
+      expect(() =>
+        validateConfig({
+          content: "./content",
+          navigation: [{ label: "Status", href: "/status", variant }],
+        }),
+      ).not.toThrow();
+    }
+  });
+
+  test("rejects invalid header navigation buttons", () => {
     expect(() =>
       validateConfig({ content: "./content", navigation: [{}] } as never),
+    ).toThrow();
+    expect(() =>
+      validateConfig({
+        content: "./content",
+        navigation: [{ label: "Status", href: "/status", variant: "default" }],
+      } as never),
     ).toThrow();
   });
 

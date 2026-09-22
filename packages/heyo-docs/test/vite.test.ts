@@ -13,6 +13,14 @@ async function createFixture() {
   return root;
 }
 
+function loadVirtualModule(
+  plugin: ReturnType<typeof heyoDocs>,
+  id: string,
+  consumer: "client" | "server" = "server",
+) {
+  return plugin.load.call({ environment: { config: { consumer } } }, id);
+}
+
 test("resolves a bare content directory from an app root in a monorepo", async () => {
   const workspaceRoot = await mkdtemp(join(tmpdir(), "heyo-docs-workspace-"));
   const appRoot = join(workspaceRoot, "apps", "docs");
@@ -26,7 +34,9 @@ test("resolves a bare content directory from an app root in a monorepo", async (
     plugin.configResolved({ command: "build", root: appRoot });
     const id = plugin.resolveId("virtual:heyo-docs-content");
 
-    await expect(plugin.load(id!)).resolves.toContain('slug: "/"');
+    await expect(loadVirtualModule(plugin, id!)).resolves.toContain(
+      'slug: "/"',
+    );
   } finally {
     await rm(workspaceRoot, { force: true, recursive: true });
   }
@@ -49,7 +59,7 @@ test("exposes an AI configuration to the browser without authentication", async 
     });
     plugin.configResolved({ command: "build", root });
     const id = plugin.resolveId("virtual:heyo-docs-config");
-    const clientConfig = await plugin.load(id!);
+    const clientConfig = await loadVirtualModule(plugin, id!, "client");
 
     expect(clientConfig).toContain('"ai":{"chat":');
     expect(clientConfig).not.toContain('"provider":"openai"');
@@ -210,7 +220,9 @@ test("warns in development when a changelog reference cannot be resolved", async
   try {
     const plugin = pluginFor(root, "serve");
     const id = plugin.resolveId("virtual:heyo-docs-content");
-    await expect(plugin.load(id!)).resolves.toContain("export const pages");
+    await expect(loadVirtualModule(plugin, id!)).resolves.toContain(
+      "export const pages",
+    );
     expect(warnings.join("\n")).toContain(
       'could not resolve changelog reference "missing"',
     );
@@ -226,7 +238,7 @@ test("fails the build when a changelog reference cannot be resolved", async () =
   try {
     const plugin = pluginFor(root, "build");
     const id = plugin.resolveId("virtual:heyo-docs-content");
-    await expect(plugin.load(id!)).rejects.toThrow(
+    await expect(loadVirtualModule(plugin, id!)).rejects.toThrow(
       'could not resolve changelog reference "missing"',
     );
   } finally {
@@ -249,9 +261,9 @@ test("invalidates cached virtual modules when MDX content changes", async () => 
     const mdxId = plugin.resolveId("virtual:heyo-docs-mdx:index.mdx")!;
 
     await Promise.all([
-      plugin.load(contentId),
-      plugin.load(serverContentId),
-      plugin.load(mdxId),
+      loadVirtualModule(plugin, contentId),
+      loadVirtualModule(plugin, serverContentId),
+      loadVirtualModule(plugin, mdxId),
     ]);
 
     const contentModule = { id: contentId };
@@ -286,7 +298,7 @@ test("loads configured JSON OpenAPI documents into a browser virtual module", as
     });
     plugin.configResolved({ command: "build", root });
     const id = plugin.resolveId("virtual:heyo-docs-openapi");
-    const module = await plugin.load(id!);
+    const module = await loadVirtualModule(plugin, id!);
 
     expect(module).toContain("openApiDocuments");
     expect(module).toContain("listPlanets");
@@ -418,7 +430,7 @@ test("reports malformed local OpenAPI schemas instead of treating them as missin
     plugin.configResolved({ command: "build", root });
     const id = plugin.resolveId("virtual:heyo-docs-openapi");
 
-    await expect(plugin.load(id!)).rejects.toThrow(
+    await expect(loadVirtualModule(plugin, id!)).rejects.toThrow(
       'could not parse OpenAPI schema "broken.json"',
     );
   } finally {
@@ -450,7 +462,7 @@ paths:
     });
     plugin.configResolved({ command: "build", root });
     const id = plugin.resolveId("virtual:heyo-docs-openapi");
-    const module = await plugin.load(id!);
+    const module = await loadVirtualModule(plugin, id!);
 
     expect(module).toContain("listStars");
   } finally {
@@ -470,7 +482,7 @@ test("includes OpenAPI endpoint Markdown in the server content module", async ()
     });
     plugin.configResolved({ command: "build", root });
     const id = plugin.resolveId("virtual:heyo-docs-content/server");
-    const module = await plugin.load(id!);
+    const module = await loadVirtualModule(plugin, id!);
 
     expect(module).toContain('"slug":"/api/planets/list-planets"');
     expect(module).toContain("# List Planets");
@@ -489,7 +501,7 @@ test("bundles local MDX images, themed images, videos, and file links from conte
     });
     plugin.configResolved({ command: "build", root });
     const id = plugin.resolveId("virtual:heyo-docs-mdx:index.mdx");
-    const module = await plugin.load(id!);
+    const module = await loadVirtualModule(plugin, id!);
 
     expect(module).toContain(
       JSON.stringify(`${join(root, "content", "assets", "diagram.svg")}?url`),

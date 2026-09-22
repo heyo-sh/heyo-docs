@@ -58,6 +58,10 @@ import { heyoDocs } from "@heyo-sh/heyo-docs/config";
 
 export default heyoDocs({
   content: "content",
+  navigation: [
+    { label: "Status", href: "https://status.example.com" },
+    { label: "Sign in", href: "https://app.example.com", variant: "primary" },
+  ],
   groups: [
     {
       group: "Documentation",
@@ -66,6 +70,8 @@ export default heyoDocs({
   ],
 });
 ```
+
+Header navigation renders every item as a `Button`. `variant` accepts the same values as `Button` and defaults to `link`.
 
 ## Contributing
 
