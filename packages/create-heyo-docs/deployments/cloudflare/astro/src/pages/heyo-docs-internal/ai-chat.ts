@@ -13,7 +13,7 @@ export const POST: APIRoute = async ({ request }) => {
       { status: 404 },
     );
 
-  const token = env.HEYO_DOCS_AI_API_KEY ?? env.OPENAI_API_KEY;
+  const token = env.HEYO_DOCS_AI_API_KEY;
   const { createAiChatResponse } = await import("@heyo-sh/heyo-docs/ai");
   return createAiChatResponse(request, {
     ai: config.ai,

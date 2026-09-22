@@ -27,14 +27,3 @@ async function copyThemeStylesheet(theme: (typeof builtInThemeNames)[number]) {
 
 await mkdir(outputDirectory, { recursive: true });
 await Promise.all(builtInThemeNames.map(copyThemeStylesheet));
-
-// Keep the original public stylesheet as a backwards-compatible alias for
-// Grain. Its source directory differs because the alias lives directly in dist.
-const grainStylesheet = await readFile(
-  join(outputDirectory, "grain.css"),
-  "utf8",
-);
-await writeFile(
-  join("dist", "theme.css"),
-  grainStylesheet.replace('@source "../";', '@source "./";'),
-);

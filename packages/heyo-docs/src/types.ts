@@ -2,6 +2,7 @@ import type { ComponentProps, ComponentType, ReactNode } from "react";
 
 import type { BuiltInThemeName } from "./theme/names";
 import type { DocsLinkComponent } from "./components/docs-link";
+import type { ButtonVariant } from "./components/ui/button-variants";
 import type { AdobeAnalyticsConfig } from "./integrations/analytics/adobe";
 import type { AmplitudeAnalyticsConfig } from "./integrations/analytics/amplitude";
 import type { ClarityAnalyticsConfig } from "./integrations/analytics/clarity";
@@ -46,10 +47,18 @@ export interface FooterConfig {
   website?: string;
 }
 
-/** A browser-safe link displayed by themes that expose a header navigation slot. */
+/** A browser-safe button link displayed by themes that expose a header navigation slot. */
 export interface HeaderNavigationItem {
   label: string;
   href: string;
+  variant: ButtonVariant;
+}
+
+/** Configuration input for a header navigation button. */
+export interface UserHeaderNavigationItem {
+  label: string;
+  href: string;
+  variant?: ButtonVariant;
 }
 
 export interface AnalyticsIntegrations {
@@ -628,7 +637,7 @@ export interface HeyoDocsConfig {
   description: string;
   theme: BuiltInThemeName;
   colors: DocsColors;
-  /** Declarative header links rendered by themes that expose a navigation slot. */
+  /** Declarative header buttons rendered by themes that expose a navigation slot. */
   navigation?: HeaderNavigationItem[];
   groups: DocsGroupConfig[];
   footer: FooterConfig;
@@ -705,8 +714,8 @@ export interface UserHeyoDocsConfig {
   description?: string;
   theme?: BuiltInThemeName;
   colors?: DocsColors;
-  /** Declarative header links rendered by themes that expose a navigation slot. */
-  navigation?: HeaderNavigationItem[];
+  /** Declarative header buttons rendered by themes that expose a navigation slot. */
+  navigation?: UserHeaderNavigationItem[];
   groups?: UserDocsGroup[];
   footer?: FooterConfig;
   mode?: DocsMode;

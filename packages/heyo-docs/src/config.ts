@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { builtInThemeNames } from "./theme/names";
+import { buttonVariantNames } from "./components/ui/button-variants";
 import { adobeAnalyticsSchema } from "./integrations/analytics/adobe";
 import { amplitudeAnalyticsSchema } from "./integrations/analytics/amplitude";
 import { clarityAnalyticsSchema } from "./integrations/analytics/clarity";
@@ -276,7 +277,15 @@ const configSchema = z
       .strict()
       .default({}),
     navigation: z
-      .array(z.object({ label: nonEmptyString, href: nonEmptyString }).strict())
+      .array(
+        z
+          .object({
+            label: nonEmptyString,
+            href: nonEmptyString,
+            variant: z.enum(buttonVariantNames).default("link"),
+          })
+          .strict(),
+      )
       .default([]),
     groups: z
       .array(z.union([documentationGroupSchema, changelogGroupSchema]))

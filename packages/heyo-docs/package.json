@@ -29,7 +29,6 @@
     "zod": "4.6.5"
   },
   "sideEffects": [
-    "./dist/theme.css",
     "./dist/theme/*.css"
   ],
   "peerDependencies": {
@@ -258,7 +257,6 @@
       "types": "./dist/theme/moss/index.d.ts",
       "default": "./dist/theme/moss/index.js"
     },
-    "./theme.css": "./dist/theme.css",
     "./theme/*.css": "./dist/theme/*.css"
   },
   "description": "A themeable documentation runtime for React Router Framework Mode.",

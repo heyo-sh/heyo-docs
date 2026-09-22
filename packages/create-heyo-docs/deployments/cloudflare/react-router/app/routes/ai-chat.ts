@@ -17,7 +17,7 @@ export async function action({ context, request }: ActionFunctionArgs) {
       { status: 404 },
     );
   const bindings = context.get(cloudflareContext);
-  const token = bindings.HEYO_DOCS_AI_API_KEY ?? bindings.OPENAI_API_KEY;
+  const token = bindings.HEYO_DOCS_AI_API_KEY;
   const { createAiChatResponse } = await import("@heyo-sh/heyo-docs/ai");
   return createAiChatResponse(request, {
     ai: config.ai,

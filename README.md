@@ -63,6 +63,10 @@ export default heyoDocs({
   theme: "grain",
   siteUrl: "https://docs.acme.com",
   branding: { name: "Acme", logo: "/logo.svg" },
+  navigation: [
+    { label: "Status", href: "https://status.acme.com" },
+    { label: "Sign in", href: "https://app.acme.com", variant: "primary" },
+  ],
   groups: [
     {
       group: "Documentation",
@@ -76,6 +80,8 @@ export default heyoDocs({
   ],
 });
 ```
+
+Header navigation renders each item as a `Button`. Its `variant` uses the same values as `Button` and defaults to `link`; use `primary` for prominent actions.
 
 Read the [configuration guide](https://docs.heyo.sh/manage-website/configuration) for the complete reference, then add pages under `content/`. Built-in MDX components, OpenAPI, deployment, and styling guides live in the [documentation](https://docs.heyo.sh).
 
