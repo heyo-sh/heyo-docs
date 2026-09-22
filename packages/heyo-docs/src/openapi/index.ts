@@ -56,24 +56,6 @@ function preferredContentType(contentTypes: string[]): string | undefined {
   );
 }
 
-function contentTypesFor(
-  document: OpenApiDocument,
-  operation: UnknownRecord,
-  pathItem: UnknownRecord,
-  field: "consumes" | "produces",
-): string[] {
-  const value = Array.isArray(operation[field])
-    ? operation[field]
-    : Array.isArray(pathItem[field])
-      ? pathItem[field]
-      : document[field];
-  return asStringArray(value);
-}
-
-function isSwagger2Document(document: OpenApiDocument): boolean {
-  return asString(document.swagger)?.startsWith("2.") ?? false;
-}
-
 /** Normalises Square's `entity:` links into standard local OpenAPI refs. */
 export function openApiDescription(
   document: OpenApiDocument,
@@ -172,23 +154,6 @@ function exampleFromContent(
   };
 }
 
-function swaggerExample(
-  source: UnknownRecord,
-  contentTypes: string[],
-): { contentType?: string; example?: unknown } {
-  const examples = asRecord(source.examples);
-  const contentType =
-    preferredContentType(
-      contentTypes.filter((candidate) => candidate in examples),
-    ) ??
-    preferredContentType(contentTypes) ??
-    preferredContentType(Object.keys(examples));
-  return {
-    contentType,
-    example: contentType ? examples[contentType] : undefined,
-  };
-}
-
 function schemaFromRaw(
   document: OpenApiDocument,
   raw: unknown,
@@ -274,45 +239,20 @@ function requestBodyFromRaw(
   };
 }
 
-function swaggerRequestBodyFromParameters(
-  document: OpenApiDocument,
-  parameters: unknown[],
-  consumes: string[],
-): OpenApiRequestBody | undefined {
-  const raw = [...parameters]
-    .reverse()
-    .map((parameter) => resolveOpenApiRef(document, asRecord(parameter)))
-    .find((parameter) => parameter.in === "body");
-  if (!raw) return undefined;
-
-  const schema = schemaFromRaw(document, raw.schema);
-  if (!schema) return undefined;
-  return {
-    contentType: preferredContentType(consumes) ?? "application/json",
-    description: openApiDescription(document, raw.description),
-    required: raw.required === true,
-    example: schemaExample(document, schema),
-    schema,
-  };
-}
-
 function responsesFromRaw(
   document: OpenApiDocument,
   raw: unknown,
-  produces: string[] = [],
 ): OpenApiResponse[] {
   return Object.entries(asRecord(raw)).map(([status, rawResponse]) => {
     const response = resolveOpenApiRef(document, asRecord(rawResponse));
     const content = exampleFromContent(document, asRecord(response.content));
-    const swagger = swaggerExample(response, produces);
     const schema = content.schema ?? schemaFromRaw(document, response.schema);
     return {
       status,
       description: openApiDescription(document, response.description),
-      contentType: content.contentType ?? swagger.contentType,
+      contentType: content.contentType,
       example:
         content.example ??
-        swagger.example ??
         (schema ? schemaExample(document, schema) : undefined),
       schema,
     };
@@ -333,18 +273,6 @@ function serversFor(
   pathItem: UnknownRecord,
   document: OpenApiDocument,
 ): string[] {
-  if (isSwagger2Document(document)) {
-    const host = asString(document.host);
-    if (!host) return [];
-    const basePath = asString(document.basePath);
-    const path = basePath ? `/${basePath.replace(/^\/+|\/+$/g, "")}` : "";
-    const schemes = asStringArray(document.schemes).filter((scheme) =>
-      /^https?$/i.test(scheme),
-    );
-    return (schemes.length ? schemes : ["https"]).map(
-      (scheme) => `${scheme.toLowerCase()}://${host}${path}`,
-    );
-  }
   const rawServers = Array.isArray(operation.servers)
     ? operation.servers
     : Array.isArray(pathItem.servers)
@@ -444,31 +372,17 @@ export function endpointsFromOpenApiDocument(
         operationId: asString(operation.operationId),
         tags: asStringArray(operation.tags),
         parameters: uniqueParameters,
-        requestBody:
-          requestBodyFromRaw(document, operation.requestBody) ??
-          (isSwagger2Document(document)
-            ? swaggerRequestBodyFromParameters(
-                document,
-                [...inheritedParameters, ...operationParameters],
-                contentTypesFor(document, operation, pathItem, "consumes"),
-              )
-            : undefined),
-        responses: responsesFromRaw(
-          document,
-          operation.responses,
-          isSwagger2Document(document)
-            ? contentTypesFor(document, operation, pathItem, "produces")
-            : [],
-        ),
+        requestBody: requestBodyFromRaw(document, operation.requestBody),
+        responses: responsesFromRaw(document, operation.responses),
         security: Array.isArray(operation.security)
           ? operation.security
           : Array.isArray(document.security)
             ? document.security
             : [],
         servers: serversFor(operation, pathItem, document),
-        securitySchemes: isSwagger2Document(document)
-          ? asRecord(document.securityDefinitions)
-          : asRecord(asRecord(document.components).securitySchemes),
+        securitySchemes: asRecord(
+          asRecord(document.components).securitySchemes,
+        ),
         document,
       });
     }
@@ -590,44 +504,21 @@ function documentForEndpoint(
   endpoint: OpenApiEndpoint,
 ): OpenApiDocument {
   const componentSchemas = asRecord(asRecord(document.components).schemas);
-  const definitions = asRecord(document.definitions);
   const componentNames = new Set<string>();
-  const definitionNames = new Set<string>();
   const { document: _document, ...endpointData } = endpoint;
 
-  collectSchemaReferences(endpointData, componentNames, definitionNames);
+  collectSchemaReferences(endpointData, componentNames);
   const pathItem = asRecord(asRecord(document.paths)[endpoint.path]);
   // `OpenApiEndpoint` is deliberately a compact presentation model. Scan the
   // source operation as well, because its normalised response metadata does
   // not retain raw `$ref` values used by request and response schemas.
-  collectSchemaReferences(pathItem.parameters, componentNames, definitionNames);
-  collectSchemaReferences(
-    pathItem[endpoint.method],
-    componentNames,
-    definitionNames,
-  );
-  for (;;) {
-    const referenceCount = componentNames.size + definitionNames.size;
-    collectReachableSchemas(
-      componentSchemas,
-      componentNames,
-      componentNames,
-      definitionNames,
-    );
-    collectReachableSchemas(
-      definitions,
-      definitionNames,
-      componentNames,
-      definitionNames,
-    );
-    if (componentNames.size + definitionNames.size === referenceCount) break;
-  }
+  collectSchemaReferences(pathItem.parameters, componentNames);
+  collectSchemaReferences(pathItem[endpoint.method], componentNames);
+  collectReachableSchemas(componentSchemas, componentNames, componentNames);
 
   const compactDocument: OpenApiDocument = { paths: {} };
   const openapi = asString(document.openapi);
-  const swagger = asString(document.swagger);
   if (openapi) compactDocument.openapi = openapi;
-  if (swagger) compactDocument.swagger = swagger;
 
   const retainedComponents = Object.fromEntries(
     [...componentNames].flatMap((name) =>
@@ -639,16 +530,6 @@ function documentForEndpoint(
   if (Object.keys(retainedComponents).length)
     compactDocument.components = { schemas: retainedComponents };
 
-  const retainedDefinitions = Object.fromEntries(
-    [...definitionNames].flatMap((name) =>
-      definitions[name] === undefined
-        ? []
-        : ([[name, definitions[name]]] as const),
-    ),
-  );
-  if (Object.keys(retainedDefinitions).length)
-    compactDocument.definitions = retainedDefinitions;
-
   return compactDocument;
 }
 
@@ -656,7 +537,6 @@ function collectReachableSchemas(
   source: UnknownRecord,
   pending: Set<string>,
   componentNames: Set<string>,
-  definitionNames: Set<string>,
 ) {
   const inspected = new Set<string>();
   for (;;) {
@@ -664,46 +544,28 @@ function collectReachableSchemas(
     if (!name) return;
     inspected.add(name);
     const schema = source[name];
-    if (schema !== undefined)
-      collectSchemaReferences(schema, componentNames, definitionNames);
+    if (schema !== undefined) collectSchemaReferences(schema, componentNames);
   }
 }
 
-function collectSchemaReferences(
-  value: unknown,
-  componentNames: Set<string>,
-  definitionNames: Set<string>,
-) {
+function collectSchemaReferences(value: unknown, componentNames: Set<string>) {
   if (Array.isArray(value)) {
-    value.forEach((item) =>
-      collectSchemaReferences(item, componentNames, definitionNames),
-    );
+    value.forEach((item) => collectSchemaReferences(item, componentNames));
     return;
   }
   if (!isRecord(value)) return;
 
   const ref = asString(value.$ref);
-  if (ref) addSchemaReference(ref, componentNames, definitionNames);
+  if (ref) addSchemaReference(ref, componentNames);
   for (const nested of Object.values(value))
-    collectSchemaReferences(nested, componentNames, definitionNames);
+    collectSchemaReferences(nested, componentNames);
 }
 
-function addSchemaReference(
-  ref: string,
-  componentNames: Set<string>,
-  definitionNames: Set<string>,
-) {
+function addSchemaReference(ref: string, componentNames: Set<string>) {
   const component = ref.match(/^#\/components\/schemas\/(.+)$/)?.[1];
-  if (component) {
-    const name = decodeSchemaName(component);
-    if (name) componentNames.add(name);
-    return;
-  }
-  const definition = ref.match(/^#\/definitions\/(.+)$/)?.[1];
-  if (definition) {
-    const name = decodeSchemaName(definition);
-    if (name) definitionNames.add(name);
-  }
+  if (!component) return;
+  const name = decodeSchemaName(component);
+  if (name) componentNames.add(name);
 }
 
 /** Creates a useful request/response example for a schema without evaluating it. */
@@ -779,5 +641,9 @@ function isIdentifier(propertyName: string | undefined) {
 }
 
 export function isOpenApiDocument(value: unknown): value is OpenApiDocument {
-  return isRecord(value) && isRecord(value.paths);
+  return (
+    isRecord(value) &&
+    asString(value.openapi)?.startsWith("3.") === true &&
+    isRecord(value.paths)
+  );
 }

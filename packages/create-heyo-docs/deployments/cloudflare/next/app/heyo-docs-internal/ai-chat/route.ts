@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     );
 
   const { env } = getCloudflareContext();
-  const token = env.HEYO_DOCS_AI_API_KEY ?? env.OPENAI_API_KEY;
+  const token = env.HEYO_DOCS_AI_API_KEY;
   const { createAiChatResponse } = await import("@heyo-sh/heyo-docs/ai");
   return createAiChatResponse(request, {
     ai: config.ai,

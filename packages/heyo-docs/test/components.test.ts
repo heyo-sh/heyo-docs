@@ -559,12 +559,15 @@ test("renders nested sections in the Grain sidebar and breadcrumbs", () => {
   expect(breadcrumb).toContain("Deploy safely");
 });
 
-test("renders declarative header navigation links", () => {
+test("renders declarative header navigation as Button links", () => {
   const html = renderToStaticMarkup(
     createElement(DocsApp, {
       theme: grainTheme,
       config: heyoDocs({
-        navigation: [{ label: "Status", href: "/status" }],
+        navigation: [
+          { label: "Status", href: "/status" },
+          { label: "Sign in", href: "/sign-in", variant: "primary" },
+        ],
       }),
       iconSet,
       pages,
@@ -574,6 +577,11 @@ test("renders declarative header navigation links", () => {
 
   expect(html).toContain('href="/status"');
   expect(html).toContain("Status");
+  expect(html).toContain("text-primary underline-offset-4 hover:underline");
+  expect(html).toContain('href="/sign-in"');
+  expect(html).toContain(
+    "bg-primary text-primary-foreground hover:bg-primary/80",
+  );
 });
 
 test("renders bordered page navigation and the heyo-docs credit", () => {
@@ -600,18 +608,15 @@ test("keeps the heyo-docs credit when a page has no adjacent pages", () => {
 test("renders usable labels for OpenAPI schema references in descriptions", () => {
   const html = renderToStaticMarkup(
     createElement(OpenApiDescription, {
-      children:
-        "Uses [](#/components/schemas/BankAccount) and [](#/definitions/LegacyModel).",
+      children: "Uses [](#/components/schemas/BankAccount).",
       document: {
         components: { schemas: { BankAccount: { type: "object" } } },
-        definitions: { LegacyModel: { type: "object" } },
         paths: {},
       },
     }),
   );
 
   expect(html).toContain("BankAccount");
-  expect(html).toContain("LegacyModel");
   expect(html).not.toContain("></button>");
 });
 

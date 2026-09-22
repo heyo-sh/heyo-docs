@@ -102,7 +102,9 @@ test("rejects missing, malformed, and structurally invalid server OpenAPI schema
           ],
         }),
       ),
-    ).rejects.toThrow('must contain a top-level "paths" object');
+    ).rejects.toThrow(
+      'must be an OpenAPI 3 document with a top-level "paths" object',
+    );
   } finally {
     await rm(root, { force: true, recursive: true });
   }

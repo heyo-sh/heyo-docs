@@ -1,4 +1,5 @@
 import { DocsLink } from "./docs-link";
+import { Button } from "./ui/button";
 import type { HeaderNavigationItem } from "../types";
 
 /** The serialisable default implementation for theme header navigation slots. */
@@ -9,13 +10,19 @@ export function HeaderNavigation({ items }: { items: HeaderNavigationItem[] }) {
       {items.map((item) => {
         const external = /^(?:https?:)?\/\//.test(item.href);
         return (
-          <DocsLink
-            href={item.href}
+          <Button
             key={`${item.label}:${item.href}`}
-            {...(external ? { rel: "noreferrer", target: "_blank" } : {})}
+            nativeButton={false}
+            render={
+              <DocsLink
+                href={item.href}
+                {...(external ? { rel: "noreferrer", target: "_blank" } : {})}
+              />
+            }
+            variant={item.variant}
           >
             {item.label}
-          </DocsLink>
+          </Button>
         );
       })}
     </nav>
