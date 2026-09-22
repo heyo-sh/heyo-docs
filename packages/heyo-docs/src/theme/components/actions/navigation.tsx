@@ -47,20 +47,20 @@ export function PageNavigation({ next, previous }: PageNavigationProps) {
               </DocsLink>
             ) : null}
           </nav>
-          <PoweredByHeyoDocs />
+          <PoweredByHeyo />
         </>
       ) : (
-        <PoweredByHeyoDocs className="mt-12" />
+        <PoweredByHeyo className="mt-12" />
       )}
     </div>
   );
 }
 
-interface PoweredByHeyoDocsProps {
+interface PoweredByHeyoProps {
   className?: string;
 }
 
-export function PoweredByHeyoDocs({ className }: PoweredByHeyoDocsProps) {
+export function PoweredByHeyo({ className }: PoweredByHeyoProps) {
   return (
     <p
       className={cn("mt-3 text-right text-xs text-muted-foreground", className)}
@@ -68,11 +68,11 @@ export function PoweredByHeyoDocs({ className }: PoweredByHeyoDocsProps) {
       Powered by{" "}
       <a
         className="underline underline-offset-2 transition-colors hover:text-foreground"
-        href="https://heyo-docs.com"
+        href="https://heyo.sh"
         rel="noreferrer"
         target="_blank"
       >
-        heyo-docs
+        heyo
       </a>
     </p>
   );

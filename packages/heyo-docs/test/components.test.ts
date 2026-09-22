@@ -584,7 +584,7 @@ test("renders declarative header navigation as Button links", () => {
   );
 });
 
-test("renders bordered page navigation and the heyo-docs credit", () => {
+test("renders bordered page navigation and the Heyo credit", () => {
   const html = renderToStaticMarkup(
     createElement(PageNavigation, {
       previous: { href: "/previous", title: "Previous page" },
@@ -593,11 +593,13 @@ test("renders bordered page navigation and the heyo-docs credit", () => {
   );
 
   expect(html).toContain("rounded-md border");
-  expect(html).toContain('href="https://heyo-docs.com"');
+  expect(html).toContain('href="https://heyo.sh"');
   expect(html).toContain("Powered by");
+  expect(html).toContain(">heyo</a>");
+  expect(html).not.toContain("heyo-docs");
 });
 
-test("keeps the heyo-docs credit when a page has no adjacent pages", () => {
+test("keeps the Heyo credit when a page has no adjacent pages", () => {
   const html = renderToStaticMarkup(createElement(PageNavigation, {}));
 
   expect(html).toContain("Powered by");
