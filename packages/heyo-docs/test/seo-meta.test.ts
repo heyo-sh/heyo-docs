@@ -1,9 +1,8 @@
 import { expect, test } from "bun:test";
 
-import {
-  docsSeoMeta,
-  sitemapPaths,
-} from "../../../examples/react-router/app/lib/seo";
+import { nextDocsSeo, nextSiteSeo } from "../src/seo/next";
+import { docsSeoMeta, siteSeoMeta } from "../src/seo/react-router";
+import { serializeJsonLd, sitemapPaths } from "../src/seo";
 import type {
   ChangelogGroupConfig,
   DocsPage,
@@ -259,4 +258,48 @@ test("includes generated OpenAPI routes in the sitemap", () => {
       endpoints: [{ slug: "/api/planets/list-planets" }],
     }),
   ).toEqual(["/guide", "/api/planets/list-planets"]);
+});
+
+test("creates site-wide metadata and WebSite JSON-LD from the SEO entrypoint", () => {
+  const reactRouterMeta = siteSeoMeta(config);
+  const nextSeo = nextSiteSeo(config);
+
+  expect(jsonLd(reactRouterMeta)).toEqual([
+    expect.objectContaining({ "@type": "WebSite", name: "Acme Docs" }),
+  ]);
+  expect(nextSeo.metadata).toMatchObject({
+    metadataBase: new URL("https://docs.example.com"),
+    openGraph: { type: "website" },
+  });
+  expect(nextSeo.structuredData).toEqual(
+    expect.arrayContaining([expect.objectContaining({ "@type": "WebSite" })]),
+  );
+});
+
+test("adapts automatic metadata for Next without importing its build adapter", () => {
+  const seo = nextDocsSeo({
+    config,
+    pathname: "/guide",
+    page: {
+      slug: "/guide",
+      title: "Guide",
+      description: "A guide.",
+      content: () => null,
+      tableOfContents: [],
+      seo: {
+        title: "Guide | Acme Docs",
+        description: "A guide.",
+        canonical: "https://docs.example.com/guide",
+      },
+    },
+  });
+
+  expect(seo.metadata).toMatchObject({
+    title: "Guide | Acme Docs",
+    alternates: { canonical: "https://docs.example.com/guide" },
+    openGraph: { type: "article" },
+  });
+  expect(serializeJsonLd([{ value: "</script>" }])).toContain(
+    "\\u003c/script>",
+  );
 });

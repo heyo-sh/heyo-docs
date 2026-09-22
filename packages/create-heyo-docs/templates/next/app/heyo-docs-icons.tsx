@@ -31,7 +31,7 @@ import {
   RiStarLine,
   RiSunLine,
 } from "@remixicon/react";
-import type { IconSet } from "@heyo-sh/heyo-docs";
+import type { IconSet } from "@heyo-sh/heyo-docs/types";
 
 /** Statically selected icons keep unused packs out of the client bundle. */
 export const iconSet = {

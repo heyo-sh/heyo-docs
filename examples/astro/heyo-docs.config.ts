@@ -1,4 +1,4 @@
-import { heyoDocs } from "@heyo-sh/heyo-docs";
+import { heyoDocs } from "@heyo-sh/heyo-docs/config";
 
 export default heyoDocs({
   siteUrl: "https://docs.heyo.sh",

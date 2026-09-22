@@ -38,10 +38,23 @@ bun add @heyo-sh/heyo-docs
 
 Framework integrations and the configuration reference are available in the [Heyo Docs documentation](https://docs.heyo.sh).
 
+## Import surfaces
+
+The root export is deliberately limited to the `DocsApp` React component. Import
+runtime capabilities from their domain entrypoints:
+
+- `@heyo-sh/heyo-docs/config` — configuration validation
+- `@heyo-sh/heyo-docs/model` and `/navigation` — documentation model and routes
+- `@heyo-sh/heyo-docs/seo` — framework-neutral metadata, JSON-LD, breadcrumbs and sitemaps; `/seo/next` and `/seo/react-router` provide framework adapters
+- `@heyo-sh/heyo-docs/openapi` and `/openapi/request` — OpenAPI model and edge-safe request handler
+- `@heyo-sh/heyo-docs/next`, `/next/plugins`, `/astro`, `/vite`, `/node` — build and framework adapters
+- `@heyo-sh/heyo-docs/theme/provider`, `/theme/script`, `/llm`, `/rss`, `/search`, `/mdx`, `/link`, `/types`
+- framework/build adapters: `/vite`, `/astro`, `/next`, `/node`
+
 ## Minimum configuration
 
 ```ts
-import { heyoDocs } from "@heyo-sh/heyo-docs";
+import { heyoDocs } from "@heyo-sh/heyo-docs/config";
 
 export default heyoDocs({
   content: "content",

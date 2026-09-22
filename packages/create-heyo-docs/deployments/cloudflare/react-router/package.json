@@ -5,7 +5,8 @@
   },
   "scripts": {
     "deploy": "wrangler deploy",
-    "cf-typegen": "wrangler types"
+    "cf-typegen": "wrangler types",
+    "typecheck": "bun run cf-typegen && react-router typegen && tsc -p tsconfig.json"
   },
   "devDependencies": {
     "@react-router/dev": "8.3.0",

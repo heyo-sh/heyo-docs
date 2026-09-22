@@ -3,14 +3,15 @@
   "version": "1.0.2",
   "dependencies": {
     "@base-ui/react": "^1.7.0",
-    "@mdx-js/mdx": "3.1.1",
-    "@remixicon/react": "^4.9.0",
     "@mariozechner/pi-agent-core": "0.73.1",
     "@mariozechner/pi-ai": "0.73.1",
+    "@mdx-js/mdx": "3.1.1",
     "@opentelemetry/api": "1.9.0",
+    "@remixicon/react": "^4.9.0",
     "beautiful-mermaid": "^1.1.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cn": "^0.3.2",
     "react-markdown": "^10.1.0",
     "rehype-raw": "^7.0.0",
     "rehype-sanitize": "^6.0.0",
@@ -22,11 +23,15 @@
     "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.1.14",
     "tw-animate-css": "^1.4.0",
+    "typebox": "1.3.30",
     "yaml": "^2.8.1",
     "zbsearch": "^4.0.0",
-    "zod": "4.5.1",
-    "typebox": "1.3.30"
+    "zod": "4.5.1"
   },
+  "sideEffects": [
+    "./dist/theme.css",
+    "./dist/theme/*.css"
+  ],
   "peerDependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
@@ -36,29 +41,93 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "default": "./dist/types.js"
+    },
+    "./model": {
+      "types": "./dist/model.d.ts",
+      "default": "./dist/model.js"
+    },
+    "./navigation": {
+      "types": "./dist/navigation.d.ts",
+      "default": "./dist/navigation.js"
+    },
+    "./openapi": {
+      "types": "./dist/openapi/index.d.ts",
+      "default": "./dist/openapi/index.js"
+    },
+    "./openapi/request": {
+      "types": "./dist/openapi/request.d.ts",
+      "default": "./dist/openapi/request.js"
+    },
+    "./seo": {
+      "types": "./dist/seo/index.d.ts",
+      "default": "./dist/seo/index.js"
+    },
+    "./seo/next": {
+      "types": "./dist/seo/next.d.ts",
+      "default": "./dist/seo/next.js"
+    },
+    "./seo/react-router": {
+      "types": "./dist/seo/react-router.d.ts",
+      "default": "./dist/seo/react-router.js"
+    },
+    "./llm": {
+      "types": "./dist/llm.d.ts",
+      "default": "./dist/llm.js"
+    },
+    "./rss": {
+      "types": "./dist/rss.d.ts",
+      "default": "./dist/rss.js"
+    },
+    "./search": {
+      "types": "./dist/search.d.ts",
+      "default": "./dist/search.js"
+    },
+    "./mdx": {
+      "types": "./dist/mdx.d.ts",
+      "default": "./dist/mdx.js"
+    },
+    "./link": {
+      "types": "./dist/link.d.ts",
+      "default": "./dist/link.js"
+    },
     "./vite": {
-      "types": "./dist/vite.d.ts",
-      "default": "./dist/vite.js"
+      "types": "./dist/adapters/vite/index.d.ts",
+      "default": "./dist/adapters/vite/index.js"
     },
     "./node": {
-      "types": "./dist/node.d.ts",
-      "default": "./dist/node.js"
+      "types": "./dist/server/index.d.ts",
+      "default": "./dist/server/index.js"
     },
     "./next": {
-      "types": "./dist/next.d.ts",
-      "default": "./dist/next.js"
+      "types": "./dist/adapters/next/index.d.ts",
+      "default": "./dist/adapters/next/index.js"
     },
-    "./next-plugins": {
-      "types": "./dist/next-plugins.d.ts",
-      "default": "./dist/next-plugins.js"
+    "./next/plugins": {
+      "types": "./dist/adapters/next/plugins.d.ts",
+      "default": "./dist/adapters/next/plugins.js"
     },
     "./astro": {
-      "types": "./dist/astro.d.ts",
-      "default": "./dist/astro.js"
+      "types": "./dist/adapters/astro/index.d.ts",
+      "default": "./dist/adapters/astro/index.js"
     },
     "./ai": {
-      "types": "./dist/ai.d.ts",
-      "default": "./dist/ai.js"
+      "types": "./dist/ai/index.d.ts",
+      "default": "./dist/ai/index.js"
+    },
+    "./integrations": {
+      "types": "./dist/components/integrations.d.ts",
+      "default": "./dist/browser-integrations.js"
+    },
+    "./theme/provider": {
+      "types": "./dist/theme/provider.d.ts",
+      "default": "./dist/theme/provider.js"
+    },
+    "./theme/script": {
+      "types": "./dist/theme/script.d.ts",
+      "default": "./dist/theme/script.js"
     },
     "./integrations/analytics/adobe": {
       "types": "./dist/integrations/analytics/adobe.d.ts",
@@ -177,6 +246,18 @@
       "browser": "./dist/config.browser.js",
       "default": "./dist/config.js"
     },
+    "./theme/grain": {
+      "types": "./dist/theme/grain/index.d.ts",
+      "default": "./dist/theme/grain/index.js"
+    },
+    "./theme/shade": {
+      "types": "./dist/theme/shade/index.d.ts",
+      "default": "./dist/theme/shade/index.js"
+    },
+    "./theme/moss": {
+      "types": "./dist/theme/moss/index.d.ts",
+      "default": "./dist/theme/moss/index.js"
+    },
     "./theme.css": "./dist/theme.css",
     "./theme/*.css": "./dist/theme/*.css"
   },
@@ -200,7 +281,7 @@
     "dev": "bun run build --watch",
     "build": "bun run build:js && bun run build:types && bun run copy:assets",
     "clean": "rm -rf dist",
-    "build:js": "bun build src/index.tsx --outdir dist --target browser --production --external react --external react-dom --external react/jsx-runtime --external zod --external zbsearch --external beautiful-mermaid --external react-markdown --external rehype-raw --external rehype-sanitize --external remark-gfm && bun build src/config.ts --outfile dist/config.browser.js --target browser --production --external zod && bun build --root src src/integrations/analytics/adobe.ts src/integrations/analytics/amplitude.ts src/integrations/analytics/clarity.ts src/integrations/analytics/clearbit.ts src/integrations/analytics/fathom.ts src/integrations/analytics/google-analytics.ts src/integrations/analytics/google-tag-manager.ts src/integrations/analytics/heap.ts src/integrations/analytics/hotjar.ts src/integrations/analytics/logrocket.ts src/integrations/analytics/mixpanel.ts src/integrations/analytics/openpanel.ts src/integrations/analytics/openreplay.ts src/integrations/analytics/pirsch.ts src/integrations/analytics/plausible.ts src/integrations/analytics/posthog.ts src/integrations/analytics/rybbit.ts src/integrations/analytics/swetrix.ts src/integrations/analytics/umami.ts src/integrations/support/chatwoot.ts src/integrations/support/chaskiq.ts src/integrations/support/front.ts src/integrations/support/intercom.ts src/integrations/support/papercups.ts src/integrations/support/typebot.ts src/integrations/support/zammad.ts src/integrations/consent/osano.ts src/integrations/consent/transcend.ts --outdir dist --target browser --production --external zod && bun build --root src src/vite.ts src/node.ts src/next.ts src/next-plugins.ts src/astro.ts src/config.ts --outdir dist --target node --production --external @mdx-js/mdx --external rehype-slug --external zod && bun build src/ai.ts --outfile dist/ai.js --target node --production --external zod --external @mariozechner/pi-agent-core --external @mariozechner/pi-ai",
+    "build:js": "rm -rf dist && bun build --root src src/index.tsx src/types.ts src/model.ts src/navigation.ts src/openapi/index.ts src/seo/index.ts src/seo/next.ts src/seo/react-router.ts src/llm.ts src/rss.ts src/search.ts src/mdx.ts src/link.ts src/theme/grain/index.tsx src/theme/shade/index.tsx src/theme/moss/index.tsx --outdir dist --target browser --production --splitting --external react --external react-dom --external react/jsx-runtime --external zod --external zbsearch --external beautiful-mermaid --external react-markdown --external rehype-raw --external rehype-sanitize --external remark-gfm && bun build src/config.ts --outfile dist/config.browser.js --target browser --production --external zod && bun build --root src src/integrations/analytics/adobe.ts src/integrations/analytics/amplitude.ts src/integrations/analytics/clarity.ts src/integrations/analytics/clearbit.ts src/integrations/analytics/fathom.ts src/integrations/analytics/google-analytics.ts src/integrations/analytics/google-tag-manager.ts src/integrations/analytics/heap.ts src/integrations/analytics/hotjar.ts src/integrations/analytics/logrocket.ts src/integrations/analytics/mixpanel.ts src/integrations/analytics/openpanel.ts src/integrations/analytics/openreplay.ts src/integrations/analytics/pirsch.ts src/integrations/analytics/plausible.ts src/integrations/analytics/posthog.ts src/integrations/analytics/rybbit.ts src/integrations/analytics/swetrix.ts src/integrations/analytics/umami.ts src/integrations/support/chatwoot.ts src/integrations/support/chaskiq.ts src/integrations/support/front.ts src/integrations/support/intercom.ts src/integrations/support/papercups.ts src/integrations/support/typebot.ts src/integrations/support/zammad.ts src/integrations/consent/osano.ts src/integrations/consent/transcend.ts --outdir dist --target browser --production --external zod && bun build --root src src/adapters/vite/index.ts src/server/index.ts src/adapters/next/index.ts src/adapters/next/plugins.ts src/adapters/astro/index.ts src/config.ts --outdir dist --target node --production --external @mdx-js/mdx --external rehype-slug --external zod && bun build src/openapi/request.ts --outfile dist/openapi/request.js --target browser --production && bun build src/components/integrations.tsx --outfile dist/browser-integrations.js --target browser --production --external react --external react-dom --external react/jsx-runtime --external zod && bun build src/theme/provider.tsx --outfile dist/theme/provider.js --target browser --production --banner='\"use client\";' --external react --external react-dom --external react/jsx-runtime && bun build src/theme/script.ts --outfile dist/theme/script.js --target browser --production && bun build src/ai/index.ts --outfile dist/ai/index.js --target node --production --external zod --external @mariozechner/pi-agent-core --external @mariozechner/pi-ai",
     "build:types": "tsc -p tsconfig.build.json",
     "copy:assets": "bun scripts/copy-theme-assets.ts",
     "typecheck": "tsc -p tsconfig.json",

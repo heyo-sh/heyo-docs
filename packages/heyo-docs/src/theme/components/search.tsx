@@ -110,9 +110,10 @@ export function DocumentationSearch({
     if (!nextOpen) setQuery("");
   };
 
-  const selectPage = (page: SearchDocument) => {
-    onOpenChange(false);
-    window.location.assign(page.slug);
+  const selectPage = (index: number) => {
+    // Dispatch the same click as selecting a result with the pointer, so the
+    // host router (Next or React Router) handles the transition.
+    resultRefs.current[index]?.click();
   };
 
   const onSearchKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
@@ -139,7 +140,7 @@ export function DocumentationSearch({
     if (event.key === "Enter") {
       event.preventDefault();
       event.stopPropagation();
-      selectPage(results[selectedIndex] ?? results[0]);
+      selectPage(selectedIndex >= 0 ? selectedIndex : 0);
     }
   };
 

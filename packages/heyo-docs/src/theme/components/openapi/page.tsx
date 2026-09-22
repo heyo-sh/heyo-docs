@@ -5,6 +5,13 @@ import { useEffect, useMemo, useState } from "react";
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../../components/ui/select";
 import { Textarea } from "../../../components/ui/textarea";
 import { markdownPathname } from "../../../llm";
 import { openApiEndpointDataPath } from "../../../openapi";
@@ -483,18 +490,24 @@ export function OpenApiPage({
             <Properties className="mb-0 mt-4">
               <Property name="API server" showRequired={false} type="base URL">
                 {endpoint.servers.length > 1 ? (
-                  <select
-                    aria-label="API server"
-                    className="h-10 rounded-md border border-input bg-input/20 px-3 text-sm text-foreground dark:bg-input/30"
-                    onChange={(event) => setServer(event.target.value)}
+                  <Select
+                    onValueChange={(value) => setServer(value ?? "")}
                     value={server}
                   >
-                    {endpoint.servers.map((candidate) => (
-                      <option key={candidate} value={candidate}>
-                        {candidate}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger
+                      aria-label="API server"
+                      className="h-10 px-3 text-sm"
+                    >
+                      <SelectValue placeholder="Select an API server" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {endpoint.servers.map((candidate) => (
+                        <SelectItem key={candidate} value={candidate}>
+                          {candidate}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 ) : (
                   <Input
                     aria-label="API server"

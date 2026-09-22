@@ -38,6 +38,8 @@ export async function scaffoldProject(
     HEYO_DOCS_VERSION: options.heyoDocsVersion ?? "latest",
     PACKAGE_MANAGER: packageManagerField(options.packageManager),
     THEME: options.theme,
+    HEYO_THEME: options.theme,
+    HEYO_THEME_IDENTIFIER: `${options.theme}Theme`,
   };
   const templatePath = join(packageRoot, "templates", options.template);
   const deploymentPath = join(

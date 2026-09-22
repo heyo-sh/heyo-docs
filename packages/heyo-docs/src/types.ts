@@ -46,6 +46,12 @@ export interface FooterConfig {
   website?: string;
 }
 
+/** A browser-safe link displayed by themes that expose a header navigation slot. */
+export interface HeaderNavigationItem {
+  label: string;
+  href: string;
+}
+
 export interface AnalyticsIntegrations {
   adobe?: AdobeAnalyticsConfig;
   amplitude?: AmplitudeAnalyticsConfig;
@@ -179,9 +185,18 @@ export interface AiChatConfig {
   placeholder: string;
 }
 
+/**
+ * Server-only guard invoked before every AI request. Return a Response to deny
+ * the request (for example after a rate-limit or session check).
+ */
+export type AiRequestGuard = (
+  request: Request,
+) => Response | void | Promise<Response | void>;
+
 /** Server-only AI settings. Authentication must never be sent to the browser. */
 export interface AiConfig {
   chat: AiChatConfig;
+  authorize?: AiRequestGuard;
 }
 
 /** The browser-safe portion of the AI configuration. */
@@ -591,8 +606,10 @@ export interface DocsAppProps {
    * and changelog page. Keys are the JSX tag names used in MDX.
    */
   mdxComponents?: MdxComponents;
+  /** The statically selected theme implementation for this application. */
+  theme: HeyoDocsTheme;
   /**
-   * Replaces selected components from the configured theme while preserving
+   * Replaces selected components from the selected theme while preserving
    * the rest of its documentation shell.
    */
   themeComponents?: Partial<HeyoDocsThemeComponents>;
@@ -611,8 +628,8 @@ export interface HeyoDocsConfig {
   description: string;
   theme: BuiltInThemeName;
   colors: DocsColors;
-  /** Application-owned JSX placed by the active theme. */
-  navigation?: ReactNode;
+  /** Declarative header links rendered by themes that expose a navigation slot. */
+  navigation?: HeaderNavigationItem[];
   groups: DocsGroupConfig[];
   footer: FooterConfig;
   mode: DocsMode;
@@ -688,8 +705,8 @@ export interface UserHeyoDocsConfig {
   description?: string;
   theme?: BuiltInThemeName;
   colors?: DocsColors;
-  /** Application-owned JSX placed by the active theme. */
-  navigation?: ReactNode;
+  /** Declarative header links rendered by themes that expose a navigation slot. */
+  navigation?: HeaderNavigationItem[];
   groups?: UserDocsGroup[];
   footer?: FooterConfig;
   mode?: DocsMode;
@@ -697,10 +714,12 @@ export interface UserHeyoDocsConfig {
    * Directory containing MDX pages and local API schemas, relative to the
    * application root. Both "./content" and "content" are supported.
    */
-  content: string;
+  content?: string;
   branding?: Partial<BrandingConfig>;
   siteUrl?: string;
   ai?: {
+    /** Server-only request guard for rate limiting or application auth. */
+    authorize?: AiRequestGuard;
     chat: {
       provider: AiProvider;
       model: string;

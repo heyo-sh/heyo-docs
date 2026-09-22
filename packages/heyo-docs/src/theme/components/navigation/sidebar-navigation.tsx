@@ -168,6 +168,15 @@ function NavigationGroup({
       className="border-b border-foreground/[0.06]"
       data-public={group.public}
     >
+      {group.src ? (
+        <DocsLink
+          className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-foreground/65 transition-colors hover:bg-foreground/[0.03] hover:text-foreground/90"
+          href={group.src}
+        >
+          <Icon className="size-4 shrink-0" name={group.icon} />
+          <span className="min-w-0 flex-1 truncate">{group.group}</span>
+        </DocsLink>
+      ) : null}
       {group.sections.map((section, index) => (
         <NavigationSection
           currentPath={currentPath}

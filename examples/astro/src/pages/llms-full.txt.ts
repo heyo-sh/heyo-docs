@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { llmsFull } from "@heyo-sh/heyo-docs";
+import { llmsFull } from "@heyo-sh/heyo-docs/llm";
 
 import config from "../../heyo-docs.config";
 import { pages } from "virtual:heyo-docs-content/server";

@@ -1,13 +1,17 @@
+import { DocsApp } from "@heyo-sh/heyo-docs";
 import {
   createDocsModel,
-  DocsApp,
-  changelogGroupForPage,
   findDocsPage,
   findOpenApiEndpoint,
+} from "@heyo-sh/heyo-docs/model";
+import { changelogGroupForPage } from "@heyo-sh/heyo-docs/navigation";
+import {
   openApiEndpointDataPath,
   openApiEndpointDetail,
-  type OpenApiEndpoint,
-} from "@heyo-sh/heyo-docs";
+} from "@heyo-sh/heyo-docs/openapi";
+import { docsSeoMeta } from "@heyo-sh/heyo-docs/seo/react-router";
+import type { OpenApiEndpoint } from "@heyo-sh/heyo-docs/types";
+import { useDocsTheme } from "@heyo-sh/heyo-docs/theme/provider";
 import {
   Link,
   useLoaderData,
@@ -16,19 +20,18 @@ import {
   type MetaFunction,
 } from "react-router";
 import { forwardRef, type ComponentPropsWithoutRef } from "react";
+import { grainTheme } from "@heyo-sh/heyo-docs/theme/grain";
 
 import { iconSet } from "../heyo-docs-icons";
-import { useTheme } from "../components/theme-provider";
-import { docsSeoMeta } from "../lib/seo";
 import { config } from "virtual:heyo-docs-config";
 import { pages } from "virtual:heyo-docs-content";
 import { openApiDocuments } from "virtual:heyo-docs-openapi";
 import { openApiEndpoints } from "virtual:heyo-docs-openapi/index";
 
-const pathnameFor = (params: Record<string, string | undefined>) => {
+function pathnameFor(params: Record<string, string | undefined>): string {
   const path = params["*"]?.replace(/^\/+|\/+$/g, "");
   return path ? `/${path}` : "/";
-};
+}
 
 const RouterLink = forwardRef<HTMLAnchorElement, ComponentPropsWithoutRef<"a">>(
   function RouterLink({ href = "/", ...props }, ref) {
@@ -77,20 +80,22 @@ export const meta: MetaFunction = ({ params }) => {
   const pathname = pathnameFor(params);
   const page = findDocsPage(model.pages, pathname);
   const endpoint = findOpenApiEndpoint(model.endpoints, pathname);
+
   if (!page && !endpoint)
     return [
-      { title: "Not found | Heyo Docs example" },
+      { title: `Not found | ${config.title}` },
       { name: "robots", content: "noindex" },
     ];
+
   return docsSeoMeta({
+    config,
+    pathname,
+    page,
+    endpoint,
+    navigation: model.navigation,
     changelogGroup: page
       ? changelogGroupForPage(config.groups, page, model.pages)
       : undefined,
-    config,
-    endpoint,
-    navigation: model.navigation,
-    page,
-    pathname,
   });
 };
 
@@ -111,7 +116,7 @@ function DocsShell({
   currentOpenApiEndpoint?: OpenApiEndpoint;
   pathname: string;
 }) {
-  const { mounted, resolvedTheme, setTheme } = useTheme();
+  const { mounted, resolvedTheme, toggleTheme } = useDocsTheme();
 
   return (
     <DocsApp
@@ -123,15 +128,13 @@ function DocsShell({
       openApiRequestUrl="/heyo-docs-internal/openapi-request"
       pages={pages}
       pathname={pathname}
+      theme={grainTheme}
       isDark={mounted ? resolvedTheme === "dark" : undefined}
-      onThemeToggle={
-        mounted
-          ? () => setTheme(resolvedTheme === "dark" ? "light" : "dark")
-          : undefined
-      }
+      onThemeToggle={mounted ? toggleTheme : undefined}
     />
   );
 }
+
 export function ErrorBoundary() {
   return <DocsShell pathname="/__not-found" />;
 }

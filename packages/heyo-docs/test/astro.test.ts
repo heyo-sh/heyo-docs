@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
 
 import { heyoDocs } from "../src/config";
-import { heyoDocsAstro } from "../src/astro";
+import { heyoDocsAstro } from "../src/adapters/astro";
 
 test("registers the Vite content adapter through Astro's integration hook", () => {
   const integration = heyoDocsAstro({

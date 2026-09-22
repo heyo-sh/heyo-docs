@@ -1,7 +1,8 @@
 {
   "scripts": {
     "deploy": "wrangler deploy --config dist/server/wrangler.json",
-    "cf-typegen": "wrangler types --config dist/server/wrangler.json"
+    "cf-typegen": "wrangler types",
+    "typecheck": "bun run cf-typegen && astro check"
   },
   "dependencies": {
     "@astrojs/cloudflare": "14.2.6"

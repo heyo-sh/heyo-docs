@@ -1,4 +1,3 @@
-import { createAiChatResponse } from "@heyo-sh/heyo-docs/ai";
 import type { APIRoute } from "astro";
 
 import config from "../../../heyo-docs.config";
@@ -6,17 +5,16 @@ import { pages as markdownPages } from "virtual:heyo-docs-content/server";
 
 export const prerender = false;
 
-export const POST: APIRoute = ({ request }) => {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey)
+export const POST: APIRoute = async ({ request }) => {
+  if (!config.ai?.chat)
     return Response.json(
-      { error: "OPENAI_API_KEY is not configured." },
-      { status: 500 },
+      { error: "AI chat is not configured." },
+      { status: 404 },
     );
 
+  const { createAiChatResponse } = await import("@heyo-sh/heyo-docs/ai");
   return createAiChatResponse(request, {
     ai: config.ai,
-    auth: { type: "api-key", token: apiKey },
     markdownPages,
     pages: markdownPages.map((page) => ({
       description: page.description,

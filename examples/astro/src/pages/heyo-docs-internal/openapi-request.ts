@@ -5,4 +5,10 @@ import { handleOpenApiRequest } from "../../lib/openapi-request";
 /** The only dynamic OpenAPI surface: a same-origin proxy for Try it requests. */
 export const prerender = false;
 
+export const GET: APIRoute = () =>
+  new Response("Method Not Allowed", {
+    headers: { Allow: "POST" },
+    status: 405,
+  });
+
 export const POST: APIRoute = ({ request }) => handleOpenApiRequest(request);

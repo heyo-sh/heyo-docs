@@ -14,8 +14,15 @@ export function replacePlaceholders(
   values: Record<string, string>,
 ): string {
   return source.replace(
-    /\{\{([A-Z0-9_]+)\}\}/g,
-    (placeholder, key: string) => values[key] ?? placeholder,
+    /\{\{([A-Z0-9_]+)\}\}|__(HEYO_[A-Z0-9_]+)__/g,
+    (
+      placeholder,
+      mustacheKey: string | undefined,
+      tokenKey: string | undefined,
+    ) => {
+      const key = mustacheKey ?? tokenKey;
+      return key ? (values[key] ?? placeholder) : placeholder;
+    },
   );
 }
 
@@ -59,8 +66,15 @@ async function replacePlaceholdersAtPath(
   values: Record<string, string>,
 ): Promise<void> {
   if (!(await stat(path)).isDirectory()) {
-    const contents = await readFile(path, "utf8");
-    await writeFile(path, replacePlaceholders(contents, values));
+    // Templates contain favicons and other binary assets. Reading every file
+    // as UTF-8 and writing it back corrupts arbitrary byte sequences, even
+    // when that file does not contain a placeholder. Only touch textual files
+    // that actually need a replacement.
+    const contents = await readFile(path);
+    if (!isTextFile(contents)) return;
+    const source = contents.toString("utf8");
+    if (!source.includes("{{") && !source.includes("__HEYO_")) return;
+    await writeFile(path, replacePlaceholders(source, values));
     return;
   }
 
@@ -70,6 +84,19 @@ async function replacePlaceholdersAtPath(
       replacePlaceholdersAtPath(join(path, entry.name), values),
     ),
   );
+}
+
+function isTextFile(contents: Buffer): boolean {
+  // A NUL byte is sufficient to reject every binary asset currently shipped by
+  // the creator. The fatal decoder also rejects malformed UTF-8 rather than
+  // replacing bytes with U+FFFD before a subsequent write.
+  if (contents.includes(0)) return false;
+  try {
+    new TextDecoder("utf-8", { fatal: true }).decode(contents);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export async function writeJson(path: string, data: unknown): Promise<void> {

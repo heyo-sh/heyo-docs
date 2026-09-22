@@ -87,6 +87,37 @@ test("streams a Pi response through the Heyo Docs chat protocol", async () => {
   );
 });
 
+test("runs the configured AI authorization and rate-limit guard before provider work", async () => {
+  const response = await createAiChatResponse(
+    new Request("http://localhost/heyo-docs-internal/ai-chat", {
+      method: "POST",
+    }),
+    {
+      ai: {
+        authorize: () =>
+          Response.json({ error: "Rate limit exceeded" }, { status: 429 }),
+        chat: {
+          provider: "openai",
+          model: "gpt-5-mini",
+          variant: "right",
+          icon: "chat",
+          text: "AI Chat",
+          name: "AI",
+          placeholder: "Ask AI about the docs",
+        },
+      },
+      markdownPages: [],
+      pages: [],
+      title: "Test docs",
+    },
+  );
+
+  expect(response.status).toBe(429);
+  await expect(response.json()).resolves.toEqual({
+    error: "Rate limit exceeded",
+  });
+});
+
 test("uses API keys supplied by the request handler", async () => {
   registration = registerFauxProvider({
     api: "openai-responses",

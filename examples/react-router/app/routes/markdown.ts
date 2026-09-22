@@ -1,4 +1,7 @@
-import { markdownForPage, pathnameFromMarkdownPath } from "@heyo-sh/heyo-docs";
+import {
+  markdownForPage,
+  pathnameFromMarkdownPath,
+} from "@heyo-sh/heyo-docs/llm";
 import type { LoaderFunctionArgs } from "react-router";
 
 import { pages } from "virtual:heyo-docs-content/server";

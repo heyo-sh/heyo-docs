@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import {
-  navigationPages,
-  openApiEndpointDetail,
-} from "@heyo-sh/heyo-docs/node";
+import { nextDocsSeo } from "@heyo-sh/heyo-docs/seo/next";
+import { navigationPages } from "@heyo-sh/heyo-docs/navigation";
+import { openApiEndpointDetail } from "@heyo-sh/heyo-docs/openapi";
+import { serializeJsonLd } from "@heyo-sh/heyo-docs/seo";
 
 import { NextDocsApp } from "../components/docs-app";
 import { docsContext, docsModel, pathnameForSegments } from "../lib/docs";
-import { docsSeo } from "../lib/seo";
 
 interface PageProps {
   params: Promise<{ slug?: string[] }>;
@@ -41,7 +40,7 @@ export async function generateMetadata({
       title: `Not found | ${context.config.title}`,
       robots: { index: false, follow: false },
     };
-  return docsSeo({ ...context, pathname }).metadata;
+  return nextDocsSeo({ ...context, pathname }).metadata;
 }
 
 export default async function DocsPage({ params }: PageProps) {
@@ -55,18 +54,20 @@ export default async function DocsPage({ params }: PageProps) {
     if (!firstPage)
       throw new Error("No local documentation page is configured.");
 
-    redirect(firstPage.slug);
+    // A minimal project owns `/` through content/index.mdx. Do not redirect
+    // the root route to itself.
+    if (firstPage.slug !== "/") redirect(firstPage.slug);
   }
   const context = docsContext(pathname);
   if (!context.page && !context.endpoint) notFound();
-  const { structuredData } = docsSeo({ ...context, pathname });
+  const { structuredData } = nextDocsSeo({ ...context, pathname });
 
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(structuredData).replace(/</g, "\\u003c"),
+          __html: serializeJsonLd(structuredData),
         }}
       />
       <NextDocsApp

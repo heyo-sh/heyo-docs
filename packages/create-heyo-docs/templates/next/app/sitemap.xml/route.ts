@@ -1,4 +1,4 @@
-import { sitemapXml } from "@heyo-sh/heyo-docs/node";
+import { sitemapXml } from "@heyo-sh/heyo-docs/seo";
 
 import { config, docsModel } from "../lib/docs";
 

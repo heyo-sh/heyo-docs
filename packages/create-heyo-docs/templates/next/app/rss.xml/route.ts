@@ -1,4 +1,4 @@
-import { rssXml } from "@heyo-sh/heyo-docs/node";
+import { rssXml } from "@heyo-sh/heyo-docs/rss";
 
 import { config, markdownPages } from "../lib/docs";
 

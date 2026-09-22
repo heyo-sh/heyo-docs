@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { rssXml } from "@heyo-sh/heyo-docs";
+import { rssXml } from "@heyo-sh/heyo-docs/rss";
 
 import config from "../../heyo-docs.config";
 import { pages } from "virtual:heyo-docs-content/server";

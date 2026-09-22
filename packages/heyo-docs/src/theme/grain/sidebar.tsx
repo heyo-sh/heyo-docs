@@ -4,6 +4,16 @@ import type { SidebarProps } from "../../types";
 import { ChangelogTableOfContents } from "../components/changelog/toc";
 import { SidebarNavigation } from "../components/navigation/sidebar-navigation";
 
+const documentationScrollbarClassName = [
+  "[&>[data-slot=scroll-area-scrollbar]]:pointer-events-none",
+  "[&>[data-slot=scroll-area-scrollbar]]:opacity-0",
+  "[&>[data-slot=scroll-area-scrollbar]]:transition-opacity",
+  "[&>[data-slot=scroll-area-scrollbar]]:duration-150",
+  "[&>[data-slot=scroll-area-scrollbar][data-scrolling]]:pointer-events-auto",
+  "[&>[data-slot=scroll-area-scrollbar][data-scrolling]]:opacity-100",
+  "[&>[data-slot=scroll-area-scrollbar][data-scrolling]]:duration-0",
+].join(" ");
+
 export function GrainSidebar({
   changelogUpdates,
   footer,
@@ -18,10 +28,10 @@ export function GrainSidebar({
         <div>{tabs}</div>
         <div>{search}</div>
         <ScrollArea
-          className={`min-h-0 flex-1${
+          className={`min-h-0 flex-1 ${
             changelogUpdates
-              ? " [&>[data-slot=scroll-area-scrollbar]]:hidden"
-              : ""
+              ? "[&>[data-slot=scroll-area-scrollbar]]:hidden"
+              : documentationScrollbarClassName
           }`}
         >
           {changelogUpdates ? (

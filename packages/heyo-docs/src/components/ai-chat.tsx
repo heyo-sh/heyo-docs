@@ -11,13 +11,11 @@ import {
   useState,
   type ChangeEvent,
   type KeyboardEvent,
-  type MouseEvent,
 } from "react";
 import ReactMarkdown from "react-markdown";
 
 import type { PublicAiChatConfig } from "../types";
 import type { BuiltInThemeName } from "../theme/names";
-import { getDocumentationScrollViewport } from "../theme/components/documentation/scroll";
 import { cn } from "../lib/utils";
 import { DocsLink } from "./docs-link";
 import { Icon } from "./icons";
@@ -215,32 +213,6 @@ function usePiChat() {
   return { error, messages, replaceMessages, sendMessage, status, stop };
 }
 
-function scrollToLinkedPageTop(
-  href: string,
-  event: MouseEvent<HTMLAnchorElement>,
-) {
-  if (
-    event.defaultPrevented ||
-    event.button !== 0 ||
-    event.metaKey ||
-    event.altKey ||
-    event.ctrlKey ||
-    event.shiftKey
-  )
-    return;
-
-  const destination = new URL(href, window.location.href);
-  if (destination.origin !== window.location.origin || destination.hash) return;
-
-  const scrollViewport = getDocumentationScrollViewport();
-  if (scrollViewport) {
-    scrollViewport.scrollTop = 0;
-    return;
-  }
-
-  window.scrollTo(0, 0);
-}
-
 const aiChatThemeStyles = {
   grain: {
     composer: "rounded-md border-foreground/5 shadow-none",
@@ -434,13 +406,7 @@ function MessageList({
                             a: ({ children, href, ...props }) =>
                               href?.startsWith("/") &&
                               !href.startsWith("//") ? (
-                                <DocsLink
-                                  href={href}
-                                  {...props}
-                                  onClick={(event) =>
-                                    scrollToLinkedPageTop(href, event)
-                                  }
-                                >
+                                <DocsLink href={href} {...props}>
                                   {children}
                                 </DocsLink>
                               ) : (

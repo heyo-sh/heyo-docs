@@ -20,9 +20,9 @@ const runtimeDirectory = join(root, "packages/heyo-docs");
 const creatorDirectory = join(root, "packages/create-heyo-docs");
 let tarball = "";
 
-// Deleting three fully installed, generated projects can take longer than
+// Deleting every fully installed generated project can take longer than
 // Bun's five-second hook default on slower filesystems.
-setDefaultTimeout(30_000);
+setDefaultTimeout(120_000);
 
 async function run(command: string[], cwd: string): Promise<void> {
   const process = Bun.spawn(command, {
@@ -32,6 +32,52 @@ async function run(command: string[], cwd: string): Promise<void> {
   });
   if ((await process.exited) !== 0)
     throw new Error(`Failed: ${command.join(" ")}`);
+}
+
+/** Smoke-tests every non-CSS subpath from the packed runtime, not just paths
+ * currently used by a framework template. */
+async function verifyPublishedRuntimeEntrypoints(
+  projectPath: string,
+): Promise<void> {
+  const packageJson = JSON.parse(
+    await Bun.file(
+      join(projectPath, "node_modules/@heyo-sh/heyo-docs/package.json"),
+    ).text(),
+  ) as { exports: Record<string, unknown> };
+  const entrypoints = Object.keys(packageJson.exports).filter(
+    (entrypoint) =>
+      !entrypoint.includes("*") &&
+      entrypoint !== "./theme.css" &&
+      !entrypoint.endsWith(".css"),
+  );
+  const script = `const entrypoints = ${JSON.stringify(entrypoints)};
+for (const entrypoint of entrypoints) {
+  const specifier = entrypoint === "."
+    ? "@heyo-sh/heyo-docs"
+    : "@heyo-sh/heyo-docs/" + entrypoint.slice(2);
+  await import(specifier);
+}`;
+
+  await run(["bun", "--eval", script], projectPath);
+}
+
+/** Confirms Tailwind scanned utility classes from the packaged theme chunks. */
+async function expectBuiltThemeUtilities(
+  projectPath: string,
+  cssDirectory: string,
+): Promise<void> {
+  const stylesheets: string[] = [];
+  const buildDirectory = join(projectPath, cssDirectory);
+  for await (const file of new Bun.Glob("**/*.css").scan({
+    cwd: buildDirectory,
+  }))
+    stylesheets.push(await Bun.file(join(buildDirectory, file)).text());
+
+  expect(stylesheets.length).toBeGreaterThan(0);
+  // This utility belongs to a shared DocsApp chunk rather than the root or
+  // theme entrypoint. Its presence prevents a regression where Tailwind only
+  // scanned dist/index.js and shipped a partially unstyled theme.
+  expect(stylesheets.join("\n")).toContain("sm\\:grid-cols-2");
 }
 
 beforeAll(async () => {
@@ -67,6 +113,7 @@ describe.serial("generated React Router projects", () => {
         heyoDocsVersion: `file:${tarball}`,
       });
       await run(["bun", "install"], projectPath);
+      await verifyPublishedRuntimeEntrypoints(projectPath);
       await run(["bun", "run", "build"], projectPath);
       const packageJson = JSON.parse(
         await Bun.file(join(projectPath, "package.json")).text(),
@@ -78,6 +125,7 @@ describe.serial("generated React Router projects", () => {
         `file:${tarball}`,
       );
       expect(packageJson.scripts.build).toBe("react-router build");
+      await expectBuiltThemeUtilities(projectPath, "build/client");
       expect(
         await Bun.file(join(projectPath, "app/routes.ts")).text(),
       ).toContain("sitemap.xml");
@@ -94,14 +142,11 @@ describe.serial("generated React Router projects", () => {
         await Bun.file(join(projectPath, "app/routes/rss.ts")).text(),
       ).toContain("rssXml");
       expect(
-        await Bun.file(join(projectPath, "content/quickstart.mdx")).exists(),
+        await Bun.file(join(projectPath, "content/index.mdx")).exists(),
       ).toBe(true);
       expect(
-        await Bun.file(join(projectPath, "content/index.mdx")).exists(),
-      ).toBe(false);
-      expect(
         await Bun.file(join(projectPath, "app/routes/home.tsx")).text(),
-      ).toContain("return redirect(firstPage.slug)");
+      ).toContain('firstPage.slug === "/"');
       expect(
         await Bun.file(join(projectPath, "components.json")).text(),
       ).toContain('"style": "base-mira"');
@@ -121,18 +166,19 @@ describe.serial("generated React Router projects", () => {
         join(projectPath, "app/root.tsx"),
       ).text();
       expect(rootSource).toContain("ThemeProvider");
-      expect(rootSource).toContain(
-        "getThemeScript(THEME_STORAGE_KEY, config.mode)",
-      );
+      expect(rootSource).toContain("IntegrationScripts");
+      expect(rootSource).toContain("themeBootstrapScript");
+      expect(rootSource).toContain("siteSeoMeta(config)");
       const docsRouteSource = await Bun.file(
         join(projectPath, "app/routes/docs.tsx"),
       ).text();
       expect(docsRouteSource).toContain("iconSet={iconSet}");
-      expect(docsRouteSource).toContain("useTheme");
+      expect(docsRouteSource).toContain("useDocsTheme");
       expect(docsRouteSource).toContain("onThemeToggle");
-      expect(docsRouteSource).toContain('"script:ld+json"');
-      expect(docsRouteSource).toContain('"@type": "WebSite"');
-      expect(docsRouteSource).toContain('"@type": "TechArticle"');
+      expect(docsRouteSource).toContain(
+        'from "@heyo-sh/heyo-docs/seo/react-router"',
+      );
+      expect(docsRouteSource).toContain("docsSeoMeta(");
       const serverEntries: string[] = [];
       for await (const entry of new Bun.Glob("build/server/**/index.js").scan({
         cwd: projectPath,
@@ -186,6 +232,7 @@ describe.serial("generated Astro projects", () => {
         `file:${tarball}`,
       );
       expect(packageJson.scripts.build).toBe("astro build");
+      await expectBuiltThemeUtilities(projectPath, "dist/client");
       expect(
         await Bun.file(join(projectPath, "astro.config.ts")).text(),
       ).toContain("heyoDocsAstro({ config })");
@@ -218,14 +265,11 @@ describe.serial("generated Astro projects", () => {
         await Bun.file(join(projectPath, "astro.config.ts")).text(),
       ).toContain('output: "static"');
       expect(
-        await Bun.file(join(projectPath, "content/quickstart.mdx")).exists(),
+        await Bun.file(join(projectPath, "content/index.mdx")).exists(),
       ).toBe(true);
       expect(
-        await Bun.file(join(projectPath, "content/index.mdx")).exists(),
-      ).toBe(false);
-      expect(
         await Bun.file(join(projectPath, "src/pages/index.astro")).text(),
-      ).toContain("return Astro.redirect(firstPage.slug)");
+      ).toContain("<AstroDocsApp client:load pathname={pathname} />");
       expect(
         await Bun.file(join(projectPath, "components.json")).text(),
       ).toContain('"style": "base-mira"');
@@ -255,6 +299,7 @@ describe.serial("generated Astro projects", () => {
           true,
         );
         expect(packageJson.scripts.deploy).toBe("vercel --prod");
+        expect(packageJson.scripts.start).toBe("vercel dev");
         expect(
           await Bun.file(
             join(projectPath, ".vercel/output/config.json"),
@@ -302,6 +347,7 @@ describe.serial("generated Next.js projects", () => {
       );
       expect(packageJson.scripts.build).toContain("next build");
       expect(packageJson.scripts.build).not.toContain("--webpack");
+      await expectBuiltThemeUtilities(projectPath, ".next/static");
       expect(
         await Bun.file(join(projectPath, "app/robots.txt/route.ts")).text(),
       ).toContain("Sitemap:");
@@ -331,11 +377,13 @@ describe.serial("generated Next.js projects", () => {
         join(projectPath, "next.config.ts"),
       ).text();
       expect(nextConfig).toContain("heyoDocsMdxOptions");
+      expect(nextConfig).toContain("serverExternalPackages: [");
+      expect(nextConfig).toContain('"@mariozechner/pi-ai"');
       expect(nextConfig).toContain("turbopack: {");
       expect(nextConfig).toContain("root: projectRoot,");
       expect(nextConfig).toContain('source: "/:path*.md"');
       expect(nextConfig).toContain(
-        'destination: "/heyo-docs-internal/markdown/:path*"',
+        'destination: "/heyo-docs-internal/markdown/:path*.md"',
       );
       expect(await Bun.file(join(projectPath, "proxy.ts")).exists()).toBe(
         false,
@@ -346,17 +394,16 @@ describe.serial("generated Next.js projects", () => {
         ).text(),
       ).toContain("generateNextContent");
       expect(
-        await Bun.file(join(projectPath, "content/quickstart.mdx")).exists(),
-      ).toBe(true);
-      expect(
         await Bun.file(join(projectPath, "content/index.mdx")).exists(),
-      ).toBe(false);
+      ).toBe(true);
       expect(
         await Bun.file(join(projectPath, "components.json")).text(),
       ).toContain('"style": "base-mira"');
-      expect(
-        await Bun.file(join(projectPath, "app/layout.tsx")).text(),
-      ).toContain('import "./_heyo-docs/theme.css"');
+      const nextLayoutSource = await Bun.file(
+        join(projectPath, "app/layout.tsx"),
+      ).text();
+      expect(nextLayoutSource).toContain('import "./_heyo-docs/theme.css"');
+      expect(nextLayoutSource).toContain("nextSiteSeo(config)");
       expect(
         await Bun.file(join(projectPath, "app/heyo-docs-icons.tsx")).text(),
       ).toContain('from "@remixicon/react"');

@@ -54,7 +54,7 @@ For an existing application, follow the framework-specific guides for [React Rou
 `heyo-docs.config.ts` is the single source of truth for your site's content, navigation, appearance, and metadata. Only `content` is required:
 
 ```ts
-import { heyoDocs } from "@heyo-sh/heyo-docs";
+import { heyoDocs } from "@heyo-sh/heyo-docs/config";
 
 export default heyoDocs({
   title: "Acme Docs",
@@ -78,6 +78,8 @@ export default heyoDocs({
 ```
 
 Read the [configuration guide](https://docs.heyo.sh/manage-website/configuration) for the complete reference, then add pages under `content/`. Built-in MDX components, OpenAPI, deployment, and styling guides live in the [documentation](https://docs.heyo.sh).
+
+The root package exports only `DocsApp`; import capabilities from domain entrypoints such as `/config`, `/model`, `/navigation`, `/seo`, `/openapi`, `/llm`, `/rss`, `/search`, `/mdx`, `/link`, and `/types`.
 
 ## Contributing
 

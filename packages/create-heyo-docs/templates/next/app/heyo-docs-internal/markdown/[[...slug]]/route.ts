@@ -1,7 +1,7 @@
 import {
   markdownForPage,
   pathnameFromMarkdownPath,
-} from "@heyo-sh/heyo-docs/node";
+} from "@heyo-sh/heyo-docs/llm";
 
 import { markdownPages } from "../../../lib/docs";
 

@@ -1,4 +1,4 @@
-import { llmsIndex } from "@heyo-sh/heyo-docs/node";
+import { llmsIndex } from "@heyo-sh/heyo-docs/llm";
 
 import { config, markdownPages } from "../lib/docs";
 

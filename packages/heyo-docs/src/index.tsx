@@ -2,8 +2,6 @@ import {
   adjacentPages,
   changelogGroupForPage,
   navigationGroupContainsPath,
-  navigationFromGroups,
-  navigationFromSlugs,
   navigationPages,
   navigationSectionPathForPath,
 } from "./navigation";
@@ -13,74 +11,14 @@ import {
   findOpenApiEndpoint,
   normaliseDocsPathname,
 } from "./model";
-import { resolveTheme } from "./theme";
 import { IconProvider } from "./components/icons";
 import { DocsLinkProvider } from "./components/docs-link";
+import { HeaderNavigation } from "./components/header-navigation";
 import { AiChat } from "./components/ai-chat";
-import { DocumentationContent } from "./theme/components/documentation/content";
-export {
-  createSearchIndex,
-  findSearchPages,
-  nextSearchResultIndex,
-  searchPages,
-} from "./search";
-import type {
-  BreadcrumbProps,
-  DocsAppProps,
-  DocsModel,
-  DocsPage,
-  HeyoDocsConfig,
-  NavigationGroup,
-  OpenApiDocumentSource,
-  OpenApiEndpoint,
-} from "./types";
+import { DocumentationScrollReset } from "./theme/components/documentation/scroll-reset";
+import type { BreadcrumbProps, DocsAppProps, NavigationGroup } from "./types";
 
-export { heyoDocs, validateConfig } from "./config";
-export {
-  adjacentPages,
-  changelogGroupForPage,
-  navigationGroupContainsPath,
-  navigationFromGroups,
-  navigationFromSlugs,
-  navigationPages,
-  navigationSectionPathForPath,
-} from "./navigation";
-export {
-  createDocsModel,
-  findDocsPage,
-  findOpenApiEndpoint,
-  normaliseDocsPathname,
-} from "./model";
-export {
-  endpointsFromOpenApiDocument,
-  endpointsFromOpenApiDocuments,
-  isOpenApiDocument,
-  openApiDescription,
-  openApiEndpointDataPath,
-  openApiEndpointDetail,
-  resolveOpenApiRef,
-  schemaExample,
-} from "./openapi";
-export { seoForPage, sitemapXml } from "./seo";
-export { rssItems, rssXml } from "./rss";
-export {
-  llmTextForPage,
-  llmsFull,
-  llmsIndex,
-  markdownForPage,
-  markdownPathname,
-  pathnameFromMarkdownPath,
-} from "./llm";
-export { resolveTheme } from "./theme";
-export { DocumentationContent } from "./theme/components/documentation/content";
-export {
-  CodeBlock,
-  CodeBlockGroup,
-} from "./theme/components/documentation/mdx-components";
-export { IconProvider } from "./components/icons";
-export { DocsLinkProvider } from "./components/docs-link";
-export type { DocsLinkComponent, DocsLinkProps } from "./components/docs-link";
-export type * from "./types";
+export type { DocsAppProps } from "./types";
 
 function activeSectionLabel(
   navigation: NavigationGroup[],
@@ -144,6 +82,7 @@ export function DocsApp({
   currentOpenApiEndpoint,
   link,
   mdxComponents,
+  theme,
   themeComponents,
   openApiDocuments,
   openApiEndpoints,
@@ -160,6 +99,7 @@ export function DocsApp({
           isDark={isDark}
           onThemeToggle={onThemeToggle}
           mdxComponents={mdxComponents}
+          theme={theme}
           themeComponents={themeComponents}
           openApiDocuments={openApiDocuments}
           openApiEndpoints={openApiEndpoints}
@@ -178,6 +118,7 @@ function DocsAppContent({
   onThemeToggle,
   currentOpenApiEndpoint,
   mdxComponents,
+  theme,
   themeComponents,
   openApiDocuments,
   openApiEndpoints,
@@ -212,15 +153,15 @@ function DocsAppContent({
     : undefined;
   const activePath = page?.slug ?? endpoint?.slug;
   const activeNavigation = activePath
-    ? model.navigation.filter((group) =>
-        navigationGroupContainsPath(group, activePath),
+    ? model.navigation.filter(
+        (group) => group.src || navigationGroupContainsPath(group, activePath),
       )
     : model.navigation;
   const pageNavigation = activePath
     ? adjacentPages(activeNavigation, activePath)
     : {};
   const components = {
-    ...resolveTheme(config.theme).components,
+    ...theme.components,
     ...themeComponents,
   };
   const {
@@ -315,7 +256,7 @@ function DocsAppContent({
       breadcrumb={breadcrumb}
       isDark={isDark}
       mobileNavigation={sidebar}
-      navigation={config.navigation}
+      navigation={<HeaderNavigation items={config.navigation ?? []} />}
       onThemeToggle={onThemeToggle}
       search={search}
       tabs={tabs}
@@ -328,6 +269,7 @@ function DocsAppContent({
         sidebar={sidebar}
         topNavigation={topNavigation}
       >
+        <DocumentationScrollReset pathname={currentPath} />
         {!page && !endpoint ? (
           <article className="heyo-docs-article">
             <p className="heyo-docs-eyebrow">404</p>

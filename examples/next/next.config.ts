@@ -8,6 +8,12 @@ const projectRoot = dirname(fileURLToPath(import.meta.url));
 const turbopackRoot = resolve(projectRoot, "../..");
 
 const nextConfig: NextConfig = {
+  // Pi resolves provider executors dynamically at runtime. Keep its Node-only
+  // packages external so Next does not replace that resolver during bundling.
+  serverExternalPackages: [
+    "@mariozechner/pi-agent-core",
+    "@mariozechner/pi-ai",
+  ],
   turbopack: {
     root: turbopackRoot,
   },
@@ -17,7 +23,7 @@ const nextConfig: NextConfig = {
       beforeFiles: [
         {
           source: "/:path*.md",
-          destination: "/heyo-docs-internal/markdown/:path*",
+          destination: "/heyo-docs-internal/markdown/:path*.md",
         },
       ],
     };
