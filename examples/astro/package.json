@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@astrojs/node": "^11.1.5",
-    "@astrojs/react": "^6.0.4",
+    "@astrojs/react": "^6.0.6",
     "@fontsource-variable/figtree": "^5.3.0",
     "@remixicon/react": "^4.9.0",
     "astro": "7.2.10",
