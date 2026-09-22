@@ -45,10 +45,7 @@ async function verifyPublishedRuntimeEntrypoints(
     ).text(),
   ) as { exports: Record<string, unknown> };
   const entrypoints = Object.keys(packageJson.exports).filter(
-    (entrypoint) =>
-      !entrypoint.includes("*") &&
-      entrypoint !== "./theme.css" &&
-      !entrypoint.endsWith(".css"),
+    (entrypoint) => !entrypoint.includes("*") && !entrypoint.endsWith(".css"),
   );
   const script = `const entrypoints = ${JSON.stringify(entrypoints)};
 for (const entrypoint of entrypoints) {

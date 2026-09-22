@@ -2,7 +2,11 @@ import { expect, test } from "bun:test";
 
 import { heyoDocs } from "../src/config";
 import { navigationFromGroups } from "../src/navigation";
-import { endpointsFromOpenApiDocuments, schemaExample } from "../src/openapi";
+import {
+  endpointsFromOpenApiDocuments,
+  isOpenApiDocument,
+  schemaExample,
+} from "../src/openapi";
 import { handleOpenApiRequest } from "../src/openapi/request";
 import type { DocsPage, OpenApiDocumentSource } from "../src/types";
 
@@ -94,6 +98,11 @@ const customPage: DocsPage = {
   tableOfContents: [],
 };
 
+test("accepts OpenAPI 3 documents only", () => {
+  expect(isOpenApiDocument({ openapi: "3.1.0", paths: {} })).toBe(true);
+  expect(isOpenApiDocument({ swagger: "2.0", paths: {} })).toBe(false);
+});
+
 test("generates OpenAPI routes, form metadata, and sidebar badges after custom sections", () => {
   const config = heyoDocs({
     content: "./content",
@@ -176,103 +185,6 @@ test("lets an MDX route take priority over a generated OpenAPI endpoint", () => 
   expect(navigation[0]?.sections.flatMap((section) => section.pages)).toEqual(
     [],
   );
-});
-
-test("normalises Swagger 2 request bodies, responses, servers, and security", () => {
-  const config = heyoDocs({
-    content: "./content",
-    groups: [{ group: "Legacy API", sections: [{ schema: "./swagger.json" }] }],
-  });
-  const endpoints = endpointsFromOpenApiDocuments(config.groups, [
-    {
-      groupIndex: 0,
-      sectionIndex: 0,
-      schema: "./swagger.json",
-      document: {
-        swagger: "2.0",
-        host: "api.example.com",
-        basePath: "/v1",
-        schemes: ["https"],
-        consumes: ["application/json"],
-        produces: ["application/json"],
-        security: [{ BearerAuth: [] }],
-        securityDefinitions: {
-          BearerAuth: { type: "http", scheme: "bearer" },
-        },
-        paths: {
-          "/planets/{planetId}": {
-            parameters: [
-              {
-                name: "planetId",
-                in: "path",
-                required: true,
-                type: "string",
-              },
-            ],
-            post: {
-              operationId: "createPlanet",
-              parameters: [
-                {
-                  name: "body",
-                  in: "body",
-                  required: true,
-                  description: "The planet to create.",
-                  schema: { $ref: "#/definitions/Planet" },
-                },
-              ],
-              responses: {
-                "201": {
-                  description: "Created",
-                  schema: { $ref: "#/definitions/Planet" },
-                  examples: {
-                    "application/json": { id: "planet_mars", name: "Mars" },
-                  },
-                },
-              },
-            },
-          },
-        },
-        definitions: {
-          Planet: {
-            type: "object",
-            properties: {
-              id: { type: "string" },
-              name: { type: "string", example: "Mars" },
-            },
-          },
-        },
-      },
-    },
-  ]);
-  const endpoint = endpoints[0];
-
-  expect(endpoint).toMatchObject({
-    method: "post",
-    path: "/planets/{planetId}",
-    servers: ["https://api.example.com/v1"],
-    parameters: [
-      {
-        name: "planetId",
-        in: "path",
-        required: true,
-        schema: { type: "string" },
-      },
-    ],
-    requestBody: {
-      contentType: "application/json",
-      description: "The planet to create.",
-      required: true,
-      example: { id: "", name: "Mars" },
-    },
-    responses: [
-      {
-        status: "201",
-        contentType: "application/json",
-        example: { id: "planet_mars", name: "Mars" },
-      },
-    ],
-    securitySchemes: { BearerAuth: { type: "http", scheme: "bearer" } },
-  });
 });
 
 test("builds examples for composed OpenAPI schemas", () => {

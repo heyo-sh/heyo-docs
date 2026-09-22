@@ -60,9 +60,9 @@ it and license your contribution under this repository's
 ## Public API and compatibility
 
 `heyo-docs` is a library. Treat exports, configuration, generated project
-behaviour, and documented CSS entry points as public contracts. Keep additions
-backwards compatible unless the issue and pull request explicitly identify a
-breaking change. Do not silently change default visual behaviour across themes.
+behaviour, and documented CSS entry points as public contracts. Clearly identify
+breaking changes in the issue and pull request. Do not silently change default
+visual behaviour across themes.
 
 Read the focused guides before changing an extension point:
 

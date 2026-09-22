@@ -61,8 +61,21 @@ not include the `.mdx` extension.
 </CodeBlock>
 
 The order is meaningful: it controls the sidebar and the previous/next links at
-the end of each article. Use a page object with `title` and `src` when a
-sidebar entry should point to a page outside the local documentation.
+the end of each article. To link a separate documentation site, use a top-level
+documentation group with an HTTP(S) `src`.
+
+## Add header buttons
+
+`navigation` renders every item as a `Button`. Each item needs a `label` and
+`href`; `variant` accepts the same values as `Button` and defaults to `link`.
+Use `primary` for a prominent action.
+
+<CodeBlock language="ts" title="heyo-docs.config.ts">
+  {`navigation: [
+  { label: "Status", href: "https://status.example.com" },
+  { label: "Sign in", href: "https://app.example.com", variant: "primary" },
+],`}
+</CodeBlock>
 
 ## AI chat
 
