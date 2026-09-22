@@ -1,10 +1,10 @@
 import {
-  changelogGroupForPage,
   createDocsModel,
   findDocsPage,
   findOpenApiEndpoint,
   normaliseDocsPathname,
-} from "@heyo-sh/heyo-docs";
+} from "@heyo-sh/heyo-docs/model";
+import { changelogGroupForPage } from "@heyo-sh/heyo-docs/navigation";
 
 import config from "../../heyo-docs.config";
 import { openApiDocuments } from "virtual:heyo-docs-openapi";
@@ -22,6 +22,7 @@ export function docsContext(pathname: string) {
   return {
     config,
     model,
+    navigation: model.navigation,
     page,
     endpoint,
     changelogGroup: page

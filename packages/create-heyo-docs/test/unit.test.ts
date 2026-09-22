@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 
 import {
   detectPackageManager,
@@ -11,6 +11,8 @@ import { projectNameError } from "../src/project-name";
 import { parseArguments } from "../src/index";
 import { scaffoldProject } from "../src/scaffold";
 import { mergePackageJson, replacePlaceholders } from "../src/utils";
+
+const root = resolve(import.meta.dir, "../../..");
 
 describe("creator utilities", () => {
   test("detects the invoking package manager", () => {
@@ -76,115 +78,47 @@ describe("creator utilities", () => {
               ? join(projectPath, "app/root.tsx")
               : join(projectPath, "src/layouts/docs-layout.astro");
         const layout = await readFile(layoutPath, "utf8");
-        expect(layout).toContain("integrations/analytics/adobe");
-        expect(layout).toContain("integrations/analytics/amplitude");
-        expect(layout).toContain("integrations/analytics/clarity");
-        expect(layout).toContain("integrations/analytics/clearbit");
-        expect(layout).toContain("integrations/analytics/fathom");
-        expect(layout).toContain("integrations/analytics/google-analytics");
-        expect(layout).toContain("integrations/analytics/google-tag-manager");
-        expect(layout).toContain("integrations/analytics/heap");
-        expect(layout).toContain("integrations/analytics/hotjar");
-        expect(layout).toContain("integrations/analytics/logrocket");
-        expect(layout).toContain("integrations/analytics/mixpanel");
-        expect(layout).toContain("integrations/analytics/openpanel");
-        expect(layout).toContain("integrations/analytics/openreplay");
-        expect(layout).toContain("integrations/analytics/pirsch");
-        expect(layout).toContain("integrations/analytics/plausible");
-        expect(layout).toContain("integrations/analytics/posthog");
-        expect(layout).toContain("integrations/analytics/rybbit");
-        expect(layout).toContain("integrations/analytics/swetrix");
-        expect(layout).toContain("integrations/analytics/umami");
-        expect(layout).toContain("integrations/support/chaskiq");
-        expect(layout).toContain("integrations/support/chatwoot");
-        expect(layout).toContain("integrations/support/front");
-        expect(layout).toContain("integrations/support/intercom");
-        expect(layout).toContain("integrations/support/papercups");
-        expect(layout).toContain("integrations/support/typebot");
-        expect(layout).toContain("integrations/support/zammad");
-        expect(layout).toContain("integrations/consent/osano");
-        expect(layout).toContain("integrations/consent/transcend");
-        expect(layout).toContain("config.integrations.consent.osano");
-        expect(layout).toContain("config.integrations.consent.transcend");
-        expect(layout).toContain("config.integrations.analytics.adobe");
-        expect(layout).toContain("config.integrations.analytics.amplitude");
-        expect(layout).toContain("config.integrations.analytics.clarity");
-        expect(layout).toContain("config.integrations.analytics.clearbit");
-        expect(layout).toContain("config.integrations.analytics.fathom");
-        expect(layout).toContain("config.integrations.analytics.ga4");
-        expect(layout).toContain("config.integrations.analytics.gtm");
-        expect(layout).toContain("config.integrations.analytics.heap");
-        expect(layout).toContain("config.integrations.analytics.hotjar");
-        expect(layout).toContain("config.integrations.analytics.logrocket");
-        expect(layout).toContain("config.integrations.analytics.mixpanel");
-        expect(layout).toContain("config.integrations.analytics.openpanel");
-        expect(layout).toContain("config.integrations.analytics.openreplay");
-        expect(layout).toContain("config.integrations.analytics.pirsch");
-        expect(layout).toContain("config.integrations.analytics.plausible");
-        expect(layout).toContain("config.integrations.analytics.posthog");
-        expect(layout).toContain("config.integrations.analytics.rybbit");
-        expect(layout).toContain("config.integrations.analytics.swetrix");
-        expect(layout).toContain("config.integrations.analytics.umami");
-        expect(layout).toContain("config.integrations.support.chaskiq");
-        expect(layout).toContain("config.integrations.support.chatwoot");
-        expect(layout).toContain("config.integrations.support.front");
-        expect(layout).toContain("config.integrations.support.intercom");
-        expect(layout).toContain("config.integrations.support.papercups");
-        expect(layout).toContain("config.integrations.support.typebot");
-        expect(layout).toContain("config.integrations.support.zammad");
-        expect(layout).toContain("data-intercom-app-id");
-        expect(layout).toContain("data-intercom-api-base");
-        expect(layout).toContain("data-front-chat-id");
-        expect(layout).toContain("data-chatwoot-website-token");
-        expect(layout).toContain("data-chaskiq-app-id");
-        expect(layout).toContain("data-papercups-token");
-        expect(layout).toContain("data-heyo-typebot");
-        expect(layout).toContain("data-zammad-chat-id");
-        expect(layout).toContain("data-google-tag-manager-container-id");
-        expect(layout).toContain("googleTagManagerNoScript");
-        expect(layout).toContain("data-google-analytics-measurement-id");
-        expect(layout).toContain("data-heap-environment-id");
+        expect(layout).toContain("@heyo-sh/heyo-docs/integrations");
+        expect(layout).toContain("IntegrationScripts");
+        expect(layout).not.toContain("integrations/analytics/adobe");
+        expect(layout).toContain("themeBootstrapScript");
 
-        const osanoScript =
-          template === "astro"
-            ? "{osano && <script is:inline src={osano.src}></script>}"
-            : "{osano && <script src={osano.src} />}";
-        const adobeScript =
-          template === "astro"
-            ? "{adobe && <script is:inline async src={adobe.src}></script>}"
-            : "{adobe && <script async={adobe.async} src={adobe.src} />}";
-        const osanoIndex = layout.indexOf(osanoScript);
-        const transcendIndex = layout.indexOf("transcend && (");
-        const transcendDefaultsIndex = layout.indexOf(
-          "transcendGoogleConsentDefaults && (",
+        const config = await readFile(
+          join(projectPath, "heyo-docs.config.ts"),
+          "utf8",
         );
-        const headIndex = layout.indexOf("<head>");
-        const firstMetadataIndex = layout.indexOf(
-          template === "astro"
-            ? '<meta charset="utf-8" />'
-            : template === "next"
-              ? '<meta name="color-scheme" content="light dark" />'
-              : '<meta charSet="utf-8" />',
-        );
-        const themeIndex = layout.lastIndexOf("getThemeScript(");
-        const adobeIndex = layout.indexOf(adobeScript);
-        const intercomIndex = layout.indexOf("intercom && (");
+        expect(config).not.toContain("groups:");
+        expect(config).not.toContain("content:");
+        expect(config).toContain("integrations:");
 
-        expect(osanoIndex).toBeGreaterThan(-1);
-        expect(transcendIndex).toBeGreaterThan(-1);
-        expect(transcendDefaultsIndex).toBeGreaterThan(-1);
-        expect(headIndex).toBeGreaterThan(-1);
-        expect(firstMetadataIndex).toBeGreaterThan(-1);
-        expect(themeIndex).toBeGreaterThan(-1);
-        expect(adobeIndex).toBeGreaterThan(-1);
-        expect(intercomIndex).toBeGreaterThan(-1);
-        expect(osanoIndex).toBeLessThan(themeIndex);
-        expect(transcendIndex).toBeLessThan(osanoIndex);
-        expect(headIndex).toBeLessThan(transcendDefaultsIndex);
-        expect(transcendDefaultsIndex).toBeLessThan(transcendIndex);
-        expect(transcendIndex).toBeLessThan(firstMetadataIndex);
-        expect(osanoIndex).toBeLessThan(adobeIndex);
-        expect(osanoIndex).toBeLessThan(intercomIndex);
+        const docsAppPath =
+          template === "next"
+            ? join(projectPath, "app/components/docs-app.tsx")
+            : template === "react-router"
+              ? join(projectPath, "app/routes/docs.tsx")
+              : join(projectPath, "src/components/docs-app.tsx");
+        expect(await readFile(docsAppPath, "utf8")).toContain(
+          "@heyo-sh/heyo-docs/theme/grain",
+        );
+        expect(
+          await Bun.file(join(projectPath, "content/index.mdx")).exists(),
+        ).toBe(true);
+        expect(
+          await Bun.file(join(projectPath, "content/quickstart.mdx")).exists(),
+        ).toBe(false);
+
+        const sourceFavicon = await readFile(
+          join(
+            root,
+            "packages/create-heyo-docs/templates",
+            template,
+            "public/favicon.ico",
+          ),
+        );
+        const generatedFavicon = await readFile(
+          join(projectPath, "public/favicon.ico"),
+        );
+        expect(generatedFavicon.equals(sourceFavicon)).toBe(true);
       }
     } finally {
       await rm(cwd, { recursive: true, force: true });

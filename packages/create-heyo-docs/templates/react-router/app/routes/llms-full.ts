@@ -1,4 +1,4 @@
-import { llmsFull } from "@heyo-sh/heyo-docs";
+import { llmsFull } from "@heyo-sh/heyo-docs/llm";
 import type { LoaderFunctionArgs } from "react-router";
 
 import config from "../../heyo-docs.config";

@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import type { DocsPage, MdxComponents } from "../../../types";
 import { markdownPathname } from "../../../llm";
 import { CopyForLlm } from "../actions/copy-for-llm";
@@ -50,14 +52,16 @@ export function DocumentationContent({
           </p>
         ) : null}
       </header>
-      <Content
-        components={{
-          ...documentationMdxComponents,
-          ...mdxComponents,
-          h1: DocumentTitle as never,
-          pre: DocumentationCodeBlock as never,
-        }}
-      />
+      <Suspense fallback={<p aria-busy="true">Loading documentation…</p>}>
+        <Content
+          components={{
+            ...documentationMdxComponents,
+            ...mdxComponents,
+            h1: DocumentTitle as never,
+            pre: DocumentationCodeBlock as never,
+          }}
+        />
+      </Suspense>
     </article>
   );
 }

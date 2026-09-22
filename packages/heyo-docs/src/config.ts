@@ -1,5 +1,4 @@
 import { z } from "zod";
-import type { ReactNode } from "react";
 
 import { builtInThemeNames } from "./theme/names";
 import { adobeAnalyticsSchema } from "./integrations/analytics/adobe";
@@ -30,7 +29,7 @@ import { papercupsSupportSchema } from "./integrations/support/papercups";
 import { typebotSupportSchema } from "./integrations/support/typebot";
 import { zammadSupportSchema } from "./integrations/support/zammad";
 import { umamiAnalyticsSchema } from "./integrations/analytics/umami";
-import { authTypesForAiProvider } from "./ai-auth";
+import { authTypesForAiProvider } from "./ai/auth";
 import type {
   AiChatAuth,
   AiOAuthTokenResolver,
@@ -141,9 +140,22 @@ const chatSchema = z
       });
   });
 
+const aiRequestGuardSchema = z.custom<
+  (request: Request) => Response | void | Promise<Response | void>
+>(
+  (
+    value,
+  ): value is (
+    request: Request,
+  ) => Response | void | Promise<Response | void> =>
+    typeof value === "function",
+  "ai.authorize must be a function.",
+);
+
 const aiSchema = z
   .object({
     chat: chatSchema,
+    authorize: aiRequestGuardSchema.optional(),
   })
   .strict();
 
@@ -263,9 +275,9 @@ const configSchema = z
       })
       .strict()
       .default({}),
-    // JSX is runtime-only UI. Adapters that emit JSON must omit it from their
-    // generated data and use the application's original configuration.
-    navigation: z.custom<ReactNode>().optional(),
+    navigation: z
+      .array(z.object({ label: nonEmptyString, href: nonEmptyString }).strict())
+      .default([]),
     groups: z
       .array(z.union([documentationGroupSchema, changelogGroupSchema]))
       .default([]),
@@ -277,7 +289,11 @@ const configSchema = z
       .strict()
       .default({}),
     mode: z.enum(["system", "light", "dark"]).default("system"),
-    content: z.string().trim().min(1, "A content directory must be provided."),
+    content: z
+      .string()
+      .trim()
+      .min(1, "A content directory must be provided.")
+      .default("content"),
     branding: z
       .object({
         name: z.string().trim().min(1).optional(),

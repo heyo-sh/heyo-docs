@@ -6,8 +6,10 @@
   "scripts": {
     "dev": "bun run --filter @heyo-sh/heyo-docs build && react-router dev",
     "build": "bun run --filter @heyo-sh/heyo-docs build && react-router build",
+    "build:workspace": "react-router build",
     "start": "react-router-serve ./build/server/index.js",
-    "typecheck": "bun run --filter @heyo-sh/heyo-docs build && react-router typegen && tsc -p tsconfig.json"
+    "typecheck": "bun run --filter @heyo-sh/heyo-docs build && react-router typegen && tsc -p tsconfig.json",
+    "typecheck:workspace": "react-router typegen && tsc -p tsconfig.json"
   },
   "dependencies": {
     "@fontsource-variable/figtree": "^5.3.0",

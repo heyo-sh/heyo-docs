@@ -2,15 +2,15 @@
 import { AstroDocsApp } from "../components/docs-app";
 import DocsLayout from "../layouts/docs-layout.astro";
 import { docsContext, pathnameForSlug } from "../lib/docs";
-import { docsSeo } from "../lib/seo";
-import { openApiEndpointDetail } from "@heyo-sh/heyo-docs";
+import { docsSeo, siteSeo } from "@heyo-sh/heyo-docs/seo";
+import { openApiEndpointDetail } from "@heyo-sh/heyo-docs/openapi";
 import { pages } from "virtual:heyo-docs-content";
 import { openApiEndpoints } from "virtual:heyo-docs-openapi/index";
 
 export async function getStaticPaths() {
-  return [...pages, ...openApiEndpoints].map(({ slug }) => ({
-    params: { slug: slug === "/" ? undefined : slug.slice(1) },
-  }));
+  return [...pages, ...openApiEndpoints]
+    .filter(({ slug }) => slug !== "/")
+    .map(({ slug }) => ({ params: { slug: slug.slice(1) } }));
 }
 
 const pathname = pathnameForSlug(Astro.params.slug);
@@ -25,16 +25,8 @@ const seo = exists
   ? docsSeo({ ...context, pathname })
   : {
       title: `Not found | ${context.config.title}`,
-      description: context.config.description,
-      structuredData: [
-        {
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          name: context.config.title,
-          description: context.config.description,
-          ...(context.config.siteUrl ? { url: context.config.siteUrl } : {}),
-        },
-      ],
+      description: siteSeo(context.config).description,
+      structuredData: siteSeo(context.config).structuredData,
     };
 ---
 

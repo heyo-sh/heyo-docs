@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
 import { getProviders } from "@mariozechner/pi-ai";
-import { createElement } from "react";
 
 import { heyoDocs, validateConfig } from "../src/config";
 
@@ -15,13 +14,13 @@ function authForProvider(provider: string) {
 }
 
 describe("configuration", () => {
-  test("applies stable defaults around the required content directory", () => {
+  test("applies stable defaults for a minimal configuration", () => {
     expect(heyoDocs({ content: "./docs" })).toEqual({
       title: "Heyo Documentation",
       description: "Clear, focused documentation for your project.",
       theme: "grain",
       colors: {},
-      navigation: undefined,
+      navigation: [],
       groups: [],
       footer: {},
       mode: "system",
@@ -33,8 +32,8 @@ describe("configuration", () => {
     });
   });
 
-  test("requires an explicit content directory", () => {
-    expect(() => validateConfig({} as never)).toThrow(/content/i);
+  test("defaults content to the conventional content directory", () => {
+    expect(heyoDocs({}).content).toBe("content");
     expect(() => validateConfig({ content: "  " } as never)).toThrow(
       "A content directory must be provided.",
     );
@@ -464,16 +463,14 @@ describe("configuration", () => {
     ).toBe("documentation");
   });
 
-  test("accepts an application-owned navigation element", () => {
-    const navigation = createElement(
-      "a",
-      { href: "https://github.com/acme" },
-      "GitHub",
-    );
-
-    expect(heyoDocs({ content: "./content", navigation }).navigation).toBe(
+  test("accepts browser-safe declarative navigation links", () => {
+    const navigation = [{ label: "GitHub", href: "https://github.com/acme" }];
+    expect(heyoDocs({ content: "./content", navigation }).navigation).toEqual(
       navigation,
     );
+    expect(() =>
+      validateConfig({ content: "./content", navigation: [{}] } as never),
+    ).toThrow();
   });
 
   test("rejects invalid config fields instead of ignoring them", () => {

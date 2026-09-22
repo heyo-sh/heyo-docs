@@ -11,6 +11,9 @@ import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 
 import { heyoDocs as defineHeyoDocs } from "../src/config";
 import { DocsApp } from "../src/index";
+import { grainTheme } from "../src/theme/grain";
+import { mossTheme } from "../src/theme/moss";
+import { shadeTheme } from "../src/theme/shade";
 import { PageNavigation } from "../src/theme/components/actions/navigation";
 import { OpenApiDescription } from "../src/theme/components/openapi/description";
 import type {
@@ -49,13 +52,10 @@ function breadcrumbMarkup(html: string) {
 test("renders the built-in theme components", () => {
   const html = renderToStaticMarkup(
     createElement(DocsApp, {
+      theme: grainTheme,
       config: heyoDocs({
         branding: { name: "Custom docs" },
-        navigation: createElement(
-          "a",
-          { href: "https://github.com/acme" },
-          "GitHub",
-        ),
+        navigation: [{ label: "GitHub", href: "https://github.com/acme" }],
         footer: { website: "https://example.com" },
         groups: [
           {
@@ -86,6 +86,7 @@ test("renders the built-in theme components", () => {
 test("renders Grain branding logos at the shared size and with dark-mode inversion", () => {
   const html = renderToStaticMarkup(
     createElement(DocsApp, {
+      theme: grainTheme,
       config: heyoDocs({ branding: { logo: "/logo.svg" } }),
       pages,
       pathname: "/",
@@ -100,6 +101,7 @@ test("renders Grain branding logos at the shared size and with dark-mode inversi
 test("renders an AI chat trigger without exposing server authentication", () => {
   const html = renderToStaticMarkup(
     createElement(DocsApp, {
+      theme: grainTheme,
       config: heyoDocs({
         ai: {
           chat: {
@@ -123,6 +125,7 @@ test("renders an AI chat trigger without exposing server authentication", () => 
 test("adapts the AI chat chrome to the selected theme", () => {
   const html = renderToStaticMarkup(
     createElement(DocsApp, {
+      theme: grainTheme,
       config: heyoDocs({
         ai: {
           chat: {
@@ -146,6 +149,7 @@ test("adapts the AI chat chrome to the selected theme", () => {
 test("places Shade navigation controls in the header and uses native sidebar buttons", () => {
   const html = renderToStaticMarkup(
     createElement(DocsApp, {
+      theme: shadeTheme,
       config: heyoDocs({
         branding: { name: "Custom docs" },
         footer: { github: "https://github.com/acme" },
@@ -159,11 +163,7 @@ test("places Shade navigation controls in the header and uses native sidebar but
             sections: [{ pages: ["reference"] }],
           },
         ],
-        navigation: createElement(
-          "a",
-          { href: "https://example.com/sign-in" },
-          "Sign in",
-        ),
+        navigation: [{ label: "Sign in", href: "https://example.com/sign-in" }],
         theme: "shade",
       }),
       isDark: true,
@@ -199,6 +199,7 @@ test("places Shade navigation controls in the header and uses native sidebar but
 test("places Moss search and footer links in the sidebar with centered header tabs", () => {
   const html = renderToStaticMarkup(
     createElement(DocsApp, {
+      theme: mossTheme,
       config: heyoDocs({
         branding: { name: "Moss docs" },
         colors: { primary: "#2f855a" },
@@ -307,6 +308,7 @@ test("renders registered custom components from compiled MDX in documentation an
 
   const documentationHtml = renderToStaticMarkup(
     createElement(DocsApp, {
+      theme: grainTheme,
       config,
       mdxComponents,
       pages: [documentationPage, changelogPage],
@@ -315,6 +317,7 @@ test("renders registered custom components from compiled MDX in documentation an
   );
   const changelogHtml = renderToStaticMarkup(
     createElement(DocsApp, {
+      theme: grainTheme,
       config,
       mdxComponents,
       pages: [documentationPage, changelogPage],
@@ -331,6 +334,7 @@ test("renders registered custom components from compiled MDX in documentation an
 test("uses a Sheet for mobile navigation while keeping the desktop sidebar separate", () => {
   const html = renderToStaticMarkup(
     createElement(DocsApp, {
+      theme: grainTheme,
       config: heyoDocs({
         groups: [
           {
@@ -356,6 +360,7 @@ test("uses a Sheet for mobile navigation while keeping the desktop sidebar separ
 test("renders unsectioned pages directly in the Grain sidebar", () => {
   const html = renderToStaticMarkup(
     createElement(DocsApp, {
+      theme: grainTheme,
       config: heyoDocs({
         groups: [
           {
@@ -382,6 +387,7 @@ test("renders the configured icon beside an individual documentation page", () =
     createElement("svg", { "data-page-icon": "true", ...props });
   const html = renderToStaticMarkup(
     createElement(DocsApp, {
+      theme: grainTheme,
       config: heyoDocs({
         groups: [
           {
@@ -420,6 +426,7 @@ test("renders configured group icons in every theme's group navigation", () => {
   for (const theme of ["grain", "shade", "moss"] as const) {
     const html = renderToStaticMarkup(
       createElement(DocsApp, {
+        theme: grainTheme,
         config: heyoDocs({
           groups: [
             {
@@ -443,6 +450,7 @@ test("renders configured group icons in every theme's group navigation", () => {
 test("renders external documentation groups as regular links", () => {
   const html = renderToStaticMarkup(
     createElement(DocsApp, {
+      theme: grainTheme,
       config: heyoDocs({
         groups: [
           {
@@ -479,6 +487,7 @@ test("uses the host router link for internal documentation navigation", () => {
   };
   const html = renderToStaticMarkup(
     createElement(DocsApp, {
+      theme: grainTheme,
       config: heyoDocs({
         groups: [
           {
@@ -511,6 +520,7 @@ test("renders nested sections in the Grain sidebar and breadcrumbs", () => {
   };
   const html = renderToStaticMarkup(
     createElement(DocsApp, {
+      theme: grainTheme,
       config: heyoDocs({
         groups: [
           {
@@ -549,11 +559,12 @@ test("renders nested sections in the Grain sidebar and breadcrumbs", () => {
   expect(breadcrumb).toContain("Deploy safely");
 });
 
-test("renders the supplied navigation element", () => {
+test("renders declarative header navigation links", () => {
   const html = renderToStaticMarkup(
     createElement(DocsApp, {
+      theme: grainTheme,
       config: heyoDocs({
-        navigation: createElement(TestIcon),
+        navigation: [{ label: "Status", href: "/status" }],
       }),
       iconSet,
       pages,
@@ -561,7 +572,8 @@ test("renders the supplied navigation element", () => {
     }),
   );
 
-  expect(html).toContain('data-icon-set="test"');
+  expect(html).toContain('href="/status"');
+  expect(html).toContain("Status");
 });
 
 test("renders bordered page navigation and the heyo-docs credit", () => {
@@ -633,6 +645,7 @@ test("scopes sidebar navigation to the active documentation group", () => {
   ];
   const html = renderToStaticMarkup(
     createElement(DocsApp, {
+      theme: grainTheme,
       config: heyoDocs({
         groups: [
           {
@@ -673,6 +686,7 @@ test("shows the active section in the Grain sidebar header", () => {
   ];
   const html = renderToStaticMarkup(
     createElement(DocsApp, {
+      theme: grainTheme,
       config: heyoDocs({
         groups: [
           {
@@ -711,6 +725,7 @@ test("renders group, section, and page breadcrumbs in the Grain header", () => {
   ];
   const html = renderToStaticMarkup(
     createElement(DocsApp, {
+      theme: grainTheme,
       config: heyoDocs({
         groups: [
           {
@@ -771,6 +786,7 @@ test("uses changelog group metadata and renders tags below their dates", () => {
   };
   const html = renderToStaticMarkup(
     createElement(DocsApp, {
+      theme: grainTheme,
       config: heyoDocs({
         groups: [
           {
@@ -819,6 +835,7 @@ test("uses a helpful default description for changelog groups", () => {
   };
   const html = renderToStaticMarkup(
     createElement(DocsApp, {
+      theme: grainTheme,
       config: heyoDocs({
         groups: [
           {
@@ -885,6 +902,7 @@ test("adds page navigation to OpenAPI endpoints and only a credit to changelogs"
 
   const openApiHtml = renderToStaticMarkup(
     createElement(DocsApp, {
+      theme: grainTheme,
       config,
       openApiDocuments,
       pages: [apiOverview, changelog],
@@ -893,6 +911,7 @@ test("adds page navigation to OpenAPI endpoints and only a credit to changelogs"
   );
   const changelogHtml = renderToStaticMarkup(
     createElement(DocsApp, {
+      theme: grainTheme,
       config,
       openApiDocuments,
       pages: [apiOverview, changelog],
@@ -901,6 +920,7 @@ test("adds page navigation to OpenAPI endpoints and only a credit to changelogs"
   );
   const apiOverviewHtml = renderToStaticMarkup(
     createElement(DocsApp, {
+      theme: grainTheme,
       config,
       openApiDocuments,
       pages: [apiOverview, changelog],
@@ -928,7 +948,10 @@ test("renders an interactive OpenAPI endpoint with Bearer auth and request body"
         openapi: "3.1.0",
         info: { title: "Square" },
         security: [{ BearerAuth: [] }],
-        servers: [{ url: "https://api.example.com/v1" }],
+        servers: [
+          { url: "https://api.example.com/v1" },
+          { url: "https://sandbox.example.com/v1" },
+        ],
         paths: {
           "/organizations/{organizationId}/planets": {
             post: {
@@ -990,6 +1013,7 @@ test("renders an interactive OpenAPI endpoint with Bearer auth and request body"
   ];
   const html = renderToStaticMarkup(
     createElement(DocsApp, {
+      theme: grainTheme,
       config: heyoDocs({
         groups: [{ group: "API", sections: [{ schema: "./openapi.json" }] }],
       }),
@@ -1022,5 +1046,6 @@ test("renders an interactive OpenAPI endpoint with Bearer auth and request body"
     html.indexOf("API server"),
     html.indexOf("Bearer token"),
   );
+  expect(apiServerProperty).toContain('data-slot="select-trigger"');
   expect(apiServerProperty).not.toContain("optional");
 });

@@ -6,12 +6,23 @@
     "packages/heyo-docs": {
       "entry": [
         "src/index.tsx",
-        "src/vite.ts",
-        "src/node.ts",
-        "src/next.ts",
-        "src/next-plugins.ts",
-        "src/astro.ts",
+        "src/adapters/vite/index.ts",
+        "src/server/index.ts",
+        "src/adapters/next/index.ts",
+        "src/adapters/next/plugins.ts",
+        "src/adapters/astro/index.ts",
         "src/config.ts",
+        "src/link.ts",
+        "src/mdx.ts",
+        "src/openapi/index.ts",
+        "src/openapi/request.ts",
+        "src/seo/index.ts",
+        "src/seo/next.ts",
+        "src/seo/react-router.ts",
+        "src/ai/index.ts",
+        "src/theme/index.ts",
+        "src/theme/provider.tsx",
+        "src/theme/script.ts",
         "test/**/*.test.ts"
       ],
       "project": [

@@ -1,10 +1,10 @@
-import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, test } from "bun:test";
 
 import { heyoDocs as defineHeyoDocs } from "../src/config";
-import { heyoDocs } from "../src/vite";
+import { heyoDocs } from "../src/adapters/vite";
 
 async function createFixture() {
   const root = await mkdtemp(join(tmpdir(), "heyo-docs-vite-"));
@@ -61,17 +61,27 @@ test("exposes an AI configuration to the browser without authentication", async 
   }
 });
 
-test("selects the stylesheet from the configured theme", async () => {
+test("selects the stylesheet from the configured theme and host sources", async () => {
   const root = await createFixture();
+  await Promise.all([mkdir(join(root, "app")), mkdir(join(root, "src"))]);
   try {
     const plugin = heyoDocs({
       config: defineHeyoDocs({ content: "content", theme: "moss" }),
     });
     plugin.configResolved({ command: "build", root });
-    const id = plugin.resolveId("virtual:heyo-docs-theme.css");
+    const stylesheetPath = plugin.resolveId("virtual:heyo-docs-theme.css");
 
-    await expect(plugin.load(id!)).resolves.toBe(
-      '@import "@heyo-sh/heyo-docs/theme/moss.css";\n',
+    expect(stylesheetPath).toBe(
+      join(root, "node_modules", ".heyo-docs", "theme.css"),
+    );
+    await expect(readFile(stylesheetPath!, "utf8")).resolves.toBe(
+      [
+        '@import "@heyo-sh/heyo-docs/theme/moss.css";',
+        `@source ${JSON.stringify(join(root, "app"))};`,
+        `@source ${JSON.stringify(join(root, "src"))};`,
+        `@source ${JSON.stringify(join(root, "content"))};`,
+        "",
+      ].join("\n"),
     );
   } finally {
     await rm(root, { force: true, recursive: true });
@@ -389,6 +399,28 @@ test("serves the same OpenAPI endpoint JSON in Vite development", async () => {
     expect(response.statusCode).toBe(200);
     expect(response.body).toContain('"Planet"');
     expect(response.body).not.toContain('"Unused"');
+  } finally {
+    await rm(root, { force: true, recursive: true });
+  }
+});
+
+test("reports malformed local OpenAPI schemas instead of treating them as missing", async () => {
+  const root = await createFixture();
+  await writeFile(join(root, "content", "broken.json"), "{");
+
+  try {
+    const plugin = heyoDocs({
+      config: defineHeyoDocs({
+        content: "./content",
+        groups: [{ group: "API", sections: [{ schema: "broken.json" }] }],
+      }),
+    });
+    plugin.configResolved({ command: "build", root });
+    const id = plugin.resolveId("virtual:heyo-docs-openapi");
+
+    await expect(plugin.load(id!)).rejects.toThrow(
+      'could not parse OpenAPI schema "broken.json"',
+    );
   } finally {
     await rm(root, { force: true, recursive: true });
   }

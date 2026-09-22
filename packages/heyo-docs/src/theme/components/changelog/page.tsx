@@ -7,6 +7,7 @@ import {
   useEffect,
   useMemo,
   useState,
+  Suspense,
   type ReactNode,
 } from "react";
 
@@ -174,15 +175,17 @@ export function ChangelogPage({
               </p>
             </header>
             <div className="mt-10">
-              <Content
-                components={{
-                  ...documentationMdxComponents,
-                  ...mdxComponents,
-                  h1: DocumentTitle as never,
-                  pre: DocumentationCodeBlock as never,
-                  Update: Update as never,
-                }}
-              />
+              <Suspense fallback={<p aria-busy="true">Loading changelog…</p>}>
+                <Content
+                  components={{
+                    ...documentationMdxComponents,
+                    ...mdxComponents,
+                    h1: DocumentTitle as never,
+                    pre: DocumentationCodeBlock as never,
+                    Update: Update as never,
+                  }}
+                />
+              </Suspense>
             </div>
             <div className="mb-6 mt-12">
               <PoweredByHeyoDocs />

@@ -24,13 +24,14 @@ import {
   RiInformationLine,
   RiLightbulbLine,
   RiLoginBoxLine,
+  RiMenuLine,
   RiMoonLine,
   RiNewsLine,
   RiSearchLine,
   RiStarLine,
   RiSunLine,
 } from "@remixicon/react";
-import type { IconSet } from "@heyo-sh/heyo-docs";
+import type { IconSet } from "@heyo-sh/heyo-docs/types";
 
 /**
  * This mapping is intentionally local to the generated application. Replace
@@ -51,6 +52,7 @@ export const iconSet = {
   arrowRight: RiArrowRightLine,
   close: RiCloseLine,
   cornerDownLeft: RiCornerDownLeftLine,
+  menu: RiMenuLine,
   search: RiSearchLine,
   sun: RiSunLine,
   moon: RiMoonLine,

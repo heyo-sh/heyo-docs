@@ -8,9 +8,9 @@
   ],
   "scripts": {
     "dev": "bun run --filter '*' dev",
-    "build": "bun run --filter '*' build",
+    "build": "bun run --filter @heyo-sh/heyo-docs build && bun run --filter @heyo-sh/create-heyo-docs build && bun run --filter heyo-docs-react-router-example build:workspace && bun run --filter heyo-docs-next-example build:workspace && bun run --filter heyo-docs-astro-example build:workspace",
     "test": "bun test",
-    "typecheck": "bun run --filter @heyo-sh/heyo-docs build && bun run --filter '*' typecheck",
+    "typecheck": "bun run --filter @heyo-sh/heyo-docs build && bun run --filter @heyo-sh/create-heyo-docs typecheck && bun run --filter heyo-docs-react-router-example typecheck:workspace && bun run --filter heyo-docs-next-example typecheck:workspace && bun run --filter heyo-docs-astro-example typecheck:workspace",
     "format": "prettier --write .",
     "lint": "prettier --check .",
     "format-staged": "lint-staged",

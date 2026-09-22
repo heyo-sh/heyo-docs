@@ -1,4 +1,4 @@
-import { rssXml } from "@heyo-sh/heyo-docs";
+import { rssXml } from "@heyo-sh/heyo-docs/rss";
 import type { LoaderFunctionArgs } from "react-router";
 
 import config from "../../heyo-docs.config";

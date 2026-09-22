@@ -1,4 +1,3 @@
-import { createAiChatResponse } from "@heyo-sh/heyo-docs/ai";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 import config from "../../../heyo-docs.config";
@@ -7,17 +6,20 @@ import { docsPages, markdownPages } from "../../_heyo-docs/server";
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
-  const { env } = getCloudflareContext();
-  const apiKey = env.OPENAI_API_KEY;
-  if (!apiKey)
+  if (!config.ai?.chat)
     return Response.json(
-      { error: "The OPENAI_API_KEY Worker secret is not configured." },
-      { status: 500 },
+      { error: "AI chat is not configured." },
+      { status: 404 },
     );
 
+  const { env } = getCloudflareContext();
+  const token = env.HEYO_DOCS_AI_API_KEY ?? env.OPENAI_API_KEY;
+  const { createAiChatResponse } = await import("@heyo-sh/heyo-docs/ai");
   return createAiChatResponse(request, {
     ai: config.ai,
-    auth: { type: "api-key", token: apiKey },
+    ...(config.ai?.chat.auth || !token
+      ? {}
+      : { auth: { type: "api-key" as const, token } }),
     markdownPages,
     pages: docsPages,
     title: config.title,

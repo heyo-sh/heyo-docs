@@ -71,6 +71,27 @@ export function navigationFromGroups(
   pages: PageReferenceTarget[],
   endpoints: OpenApiEndpoint[] = [],
 ): NavigationGroup[] {
+  // A starter should work with only `content/index.mdx`. Explicit groups still
+  // own ordering and labels, but an omitted group list produces a stable,
+  // alphabetically ordered documentation section instead of an empty sidebar.
+  if (groups.length === 0) {
+    return [
+      {
+        group: "Documentation",
+        icon: "book",
+        public: true,
+        sections: [
+          {
+            expanded: true,
+            pages: [...pages]
+              .sort((left, right) => left.slug.localeCompare(right.slug))
+              .map((page) => ({ slug: page.slug, title: page.title })),
+          },
+        ],
+      },
+    ];
+  }
+
   return groups.flatMap((group, groupIndex): NavigationGroup[] => {
     if (group.type === "changelog") {
       return [

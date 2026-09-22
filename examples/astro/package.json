@@ -7,8 +7,10 @@
   "scripts": {
     "dev": "bun run --filter @heyo-sh/heyo-docs build && astro dev",
     "build": "bun run --filter @heyo-sh/heyo-docs build && astro build",
+    "build:workspace": "astro build",
     "start": "node ./dist/server/entry.mjs",
-    "typecheck": "bun run --filter @heyo-sh/heyo-docs build && astro check"
+    "typecheck": "bun run --filter @heyo-sh/heyo-docs build && astro check",
+    "typecheck:workspace": "astro check"
   },
   "dependencies": {
     "@astrojs/node": "^11.1.5",

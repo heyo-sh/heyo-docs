@@ -1,5 +1,8 @@
 import type { APIRoute } from "astro";
-import { markdownForPage, pathnameFromMarkdownPath } from "@heyo-sh/heyo-docs";
+import {
+  markdownForPage,
+  pathnameFromMarkdownPath,
+} from "@heyo-sh/heyo-docs/llm";
 
 import { pages } from "virtual:heyo-docs-content/server";
 

@@ -739,82 +739,41 @@ test("wires each browser integration into every framework template", async () =>
       ),
     ),
   ];
-  const integrations = [
-    "amplitude",
-    "clarity",
-    "clearbit",
-    "fathom",
-    "google-analytics",
-    "google-tag-manager",
-    "heap",
-    "hotjar",
-    "logrocket",
-    "mixpanel",
-    "openpanel",
-    "openreplay",
-    "pirsch",
-    "plausible",
-    "posthog",
-    "rybbit",
-    "swetrix",
-    "umami",
-  ];
-  const supportIntegrations = [
-    "chaskiq",
-    "chatwoot",
-    "front",
-    "intercom",
-    "papercups",
-    "typebot",
-    "zammad",
-  ];
-
   for (const template of templates) {
     const source = await template.text();
-
-    for (const integration of integrations) {
-      expect(source).toContain(`integrations/analytics/${integration}`);
-    }
-    for (const integration of supportIntegrations) {
-      expect(source).toContain(`integrations/support/${integration}`);
-    }
-
-    expect(source).toContain("integrations/consent/transcend");
-    expect(source).toContain("data-cfasync");
-    expect(source).toContain("transcendGoogleConsentModeDefaultsScript");
-    expect(source.indexOf("transcendGoogleConsentDefaults &&")).toBeLessThan(
-      source.indexOf("data-cfasync"),
-    );
-    expect(source).toContain("data-front-chat-id");
-    expect(source).toContain("data-chatwoot-website-token");
-    expect(source).toContain("data-chaskiq-app-id");
-    expect(source).toContain("data-papercups-token");
-    expect(source).toContain("data-heyo-typebot");
-    expect(source).toContain("data-zammad-chat-id");
-    expect(source).toContain("data-google-tag-manager-container-id");
-    expect(source).toContain("googleTagManagerNoScript");
-    expect(source).toContain("data-hotjar-site-id");
-    expect(source).toContain("data-logrocket-app-id");
-    expect(source).toContain("data-mixpanel-project-token");
-    expect(source).toContain("data-openpanel-client-id");
-    expect(source).toContain("data-openreplay-project-key");
-    expect(source).toContain("data-posthog-project-api-key");
-    expect(source).toContain("data-swetrix-project-id");
-    expect(source).toContain("data-website-id");
-    expect(source).toContain("data-intercom-api-base");
-
-    const bodyIndex = source.indexOf("<body");
-    expect(bodyIndex).toBeGreaterThan(-1);
-    expect(source.indexOf("data-swetrix-project-id")).toBeGreaterThan(
-      bodyIndex,
-    );
-    for (const supportScript of [
-      "data-intercom-app-id",
-      "data-front-chat-id",
-      "data-chatwoot-website-token",
-      "data-zammad-chat-id",
-    ]) {
-      expect(source.indexOf(supportScript)).toBeGreaterThan(bodyIndex);
-    }
+    expect(source).toContain("@heyo-sh/heyo-docs/integrations");
+    expect(source).toContain("IntegrationScripts");
+    expect(source).toContain("integrations={config.integrations}");
+    expect(source).toContain('placement="head"');
+    expect(source).toContain('placement="body"');
   }
+
+  // Provider-specific snippets live in the shared integration renderer, so
+  // framework adapters stay small while preserving the full capability set.
+  const renderer = await Bun.file(
+    new URL("../src/components/integrations.tsx", import.meta.url),
+  ).text();
+  for (const provider of [
+    "data-cfasync",
+    "data-front-chat-id",
+    "data-chatwoot-website-token",
+    "data-chaskiq-app-id",
+    "data-papercups-token",
+    "data-heyo-typebot",
+    "data-zammad-chat-id",
+    "data-google-tag-manager-container-id",
+    "data-hotjar-site-id",
+    "data-logrocket-app-id",
+    "data-mixpanel-project-token",
+    "data-openpanel-client-id",
+    "data-openreplay-project-key",
+    "data-posthog-project-api-key",
+    "data-swetrix-project-id",
+    "data-website-id",
+    "data-intercom-api-base",
+  ])
+    expect(renderer).toContain(provider);
+  expect(renderer.indexOf("transcendGoogleConsentDefaults &&")).toBeLessThan(
+    renderer.indexOf("data-cfasync"),
+  );
 });

@@ -8,21 +8,22 @@ import { pages as markdownPages } from "virtual:heyo-docs-content/server";
 export async function action({ context, request }: ActionFunctionArgs) {
   if (request.method !== "POST")
     return new Response("Method Not Allowed", {
-      headers: { Allow: "POST" },
       status: 405,
+      headers: { Allow: "POST" },
     });
-
-  const apiKey = context.get(cloudflareContext).OPENAI_API_KEY;
-  if (!apiKey)
+  if (!config.ai?.chat)
     return Response.json(
-      { error: "The OPENAI_API_KEY Worker secret is not configured." },
-      { status: 500 },
+      { error: "AI chat is not configured." },
+      { status: 404 },
     );
-
+  const bindings = context.get(cloudflareContext);
+  const token = bindings.HEYO_DOCS_AI_API_KEY ?? bindings.OPENAI_API_KEY;
   const { createAiChatResponse } = await import("@heyo-sh/heyo-docs/ai");
   return createAiChatResponse(request, {
     ai: config.ai,
-    auth: { type: "api-key", token: apiKey },
+    ...(config.ai?.chat.auth || !token
+      ? {}
+      : { auth: { type: "api-key" as const, token } }),
     markdownPages,
     pages,
     title: config.title,

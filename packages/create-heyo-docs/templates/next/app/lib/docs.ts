@@ -1,11 +1,11 @@
-import type { DocsPage } from "@heyo-sh/heyo-docs";
+import type { DocsPage } from "@heyo-sh/heyo-docs/types";
 import {
-  changelogGroupForPage,
   createDocsModel,
   findDocsPage,
   findOpenApiEndpoint,
   normaliseDocsPathname,
-} from "@heyo-sh/heyo-docs/node";
+} from "@heyo-sh/heyo-docs/model";
+import { changelogGroupForPage } from "@heyo-sh/heyo-docs/navigation";
 
 import config from "../../heyo-docs.config";
 import {

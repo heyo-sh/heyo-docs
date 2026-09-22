@@ -1,12 +1,17 @@
+import { DocsApp } from "@heyo-sh/heyo-docs";
 import {
   createDocsModel,
-  DocsApp,
   findDocsPage,
   findOpenApiEndpoint,
+} from "@heyo-sh/heyo-docs/model";
+import { changelogGroupForPage } from "@heyo-sh/heyo-docs/navigation";
+import {
   openApiEndpointDataPath,
   openApiEndpointDetail,
-  type OpenApiEndpoint,
-} from "@heyo-sh/heyo-docs";
+} from "@heyo-sh/heyo-docs/openapi";
+import { docsSeoMeta } from "@heyo-sh/heyo-docs/seo/react-router";
+import type { OpenApiEndpoint } from "@heyo-sh/heyo-docs/types";
+import { useDocsTheme } from "@heyo-sh/heyo-docs/theme/provider";
 import {
   Link,
   useLoaderData,
@@ -15,9 +20,9 @@ import {
   type MetaFunction,
 } from "react-router";
 import { forwardRef, type ComponentPropsWithoutRef } from "react";
+import { __HEYO_THEME_IDENTIFIER__ } from "@heyo-sh/heyo-docs/theme/__HEYO_THEME__";
 
 import { iconSet } from "../heyo-docs-icons";
-import { useTheme } from "../components/theme-provider";
 import { config } from "virtual:heyo-docs-config";
 import { pages } from "virtual:heyo-docs-content";
 import { openApiDocuments } from "virtual:heyo-docs-openapi";
@@ -80,59 +85,16 @@ export const meta: MetaFunction = ({ params }) => {
       { title: `Not found | ${config.title}` },
       { name: "robots", content: "noindex" },
     ];
-  const title = page?.seo.title ?? `${endpoint!.title} | ${config.title}`;
-  const description =
-    page?.seo.description ??
-    endpoint?.description ??
-    `${endpoint!.method.toUpperCase()} ${endpoint!.path} API endpoint.`;
-  const canonical =
-    page?.seo.canonical ??
-    (config.siteUrl ? `${config.siteUrl}${pathname}` : undefined);
-  return [
-    { title },
-    { name: "description", content: description },
-    { name: "robots", content: "index, follow" },
-    { property: "og:type", content: "article" },
-    { property: "og:site_name", content: config.title },
-    { property: "og:title", content: title },
-    { property: "og:description", content: description },
-    { name: "twitter:card", content: "summary" },
-    { name: "twitter:title", content: title },
-    { name: "twitter:description", content: description },
-    ...(canonical
-      ? [
-          { property: "og:url", content: canonical },
-          {
-            tagName: "link" as const,
-            rel: "canonical",
-            href: canonical,
-          },
-        ]
-      : []),
-    {
-      "script:ld+json": [
-        {
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          name: config.title,
-          description: config.description,
-          ...(config.siteUrl ? { url: config.siteUrl } : {}),
-        },
-        {
-          "@context": "https://schema.org",
-          "@type": "TechArticle",
-          headline: page?.title ?? endpoint!.title,
-          description,
-          ...(canonical ? { url: canonical } : {}),
-          isPartOf: {
-            "@type": "WebSite",
-            name: config.title,
-            ...(config.siteUrl ? { url: config.siteUrl } : {}),
-          },
-        },
-      ],
-    },
-  ];
+  return docsSeoMeta({
+    config,
+    pathname,
+    page,
+    endpoint,
+    navigation: model.navigation,
+    changelogGroup: page
+      ? changelogGroupForPage(config.groups, page, model.pages)
+      : undefined,
+  });
 };
 
 export default function DocsRoute() {
@@ -152,7 +114,7 @@ function DocsShell({
   currentOpenApiEndpoint?: OpenApiEndpoint;
   pathname: string;
 }) {
-  const { mounted, resolvedTheme, setTheme } = useTheme();
+  const { mounted, resolvedTheme, toggleTheme } = useDocsTheme();
 
   return (
     <DocsApp
@@ -164,12 +126,9 @@ function DocsShell({
       openApiRequestUrl="/heyo-docs-internal/openapi-request"
       pages={pages}
       pathname={pathname}
+      theme={__HEYO_THEME_IDENTIFIER__}
       isDark={mounted ? resolvedTheme === "dark" : undefined}
-      onThemeToggle={
-        mounted
-          ? () => setTheme(resolvedTheme === "dark" ? "light" : "dark")
-          : undefined
-      }
+      onThemeToggle={mounted ? toggleTheme : undefined}
     />
   );
 }

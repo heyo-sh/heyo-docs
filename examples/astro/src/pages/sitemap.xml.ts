@@ -1,8 +1,8 @@
 import type { APIRoute } from "astro";
-import { sitemapXml } from "@heyo-sh/heyo-docs";
+import { sitemapXml } from "@heyo-sh/heyo-docs/seo";
 
 import config from "../../heyo-docs.config";
-import { createDocsModel } from "@heyo-sh/heyo-docs";
+import { createDocsModel } from "@heyo-sh/heyo-docs/model";
 import { openApiDocuments } from "virtual:heyo-docs-openapi";
 import { pages } from "virtual:heyo-docs-content";
 

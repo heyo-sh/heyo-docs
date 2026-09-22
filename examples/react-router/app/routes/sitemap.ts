@@ -1,8 +1,8 @@
-import { createDocsModel, sitemapXml } from "@heyo-sh/heyo-docs";
+import { createDocsModel } from "@heyo-sh/heyo-docs/model";
+import { sitemapPaths, sitemapXml } from "@heyo-sh/heyo-docs/seo";
 import type { Route } from "./+types/sitemap";
 
 import config from "../../heyo-docs.config";
-import { sitemapPaths } from "../lib/seo";
 import { pages } from "virtual:heyo-docs-content";
 import { openApiDocuments } from "virtual:heyo-docs-openapi";
 

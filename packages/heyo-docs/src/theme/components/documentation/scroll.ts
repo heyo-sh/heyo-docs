@@ -6,3 +6,14 @@ export function getDocumentationScrollViewport() {
     `#${documentationScrollAreaId} [data-slot="scroll-area-viewport"]`,
   );
 }
+
+/** Returns the active documentation page to the top without moving its sidebar. */
+export function scrollDocumentationToTop() {
+  const scrollViewport = getDocumentationScrollViewport();
+  if (scrollViewport) {
+    scrollViewport.scrollTop = 0;
+    return;
+  }
+
+  window.scrollTo(0, 0);
+}
