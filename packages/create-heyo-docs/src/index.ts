@@ -238,7 +238,9 @@ async function selectAvailable<T extends string>(
   }
 }
 
-function promptValue<T extends string | boolean>(value: T | symbol): T {
+function promptValue(value: string | symbol): string;
+function promptValue(value: boolean | symbol): boolean;
+function promptValue(value: string | boolean | symbol): string | boolean {
   if (typeof value !== "symbol") return value;
   if (p.isCancel(value)) cancelCreation();
   throw new Error("Prompt did not return a value.");
