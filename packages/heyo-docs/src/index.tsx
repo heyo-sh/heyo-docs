@@ -126,11 +126,17 @@ function DocsAppContent({
   pages,
   pathname,
 }: DocsAppProps) {
-  const pageActions = {
-    copyForLLM: config.ai?.copyForLLM !== "disabled",
-    openIn: config.ai?.openIn !== "disabled",
-    siteUrl: config.siteUrl,
-  };
+  const pageActions = config.ai
+    ? {
+        copyForLLM: config.ai.copyForLLM === "enabled",
+        openIn: config.ai.openIn === "enabled",
+        siteUrl: config.siteUrl,
+      }
+    : {
+        copyForLLM: true,
+        openIn: true,
+        siteUrl: config.siteUrl,
+      };
   const chatConfig = config.ai?.chat;
   const chat = chatConfig
     ? {

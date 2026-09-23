@@ -204,12 +204,12 @@ export type AiRequestGuard = (
 
 export type AiPageActionState = "enabled" | "disabled";
 
-/** Server-only AI settings. Authentication must never be sent to the browser. */
+/** Validated AI and page-action settings. Authentication never reaches the browser. */
 export interface AiConfig {
   /** Shows the action that copies the current page's Markdown for an LLM. */
-  copyForLLM?: AiPageActionState;
+  copyForLLM: AiPageActionState;
   /** Shows the menu that opens the current page's Markdown in AI tools. */
-  openIn?: AiPageActionState;
+  openIn: AiPageActionState;
   /** Optional documentation-aware chat configuration. */
   chat?: AiChatConfig;
   authorize?: AiRequestGuard;
@@ -223,8 +223,8 @@ export type PublicAiChatConfig = Omit<
 
 /** AI configuration that is safe to embed in browser bundles. */
 export interface PublicAiConfig {
-  copyForLLM?: AiPageActionState;
-  openIn?: AiPageActionState;
+  copyForLLM: AiPageActionState;
+  openIn: AiPageActionState;
   chat?: PublicAiChatConfig;
 }
 

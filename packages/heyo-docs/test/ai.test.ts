@@ -50,6 +50,8 @@ test("streams a Pi response through the Heyo Docs chat protocol", async () => {
     }),
     {
       ai: {
+        copyForLLM: "enabled",
+        openIn: "enabled",
         chat: {
           provider: "openai",
           model: "gpt-5-mini",
@@ -94,6 +96,8 @@ test("runs the configured AI authorization and rate-limit guard before provider 
     }),
     {
       ai: {
+        copyForLLM: "enabled",
+        openIn: "enabled",
         authorize: () =>
           Response.json({ error: "Rate limit exceeded" }, { status: 429 }),
         chat: {
@@ -134,6 +138,8 @@ test("uses API keys supplied by the request handler", async () => {
     }),
     {
       ai: {
+        copyForLLM: "enabled",
+        openIn: "enabled",
         chat: {
           provider: "openai",
           model: "gpt-5-mini",
@@ -166,6 +172,8 @@ test("rejects request credentials incompatible with the provider", async () => {
     }),
     {
       ai: {
+        copyForLLM: "enabled",
+        openIn: "enabled",
         chat: {
           provider: "github-copilot",
           model: "gpt-5-mini",
@@ -211,6 +219,8 @@ test("resolves every installed Pi model to its registered API executor", () => {
 test("rejects malformed and incomplete chat requests", async () => {
   const options = {
     ai: {
+      copyForLLM: "enabled" as const,
+      openIn: "enabled" as const,
       chat: {
         provider: "openai",
         model: "gpt-5-mini",

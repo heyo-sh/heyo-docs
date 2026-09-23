@@ -61,7 +61,7 @@ export default heyoDocs({
   description: "Guides and API reference for Acme.",
   content: "content",
   theme: "grain",
-  siteUrl: "https://docs.acme.com",
+  siteUrl: "https://docs.acme.com/handbook",
   branding: { name: "Acme", logo: "/logo.svg" },
   navigation: [
     { label: "Status", href: "https://status.acme.com" },
@@ -81,7 +81,26 @@ export default heyoDocs({
 });
 ```
 
-Header navigation renders each item as a `Button`. Its `variant` uses the same values as `Button` and defaults to `link`; use `primary` for prominent actions.
+Header navigation renders each item as a `Button`. Its `variant` uses the same values as `Button` and defaults to `link`; use `primary` for prominent actions. `siteUrl` is the canonical public documentation root and may include a mount path such as `/handbook`.
+
+## Markdown and AI actions
+
+Every documentation, changelog, and OpenAPI page shows **Copy for LLM** and
+**Open** by default. They use the stable public `.md` representation of the
+current page; mounted docs paths are derived from the browser URL, without a
+framework-specific adapter. They do not require AI Chat credentials.
+
+Configure either action independently only when needed:
+
+```ts
+ai: {
+  copyForLLM: "disabled", // default: "enabled"
+  openIn: "enabled", // default: "enabled"
+}
+```
+
+The selected framework must serve public `*.md` endpoints. All generated
+projects already do; see the [Markdown endpoint guide](https://docs.heyo.sh/tutorials/markdown-endpoints).
 
 Read the [configuration guide](https://docs.heyo.sh/manage-website/configuration) for the complete reference, then add pages under `content/`. Built-in MDX components, OpenAPI, deployment, and styling guides live in the [documentation](https://docs.heyo.sh).
 
