@@ -61,11 +61,33 @@ test("exposes an AI configuration to the browser without authentication", async 
     const id = plugin.resolveId("virtual:heyo-docs-config");
     const clientConfig = await loadVirtualModule(plugin, id!, "client");
 
-    expect(clientConfig).toContain('"ai":{"chat":');
+    expect(clientConfig).toContain(
+      '"ai":{"copyForLLM":"enabled","openIn":"enabled","chat":',
+    );
     expect(clientConfig).not.toContain('"provider":"openai"');
     expect(clientConfig).not.toContain('"model":"gpt-5-mini"');
     expect(clientConfig).not.toContain('"auth":');
     expect(clientConfig).not.toContain("server-only-authentication");
+
+    const actionsOnlyPlugin = heyoDocs({
+      config: defineHeyoDocs({
+        content: "content",
+        ai: { copyForLLM: "disabled", openIn: "disabled" },
+      }),
+    });
+    actionsOnlyPlugin.configResolved({ command: "build", root });
+    const actionsOnlyId = actionsOnlyPlugin.resolveId(
+      "virtual:heyo-docs-config",
+    );
+    const actionsOnlyConfig = await loadVirtualModule(
+      actionsOnlyPlugin,
+      actionsOnlyId!,
+      "client",
+    );
+    expect(actionsOnlyConfig).toContain(
+      '"ai":{"copyForLLM":"disabled","openIn":"disabled"}',
+    );
+    expect(actionsOnlyConfig).not.toContain('"chat"');
   } finally {
     await rm(root, { force: true, recursive: true });
   }

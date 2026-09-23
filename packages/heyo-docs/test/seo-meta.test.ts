@@ -193,6 +193,59 @@ test("matches breadcrumb JSON-LD to the documentation navigation hierarchy", () 
   );
 });
 
+test("preserves a siteUrl path prefix in canonical and breadcrumb URLs", () => {
+  const page: DocsPage = {
+    slug: "/guides/install",
+    title: "Install the SDK",
+    description: "Install the SDK.",
+    content: () => null,
+    tableOfContents: [],
+    seo: {
+      title: "Install the SDK | Acme Docs",
+      description: "Install the SDK.",
+    },
+  };
+  const navigation: NavigationGroup[] = [
+    {
+      group: "Product guides",
+      public: true,
+      sections: [
+        {
+          expanded: true,
+          pages: [
+            { slug: "/guides/intro", title: "Introduction" },
+            { slug: page.slug, title: page.title },
+          ],
+        },
+      ],
+    },
+  ];
+  const meta = docsSeoMeta({
+    config: { ...config, siteUrl: "https://docs.example.com/heyo-docs" },
+    navigation,
+    page,
+    pathname: page.slug,
+  });
+
+  expect(meta).toContainEqual({
+    tagName: "link",
+    rel: "canonical",
+    href: "https://docs.example.com/heyo-docs/guides/install",
+  });
+  expect(jsonLd(meta)).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        "@type": "BreadcrumbList",
+        itemListElement: expect.arrayContaining([
+          expect.objectContaining({
+            item: "https://docs.example.com/heyo-docs/guides/intro",
+          }),
+        ]),
+      }),
+    ]),
+  );
+});
+
 test("includes every nested section in breadcrumb JSON-LD", () => {
   const page: DocsPage = {
     slug: "/guides/deploy",
@@ -274,6 +327,28 @@ test("creates site-wide metadata and WebSite JSON-LD from the SEO entrypoint", (
   expect(nextSeo.structuredData).toEqual(
     expect.arrayContaining([expect.objectContaining({ "@type": "WebSite" })]),
   );
+});
+
+test("preserves a siteUrl path prefix in Next root alternate URLs", () => {
+  const seo = nextSiteSeo({
+    ...config,
+    siteUrl: "https://docs.example.com/heyo-docs",
+    groups: [
+      {
+        type: "changelog",
+        group: "Changelog",
+        public: true,
+        updates: ["changelog.mdx"],
+      },
+    ],
+  });
+
+  expect(seo.metadata.alternates).toEqual({
+    canonical: "https://docs.example.com/heyo-docs/",
+    types: {
+      "application/rss+xml": "https://docs.example.com/heyo-docs/rss.xml",
+    },
+  });
 });
 
 test("adapts automatic metadata for Next without importing its build adapter", () => {

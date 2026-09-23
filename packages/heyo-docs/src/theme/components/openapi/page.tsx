@@ -13,7 +13,6 @@ import {
   SelectValue,
 } from "../../../components/ui/select";
 import { Textarea } from "../../../components/ui/textarea";
-import { markdownPathname } from "../../../llm";
 import { openApiEndpointDataPath } from "../../../openapi";
 import type {
   OpenApiEndpoint,
@@ -21,8 +20,7 @@ import type {
   OpenApiParameter,
 } from "../../../types";
 import { Property, Properties } from "../documentation/mdx-components";
-import { CopyForLlm } from "../actions/copy-for-llm";
-import { Open } from "../actions/open";
+import { PageActions } from "../actions/page-actions";
 import { PageNavigation } from "../actions/navigation";
 import { OpenApiDescription } from "./description";
 import { OpenApiExample } from "./example";
@@ -263,6 +261,7 @@ function DocumentedResponses({ endpoint }: { endpoint: OpenApiEndpoint }) {
 }
 
 export function OpenApiPage({
+  actions,
   endpoint: indexedEndpoint,
   next,
   openApiRequestUrl,
@@ -292,7 +291,6 @@ export function OpenApiPage({
     ? `heyo-docs:openapi:bearer:${endpoint.groupIndex}:${endpoint.sectionIndex}:${scheme}`
     : undefined;
   const [bearerToken, setBearerToken] = useState("");
-  const markdownUrl = markdownPathname(endpoint.slug);
 
   useEffect(() => {
     if (indexedEndpoint.document) return;
@@ -456,8 +454,7 @@ export function OpenApiPage({
                 {endpoint.title}
               </h1>
               <div className="flex shrink-0 items-center gap-2">
-                <CopyForLlm markdownUrl={markdownUrl} />
-                <Open markdownUrl={markdownUrl} />
+                <PageActions actions={actions} pagePathname={endpoint.slug} />
               </div>
             </div>
             {endpoint.description ? (

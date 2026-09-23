@@ -1,3 +1,8 @@
+import {
+  absoluteUrlAtBasePath,
+  normalisePathname,
+  pathnameAtBasePath,
+} from "./lib/url";
 import type { OpenApiEndpoint } from "./types";
 
 /** A source page that can be exposed as Markdown without loading MDX in the browser. */
@@ -25,6 +30,38 @@ export function pathnameFromMarkdownPath(pathname: string): string | undefined {
 
   const withoutExtension = normalised.slice(0, -".md".length);
   return withoutExtension === "/index" ? "/" : withoutExtension || "/";
+}
+
+/**
+ * Builds a Markdown URL below the configured documentation root. Unlike
+ * `new URL("/page", siteUrl)`, this keeps a pathname such as `/docs` in the
+ * configured site URL.
+ */
+export function markdownPathnameAtSite(
+  siteUrl: string,
+  pathname: string,
+): string {
+  return pathnameAtBasePath(
+    new URL(siteUrl).pathname,
+    markdownPathname(pathname),
+  );
+}
+
+/**
+ * Derives the Markdown URL from the browser's current public pathname. This
+ * keeps mounted docs (`/docs/...`) working without app-specific adapters.
+ */
+export function markdownPathnameAtCurrentPage(
+  currentPathname: string,
+  pathname: string,
+): string {
+  const current = normalisePathname(currentPathname);
+  const page = normalisePathname(pathname);
+
+  if (page === "/") return pathnameAtBasePath(current, "/index.md");
+  if (!current.endsWith(page)) return markdownPathname(page);
+
+  return `${current.slice(0, -page.length)}${markdownPathname(page)}`;
 }
 
 /**
@@ -154,16 +191,8 @@ export function llmsFull(pages: MarkdownPage[], siteUrl: string): string {
     .trim()}\n`;
 }
 
-function normalisePathname(pathname: string): string {
-  const withoutQueryOrHash = pathname.split(/[?#]/, 1)[0] ?? "";
-  const segments = withoutQueryOrHash.split("/").filter(Boolean);
-  return segments.length ? `/${segments.join("/")}` : "/";
-}
-
 function absolutePageUrl(siteUrl: string, pathname: string): string {
-  return new URL(normalisePathname(pathname), `${siteUrl.replace(/\/$/, "")}/`)
-    .toString()
-    .replace(/\/$/, pathname === "/" ? "/" : "");
+  return absoluteUrlAtBasePath(siteUrl, pathname);
 }
 
 function escapeMarkdownLinkText(value: string): string {

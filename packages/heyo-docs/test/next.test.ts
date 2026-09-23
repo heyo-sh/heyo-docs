@@ -86,6 +86,9 @@ test("generates browser-safe Next data, server data, endpoint shards, and local 
 
     expect(client).toContain('lazy(() => import("../../content/index.mdx"))');
     expect(client).toContain('"placeholder":"Ask AI about the docs"');
+    expect(client).toContain(
+      '"copyForLLM":"enabled","openIn":"enabled","chat":',
+    );
     expect(client).not.toContain("server-only-authentication");
     expect(client).not.toContain('"provider":"openai"');
     expect(client).not.toContain('"model":"gpt-5-mini"');

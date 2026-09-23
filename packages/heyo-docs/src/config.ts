@@ -153,9 +153,13 @@ const aiRequestGuardSchema = z.custom<
   "ai.authorize must be a function.",
 );
 
+const aiPageActionStateSchema = z.enum(["enabled", "disabled"]);
+
 const aiSchema = z
   .object({
-    chat: chatSchema,
+    copyForLLM: aiPageActionStateSchema.default("enabled"),
+    openIn: aiPageActionStateSchema.default("enabled"),
+    chat: chatSchema.optional(),
     authorize: aiRequestGuardSchema.optional(),
   })
   .strict();
