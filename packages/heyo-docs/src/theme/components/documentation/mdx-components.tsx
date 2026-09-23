@@ -659,7 +659,7 @@ function Folder({ children, defaultOpen = true, name }: FolderProps) {
             name="chevronDown"
           />
         </summary>
-        <ul className="ml-3 !my-0 !list-none border-l border-foreground/10 !py-0 !pl-3">
+        <ul className="!my-0 !list-none border-l border-foreground/10 !py-0 !pl-6">
           {children}
         </ul>
       </details>
@@ -1054,7 +1054,7 @@ function Columns({ children, columns = 2, variant = "card" }: ColumnsProps) {
   return (
     <div
       className={cn(
-        "not-prose my-5 grid grid-cols-1 gap-4",
+        "not-prose my-5 grid w-full grid-cols-1 gap-4",
         columns === 2 ? "sm:grid-cols-2" : "sm:grid-cols-2 xl:grid-cols-3",
       )}
     >
