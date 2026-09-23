@@ -16,7 +16,7 @@ import { markdownPathname } from "../../../llm";
 import type { ChangelogPageProps } from "../../../types";
 import { CopyForLlm } from "../actions/copy-for-llm";
 import { Open } from "../actions/open";
-import { PoweredByHeyoDocs } from "../actions/navigation";
+import { PoweredByHeyo } from "../actions/navigation";
 import { documentationContentClassName } from "../documentation/content";
 import {
   DocumentationCodeBlock,
@@ -188,7 +188,7 @@ export function ChangelogPage({
               </Suspense>
             </div>
             <div className="mb-6 mt-12">
-              <PoweredByHeyoDocs />
+              <PoweredByHeyo />
             </div>
           </article>
           {availableTags.length ? (
