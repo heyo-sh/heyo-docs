@@ -100,6 +100,8 @@ describe("configuration", () => {
         },
       }).ai,
     ).toEqual({
+      copyForLLM: "enabled",
+      openIn: "enabled",
       chat: {
         provider: "openai",
         model: "gpt-5-mini",
@@ -113,6 +115,15 @@ describe("configuration", () => {
     });
   });
 
+  test("configures page-level AI actions without requiring AI chat", () => {
+    expect(
+      heyoDocs({
+        content: "./content",
+        ai: { copyForLLM: "disabled" },
+      }).ai,
+    ).toEqual({ copyForLLM: "disabled", openIn: "enabled" });
+  });
+
   test("allows chat credentials to be supplied by a request handler", () => {
     expect(
       heyoDocs({
@@ -123,7 +134,7 @@ describe("configuration", () => {
             model: "gpt-5-mini",
           },
         },
-      }).ai?.chat.auth,
+      }).ai?.chat?.auth,
     ).toBeUndefined();
   });
 

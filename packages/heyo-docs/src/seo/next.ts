@@ -1,4 +1,5 @@
 import { docsSeo, siteSeo, type DocsSeoInput } from "./index";
+import { absoluteUrlAtBasePath } from "../lib/url";
 import type { HeyoDocsConfig } from "../types";
 
 /** Structural subset accepted by Next App Router's `Metadata` type. */
@@ -23,8 +24,8 @@ export function nextSiteSeo(config: HeyoDocsConfig): {
   metadata: NextSeoMetadata & {
     metadataBase?: URL;
     alternates?: {
-      canonical?: "/";
-      types?: { "application/rss+xml": "/rss.xml" };
+      canonical?: string;
+      types?: { "application/rss+xml": string };
     };
   };
   structuredData: unknown[];
@@ -38,9 +39,15 @@ export function nextSiteSeo(config: HeyoDocsConfig): {
       referrer: "strict-origin-when-cross-origin",
       ...(config.siteUrl ? { metadataBase: new URL(config.siteUrl) } : {}),
       alternates: {
-        ...(config.siteUrl ? { canonical: "/" as const } : {}),
+        ...(seo.canonical ? { canonical: seo.canonical } : {}),
         ...(config.groups.some((group) => group.type === "changelog")
-          ? { types: { "application/rss+xml": "/rss.xml" as const } }
+          ? {
+              types: {
+                "application/rss+xml": config.siteUrl
+                  ? absoluteUrlAtBasePath(config.siteUrl, "/rss.xml")
+                  : "/rss.xml",
+              },
+            }
           : {}),
       },
       openGraph: {

@@ -126,6 +126,11 @@ function DocsAppContent({
   pages,
   pathname,
 }: DocsAppProps) {
+  const pageActions = {
+    copyForLLM: config.ai?.copyForLLM !== "disabled",
+    openIn: config.ai?.openIn !== "disabled",
+    siteUrl: config.siteUrl,
+  };
   const chatConfig = config.ai?.chat;
   const chat = chatConfig
     ? {
@@ -278,6 +283,7 @@ function DocsAppContent({
           </article>
         ) : endpoint ? (
           <OpenApiPage
+            actions={pageActions}
             endpoint={endpoint}
             key={endpoint.slug}
             next={pageNavigation.next}
@@ -286,12 +292,14 @@ function DocsAppContent({
           />
         ) : changelogGroup ? (
           <ChangelogPage
+            actions={pageActions}
             group={changelogGroup}
             mdxComponents={mdxComponents}
             page={page!}
           />
         ) : (
           <DocsPage
+            actions={pageActions}
             mdxComponents={mdxComponents}
             next={pageNavigation.next}
             page={page!}

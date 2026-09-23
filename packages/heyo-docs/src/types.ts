@@ -202,13 +202,20 @@ export type AiRequestGuard = (
   request: Request,
 ) => Response | void | Promise<Response | void>;
 
+export type AiPageActionState = "enabled" | "disabled";
+
 /** Server-only AI settings. Authentication must never be sent to the browser. */
 export interface AiConfig {
-  chat: AiChatConfig;
+  /** Shows the action that copies the current page's Markdown for an LLM. */
+  copyForLLM?: AiPageActionState;
+  /** Shows the menu that opens the current page's Markdown in AI tools. */
+  openIn?: AiPageActionState;
+  /** Optional documentation-aware chat configuration. */
+  chat?: AiChatConfig;
   authorize?: AiRequestGuard;
 }
 
-/** The browser-safe portion of the AI configuration. */
+/** The browser-safe portion of the AI chat configuration. */
 export type PublicAiChatConfig = Omit<
   AiChatConfig,
   "auth" | "model" | "provider"
@@ -216,7 +223,9 @@ export type PublicAiChatConfig = Omit<
 
 /** AI configuration that is safe to embed in browser bundles. */
 export interface PublicAiConfig {
-  chat: PublicAiChatConfig;
+  copyForLLM?: AiPageActionState;
+  openIn?: AiPageActionState;
+  chat?: PublicAiChatConfig;
 }
 
 export interface DocumentationSection {
@@ -529,11 +538,19 @@ export interface SidebarFooterProps {
   onThemeToggle?: () => void;
 }
 
+export interface PageActionsConfig {
+  copyForLLM: boolean;
+  openIn: boolean;
+  /** Canonical docs root used before browser hydration. */
+  siteUrl?: string;
+}
+
 export interface DocsPageProps {
   page: DocsPage;
   previous?: PageNavigationItem;
   next?: PageNavigationItem;
   tableOfContents: ReactNode;
+  actions: PageActionsConfig;
   /** Application-owned components injected into the page's MDX content. */
   mdxComponents?: MdxComponents;
 }
@@ -541,6 +558,7 @@ export interface DocsPageProps {
 export interface ChangelogPageProps {
   page: DocsPage;
   group: ChangelogGroupConfig;
+  actions: PageActionsConfig;
   /** Application-owned components injected into the changelog's MDX content. */
   mdxComponents?: MdxComponents;
 }
@@ -549,6 +567,7 @@ export interface OpenApiPageProps {
   endpoint: OpenApiEndpoint;
   previous?: PageNavigationItem;
   next?: PageNavigationItem;
+  actions: PageActionsConfig;
   /** Optional same-origin endpoint used to send OpenAPI requests server-side. */
   openApiRequestUrl?: string;
 }
@@ -648,6 +667,7 @@ export interface HeyoDocsConfig {
    */
   content: string;
   branding: BrandingConfig;
+  /** Canonical public root, including any mount path such as `/docs`. */
   siteUrl?: string;
   ai?: AiConfig;
   integrations: DocsIntegrations;
@@ -725,11 +745,19 @@ export interface UserHeyoDocsConfig {
    */
   content?: string;
   branding?: Partial<BrandingConfig>;
+  /**
+   * Canonical public root of this documentation site. It may include a path
+   * prefix, for example `https://example.com/docs`.
+   */
   siteUrl?: string;
   ai?: {
+    /** Defaults to `"enabled"`; disable when the host does not serve `*.md` pages. */
+    copyForLLM?: AiPageActionState;
+    /** Defaults to `"enabled"`; disable when the host does not serve `*.md` pages. */
+    openIn?: AiPageActionState;
     /** Server-only request guard for rate limiting or application auth. */
     authorize?: AiRequestGuard;
-    chat: {
+    chat?: {
       provider: AiProvider;
       model: string;
       auth?: AiChatAuth;

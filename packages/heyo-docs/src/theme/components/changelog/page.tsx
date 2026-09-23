@@ -12,10 +12,8 @@ import {
 } from "react";
 
 import { Badge } from "../../../components/ui/badge";
-import { markdownPathname } from "../../../llm";
 import type { ChangelogPageProps } from "../../../types";
-import { CopyForLlm } from "../actions/copy-for-llm";
-import { Open } from "../actions/open";
+import { PageActions } from "../actions/page-actions";
 import { PoweredByHeyo } from "../actions/navigation";
 import { documentationContentClassName } from "../documentation/content";
 import {
@@ -116,12 +114,12 @@ function DocumentTitle() {
 
 /** A Mintlify-style changelog page that preserves the Grain documentation shell. */
 export function ChangelogPage({
+  actions,
   group,
   mdxComponents,
   page,
 }: ChangelogPageProps) {
   const Content = page.content;
-  const markdownUrl = markdownPathname(page.slug);
   const updates = page.changelogUpdates ?? [];
   const availableTags = useMemo(
     () =>
@@ -166,8 +164,7 @@ export function ChangelogPage({
                   {group.group}
                 </h1>
                 <div className="flex shrink-0 items-center gap-2">
-                  <CopyForLlm markdownUrl={markdownUrl} />
-                  <Open markdownUrl={markdownUrl} />
+                  <PageActions actions={actions} pagePathname={page.slug} />
                 </div>
               </div>
               <p className="mb-0 mt-4 max-w-2xl text-[1.0625rem] leading-7 text-muted-foreground">

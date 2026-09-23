@@ -14,6 +14,8 @@ import {
   markdownForPage,
   markdownPageForOpenApiEndpoint,
   markdownPathname,
+  markdownPathnameAtCurrentPage,
+  markdownPathnameAtSite,
   pathnameFromMarkdownPath,
 } from "../src/llm";
 import type { DocsPage, MarkdownPage, OpenApiEndpoint } from "../src/types";
@@ -132,6 +134,21 @@ test("round-trips Markdown resource paths and removes only leading frontmatter",
     "/guides/install",
   );
   expect(pathnameFromMarkdownPath("/guides/install.mdx")).toBeUndefined();
+  expect(
+    markdownPathnameAtCurrentPage(
+      "/heyo-docs/tutorials/robots-txt",
+      "/tutorials/robots-txt",
+    ),
+  ).toBe("/heyo-docs/tutorials/robots-txt.md");
+  expect(markdownPathnameAtCurrentPage("/heyo-docs", "/")).toBe(
+    "/heyo-docs/index.md",
+  );
+  expect(
+    markdownPathnameAtSite(
+      "https://heyo.sh/heyo-docs",
+      "/tutorials/robots-txt",
+    ),
+  ).toBe("/heyo-docs/tutorials/robots-txt.md");
 
   const page: MarkdownPage = {
     slug: "/guide",
@@ -206,5 +223,14 @@ test("generates safe, complete LLM Markdown for pages and OpenAPI endpoints", ()
   );
   expect(llmsFull(docs, "https://docs.example.com/")).toContain(
     "# Create widget (https://docs.example.com/api/widgets/create-widget)",
+  );
+  expect(
+    llmsIndex(
+      docs,
+      { title: "Acme", description: "" },
+      "https://docs.example.com/docs",
+    ),
+  ).toContain(
+    "[Create widget](https://docs.example.com/docs/api/widgets/create-widget)",
   );
 });

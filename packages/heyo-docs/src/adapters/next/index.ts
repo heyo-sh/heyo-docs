@@ -118,13 +118,15 @@ function clientModule(
   const { ai, ...serializableConfig } = config;
   const publicAi = ai
     ? (() => {
+        const { authorize: _authorize, chat: configuredChat, ...actions } = ai;
+        if (!configuredChat) return actions;
         const {
           auth: _auth,
           model: _model,
           provider: _provider,
           ...chat
-        } = ai.chat;
-        return { chat };
+        } = configuredChat;
+        return { ...actions, chat };
       })()
     : undefined;
   const clientConfig = {

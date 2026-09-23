@@ -83,6 +83,41 @@ test("renders the built-in theme components", () => {
   expect(html).toContain("Page body");
 });
 
+test("resolves page actions beneath a path-prefixed documentation URL", () => {
+  const page = {
+    ...pages[0]!,
+    slug: "/guides/install",
+    sourcePath: "guides/install.mdx",
+  };
+  const html = renderToStaticMarkup(
+    createElement(DocsApp, {
+      theme: grainTheme,
+      config: heyoDocs({ siteUrl: "https://example.com/heyo-docs" }),
+      pages: [page],
+      pathname: page.slug,
+    }),
+  );
+
+  expect(html).toContain("Copy for LLM");
+  expect(html).toContain('aria-label="Copy this page as Markdown for an LLM"');
+});
+
+test("can disable each page-level AI action without configuring AI chat", () => {
+  const html = renderToStaticMarkup(
+    createElement(DocsApp, {
+      theme: grainTheme,
+      config: heyoDocs({
+        ai: { copyForLLM: "disabled", openIn: "disabled" },
+      }),
+      pages,
+      pathname: "/",
+    }),
+  );
+
+  expect(html).not.toContain("Copy for LLM");
+  expect(html).not.toContain(">Open</button>");
+});
+
 test("renders Grain branding logos at the shared size and with dark-mode inversion", () => {
   const html = renderToStaticMarkup(
     createElement(DocsApp, {
@@ -822,6 +857,7 @@ test("uses changelog group metadata and renders tags below their dates", () => {
   expect(html).toContain("Release notes");
   expect(html).toContain("Everything new in one place.");
   expect(html).toContain("Filter updates");
+  expect(html).toContain("Copy for LLM");
   expect(html).toContain("gap-x-1.5 gap-y-[3px]");
   expect(html).toContain("flex flex-col items-start gap-1.5");
   expect(html).not.toContain("v1.0.0");

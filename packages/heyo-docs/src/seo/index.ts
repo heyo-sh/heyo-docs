@@ -3,6 +3,7 @@ import {
   navigationPages,
   navigationSectionPathForPath,
 } from "../navigation";
+import { absoluteUrlAtBasePath } from "../lib/url";
 import type {
   ChangelogGroupConfig,
   DocsPage,
@@ -32,7 +33,9 @@ export function siteSeo(config: HeyoDocsConfig): DocsSeoMetadata {
   return {
     title: config.title,
     description: config.description,
-    canonical: config.siteUrl ? `${config.siteUrl}/` : undefined,
+    canonical: config.siteUrl
+      ? absoluteUrlAtBasePath(config.siteUrl, "/")
+      : undefined,
     structuredData: [
       {
         "@context": "https://schema.org",
@@ -54,7 +57,9 @@ export function docsSeo(input: DocsSeoInput): DocsSeoMetadata {
     `${endpoint!.method.toUpperCase()} ${endpoint!.path} API endpoint.`;
   const canonical =
     page?.seo.canonical ??
-    (config.siteUrl ? `${config.siteUrl}${pathname}` : undefined);
+    (config.siteUrl
+      ? absoluteUrlAtBasePath(config.siteUrl, pathname)
+      : undefined);
   const currentTitle = page?.title ?? endpoint!.title;
   const crumbs = breadcrumbItems(
     navigation,
@@ -121,17 +126,16 @@ export function seoForPage(
     title: `${page.title} | ${config.title}`,
     description: page.description || config.description,
     canonical: config.siteUrl
-      ? `${config.siteUrl}${page.slug === "/" ? "/" : page.slug}`
+      ? absoluteUrlAtBasePath(config.siteUrl, page.slug)
       : undefined,
   };
 }
 
 export function sitemapXml(siteUrl: string, paths: string[]): string {
-  const base = siteUrl.replace(/\/$/, "");
   const urls = paths
     .map(
       (path) =>
-        `  <url><loc>${escapeXml(`${base}${path === "/" ? "/" : path}`)}</loc></url>`,
+        `  <url><loc>${escapeXml(absoluteUrlAtBasePath(siteUrl, path))}</loc></url>`,
     )
     .join("\n");
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`;
@@ -173,7 +177,7 @@ function absoluteUrl(siteUrl: string | undefined, href: string | undefined) {
   if (!siteUrl || !href) return undefined;
   return /^https?:\/\//.test(href)
     ? href
-    : new URL(href, `${siteUrl}/`).toString();
+    : absoluteUrlAtBasePath(siteUrl, href);
 }
 
 function structuredPageData({

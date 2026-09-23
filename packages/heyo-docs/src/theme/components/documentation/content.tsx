@@ -1,15 +1,18 @@
 import { Suspense } from "react";
 
-import type { DocsPage, MdxComponents } from "../../../types";
-import { markdownPathname } from "../../../llm";
-import { CopyForLlm } from "../actions/copy-for-llm";
-import { Open } from "../actions/open";
+import type {
+  DocsPage,
+  MdxComponents,
+  PageActionsConfig,
+} from "../../../types";
+import { PageActions } from "../actions/page-actions";
 import {
   DocumentationCodeBlock,
   documentationMdxComponents,
 } from "./mdx-components";
 
 interface DocumentationContentProps {
+  actions: PageActionsConfig;
   page: DocsPage;
   mdxComponents?: MdxComponents;
   /** Shows the Markdown and AI actions displayed on regular documentation pages. */
@@ -25,12 +28,12 @@ function DocumentTitle() {
 }
 
 export function DocumentationContent({
+  actions,
   page,
   mdxComponents,
   showActions = true,
 }: DocumentationContentProps) {
   const Content = page.content;
-  const markdownUrl = markdownPathname(page.slug);
 
   return (
     <article className={`max-w-3xl ${documentationContentClassName}`}>
@@ -41,8 +44,7 @@ export function DocumentationContent({
           </h1>
           {showActions ? (
             <div className="flex shrink-0 items-center gap-2">
-              <CopyForLlm markdownUrl={markdownUrl} />
-              <Open markdownUrl={markdownUrl} />
+              <PageActions actions={actions} pagePathname={page.slug} />
             </div>
           ) : null}
         </div>
