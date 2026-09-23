@@ -1,5 +1,11 @@
 # @heyo-sh/heyo-docs
 
+## 3.2.0
+
+### Minor Changes
+
+- 1dc0e7b: Add configurable Copy for LLM and Open page actions, resolve their Markdown URLs from the public browser path, and preserve path-prefixed `siteUrl` values in generated AI and SEO URLs.
+
 ## 3.1.0
 
 ### Minor Changes
