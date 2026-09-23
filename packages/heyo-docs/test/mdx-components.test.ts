@@ -61,7 +61,7 @@ test("registers the documentation components for every MDX page", () => {
   ).toBeUndefined();
 });
 
-test("renders left-aligned table headers with gap-4 between columns", () => {
+test("renders left-aligned table headers", () => {
   const Table = component("table");
   const html = renderToStaticMarkup(
     createElement(
@@ -93,6 +93,47 @@ test("renders left-aligned table headers with gap-4 between columns", () => {
   expect(html).toContain("[&amp;_th]:text-left");
   expect(html).toContain("[&amp;_th]:px-2");
   expect(html).toContain("[&amp;_td]:px-2");
+});
+
+test("makes columns fill their preview container", () => {
+  const Column = component("Column");
+  const Columns = component("Columns");
+  const html = renderToStaticMarkup(
+    createElement(
+      Columns,
+      { columns: 2 },
+      createElement(Column, { title: "First" }, "First column"),
+      createElement(Column, { title: "Second" }, "Second column"),
+    ),
+  );
+
+  expect(html).toContain("not-prose my-5 grid w-full grid-cols-1 gap-4");
+});
+
+test("keeps nested tree folders indented without moving their disclosure controls", () => {
+  const File = component("File");
+  const Folder = component("Folder");
+  const Tree = component("Tree");
+  const html = renderToStaticMarkup(
+    createElement(
+      Tree,
+      null,
+      createElement(
+        Folder,
+        { name: "app" },
+        createElement(
+          Folder,
+          { name: "components" },
+          createElement(File, { name: "docs.tsx" }),
+        ),
+      ),
+    ),
+  );
+
+  expect(html).toContain(
+    "!my-0 !list-none border-l border-foreground/10 !py-0 !pl-6",
+  );
+  expect(html).not.toContain("ml-3 !my-0 !list-none");
 });
 
 test("renders interactive component shells during SSR", () => {
