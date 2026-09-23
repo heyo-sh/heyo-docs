@@ -1,5 +1,11 @@
 # @heyo-sh/heyo-docs
 
+## 3.1.0
+
+### Minor Changes
+
+- 576af21: Replace the documentation footer credit with a link to Heyo.
+
 ## 3.0.0
 
 ### Major Changes
