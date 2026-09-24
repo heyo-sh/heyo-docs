@@ -37,7 +37,7 @@ argument when using them in automation.
 | `--package-manager` | `bun`, `pnpm`, `npm`, `yarn`    |
 | `--no-install`      | Skip dependency installation    |
 
-Read the [full documentation](https://docs.heyo.sh) for configuration, content, components, framework integrations, and deployment.
+Read the [full documentation](https://heyo.sh) for configuration, content, components, framework integrations, and deployment.
 
 ## License
 

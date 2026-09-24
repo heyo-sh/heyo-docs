@@ -10,11 +10,11 @@
   </p>
 
   <p style="margin-top: 0.375rem;">
-    <a href="https://docs.heyo.sh/introduction/">Documentation</a>
+    <a href="https://heyo.sh/introduction/">Documentation</a>
     ·
-    <a href="https://docs.heyo.sh/changelog">Changelog (Demo)</a>
+    <a href="https://heyo.sh/changelog">Changelog (Demo)</a>
     ·
-    <a href="https://docs.heyo.sh/api-demo/overview">OpenAPI (Demo)</a>
+    <a href="https://heyo.sh/api-demo/overview">OpenAPI (Demo)</a>
   </p>
 </div>
 
@@ -47,7 +47,7 @@ bun create @heyo-sh/heyo-docs
 The creator works with pnpm, npm, Yarn, and Bun. It lets you choose React
 Router, Next.js, or Astro, plus a theme and deployment target.
 
-For an existing application, follow the framework-specific guides for [React Router](https://docs.heyo.sh/framework/react-router), [Next.js](https://docs.heyo.sh/framework/nextjs), or [Astro](https://docs.heyo.sh/framework/astro).
+For an existing application, follow the framework-specific guides for [React Router](https://heyo.sh/framework/react-router), [Next.js](https://heyo.sh/framework/nextjs), or [Astro](https://heyo.sh/framework/astro).
 
 ## Minimum Configuration
 
@@ -100,9 +100,9 @@ ai: {
 ```
 
 The selected framework must serve public `*.md` endpoints. All generated
-projects already do; see the [Markdown endpoint guide](https://docs.heyo.sh/tutorials/markdown-endpoints).
+projects already do; see the [Markdown endpoint guide](https://heyo.sh/tutorials/markdown-endpoints).
 
-Read the [configuration guide](https://docs.heyo.sh/manage-website/configuration) for the complete reference, then add pages under `content/`. Built-in MDX components, OpenAPI, deployment, and styling guides live in the [documentation](https://docs.heyo.sh).
+Read the [configuration guide](https://heyo.sh/manage-website/configuration) for the complete reference, then add pages under `content/`. Built-in MDX components, OpenAPI, deployment, and styling guides live in the [documentation](https://heyo.sh).
 
 The root package exports only `DocsApp`; import capabilities from domain entrypoints such as `/config`, `/model`, `/navigation`, `/seo`, `/openapi`, `/llm`, `/rss`, `/search`, `/mdx`, `/link`, and `/types`.
 
