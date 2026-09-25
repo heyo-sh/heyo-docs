@@ -5,7 +5,7 @@
     <a href="https://npmjs.com/package/@heyo-sh/heyo-docs"><img src="https://img.shields.io/npm/dm/%40heyo-sh%2Fheyo-docs?style=flat&amp;colorA=000000&amp;colorB=000000" alt="npm downloads"/></a>
     <a href="https://www.npmjs.com/package/@heyo-sh/heyo-docs"><img src="https://img.shields.io/npm/v/%40heyo-sh%2Fheyo-docs.svg?style=flat&amp;colorA=000000&amp;colorB=000000" alt="npm version"/></a>
     <a href="https://github.com/heyo-sh/heyo-docs/stargazers"><img src="https://img.shields.io/github/stars/heyo-sh/heyo-docs?style=flat&amp;colorA=000000&amp;colorB=000000" alt="GitHub stars"/></a>
-    <img src="https://img.shields.io/badge/28%2B%20integrations-000000?style=flat&amp;colorA=000000&amp;colorB=000000" alt="28+ integrations"/>
+    <img src="https://img.shields.io/badge/29%2B%20integrations-000000?style=flat&amp;colorA=000000&amp;colorB=000000" alt="29+ integrations"/>
     <img src="https://img.shields.io/badge/AI--First-000000?style=flat&amp;colorA=000000&amp;colorB=000000" alt="AI-First"/>
   </p>
 

@@ -4,6 +4,7 @@ import { adobeAnalyticsScript } from "../integrations/analytics/adobe";
 import { amplitudeAnalyticsScript } from "../integrations/analytics/amplitude";
 import { clarityBootstrapScript } from "../integrations/analytics/clarity";
 import { clearbitAnalyticsScript } from "../integrations/analytics/clearbit";
+import { databuddyAnalyticsScript } from "../integrations/analytics/databuddy";
 import { fathomAnalyticsScript } from "../integrations/analytics/fathom";
 import {
   googleAnalyticsBootstrapScript,
@@ -93,6 +94,9 @@ export function IntegrationScripts({
     : undefined;
   const clearbit = integrations.analytics.clearbit
     ? clearbitAnalyticsScript(integrations.analytics.clearbit)
+    : undefined;
+  const databuddy = integrations.analytics.databuddy
+    ? databuddyAnalyticsScript(integrations.analytics.databuddy)
     : undefined;
   const fathom = integrations.analytics.fathom
     ? fathomAnalyticsScript(integrations.analytics.fathom)
@@ -204,6 +208,28 @@ export function IntegrationScripts({
           />
         )}
         {clearbit && <script src={clearbit.src} />}
+        {databuddy && (
+          <script
+            async={databuddy.async}
+            crossOrigin={databuddy.crossOrigin}
+            data-api-url={databuddy.apiUrl}
+            data-batch-size={databuddy.batchSize}
+            data-batch-timeout={databuddy.batchTimeout}
+            data-client-id={databuddy.clientId}
+            data-disabled={databuddy.disabled}
+            data-enable-batching={databuddy.enableBatching}
+            data-mask-patterns={databuddy.maskPatterns}
+            data-sampling-rate={databuddy.samplingRate}
+            data-skip-patterns={databuddy.skipPatterns}
+            data-track-attributes={databuddy.trackAttributes}
+            data-track-errors={databuddy.trackErrors}
+            data-track-hash-changes={databuddy.trackHashChanges}
+            data-track-interactions={databuddy.trackInteractions}
+            data-track-outgoing-links={databuddy.trackOutgoingLinks}
+            data-track-web-vitals={databuddy.trackWebVitals}
+            src={databuddy.src}
+          />
+        )}
         {fathom && (
           <script
             data-site={fathom.siteId}
