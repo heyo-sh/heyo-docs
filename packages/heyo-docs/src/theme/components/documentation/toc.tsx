@@ -179,21 +179,53 @@ export function DocumentationTableOfContents({ items }: TableOfContentsProps) {
   }, [updateTrack]);
 
   useEffect(() => {
-    const headings = items
-      .map((item) => document.getElementById(item.id))
-      .filter((heading): heading is HTMLElement => heading !== null);
-    if (!headings.length) return;
-    const scrollViewport = getDocumentationScrollViewport();
+    if (!items.length) return;
+
+    // The headings are resolved on every update instead of once. The page can
+    // replace its content nodes after this effect runs, and a detached node
+    // reports a zero rectangle, which used to place every heading above the
+    // trigger line and left the last entry active for good.
+    const currentHeadings = () =>
+      items
+        .map((item) => document.getElementById(item.id))
+        .filter((heading): heading is HTMLElement => heading !== null);
+
+    const observed = new Set<Element>();
+    const syncObserved = (headings: HTMLElement[]) => {
+      for (const element of observed) {
+        if (element.isConnected) continue;
+        observer.unobserve(element);
+        observed.delete(element);
+      }
+      for (const heading of headings) {
+        if (observed.has(heading)) continue;
+        observer.observe(heading);
+        observed.add(heading);
+      }
+    };
 
     const updateActiveHeading = () => {
+      const headings = currentHeadings();
+      if (!headings.length) return;
+      syncObserved(headings);
+
+      // The scrolling viewport can mount after this effect runs, so it is
+      // resolved on every update. Resolving it once marked the page as ended
+      // on the very first render and left the last heading active until the
+      // next full remount.
+      const scrollViewport = getDocumentationScrollViewport();
       const documentHeight = Math.max(
         document.body.scrollHeight,
         document.documentElement.scrollHeight,
       );
+      // A viewport that cannot scroll is never at its end; without this guard
+      // a page whose content still has to be laid out reports the end.
       const isAtDocumentEnd = scrollViewport
-        ? scrollViewport.scrollTop + scrollViewport.clientHeight >=
-          scrollViewport.scrollHeight - 2
-        : window.scrollY + window.innerHeight >= documentHeight - 2;
+        ? scrollViewport.scrollHeight > scrollViewport.clientHeight + 2 &&
+          scrollViewport.scrollTop + scrollViewport.clientHeight >=
+            scrollViewport.scrollHeight - 2
+        : documentHeight > window.innerHeight + 2 &&
+          window.scrollY + window.innerHeight >= documentHeight - 2;
 
       if (isAtDocumentEnd) {
         const nextId = headings.at(-1)!.id;
@@ -219,16 +251,20 @@ export function DocumentationTableOfContents({ items }: TableOfContentsProps) {
       // The documentation page scrolls inside this viewport, not the window.
       // Keeping the observer rooted here prevents stale window intersections
       // from re-running the active-item animation after a container scroll.
-      root: scrollViewport,
+      root: getDocumentationScrollViewport(),
       rootMargin: "0px 0px -33.333% 0px",
       threshold: [0, 1],
     });
 
-    for (const heading of headings) observer.observe(heading);
-    const scrollTarget = scrollViewport ?? window;
+    // Removing an observed heading also notifies the observer, so replaced
+    // content re-runs the update on its own.
+    syncObserved(currentHeadings());
     window.addEventListener("hashchange", updateActiveHeading);
     window.addEventListener("resize", updateActiveHeading);
-    scrollTarget.addEventListener("scroll", updateActiveHeading, {
+    // Captured on the document, so scrolling reaches this handler no matter
+    // which container ends up scrolling, including one that mounts later.
+    document.addEventListener("scroll", updateActiveHeading, {
+      capture: true,
       passive: true,
     });
     updateActiveHeading();
@@ -237,7 +273,9 @@ export function DocumentationTableOfContents({ items }: TableOfContentsProps) {
       observer.disconnect();
       window.removeEventListener("hashchange", updateActiveHeading);
       window.removeEventListener("resize", updateActiveHeading);
-      scrollTarget.removeEventListener("scroll", updateActiveHeading);
+      document.removeEventListener("scroll", updateActiveHeading, {
+        capture: true,
+      });
     };
   }, [items]);
 
