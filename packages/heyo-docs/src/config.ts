@@ -6,6 +6,7 @@ import { adobeAnalyticsSchema } from "./integrations/analytics/adobe";
 import { amplitudeAnalyticsSchema } from "./integrations/analytics/amplitude";
 import { clarityAnalyticsSchema } from "./integrations/analytics/clarity";
 import { clearbitAnalyticsSchema } from "./integrations/analytics/clearbit";
+import { databuddyAnalyticsSchema } from "./integrations/analytics/databuddy";
 import { fathomAnalyticsSchema } from "./integrations/analytics/fathom";
 import { googleAnalyticsSchema } from "./integrations/analytics/google-analytics";
 import { googleTagManagerSchema } from "./integrations/analytics/google-tag-manager";
@@ -324,6 +325,7 @@ const configSchema = z
             amplitude: amplitudeAnalyticsSchema.optional(),
             clarity: clarityAnalyticsSchema.optional(),
             clearbit: clearbitAnalyticsSchema.optional(),
+            databuddy: databuddyAnalyticsSchema.optional(),
             fathom: fathomAnalyticsSchema.optional(),
             ga4: googleAnalyticsSchema.optional(),
             gtm: googleTagManagerSchema.optional(),

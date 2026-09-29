@@ -11,6 +11,7 @@ integrations: {
     amplitude: { apiKey: "..." },
     clarity: { projectId: "..." },
     clearbit: { publishableKey: "pk_..." },
+    databuddy: { clientId: "...", trackWebVitals: true, trackErrors: true },
     fathom: { siteId: "..." },
     ga4: { measurementId: "G-..." },
     gtm: { containerId: "GTM-..." },

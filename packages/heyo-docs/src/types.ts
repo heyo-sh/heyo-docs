@@ -7,6 +7,7 @@ import type { AdobeAnalyticsConfig } from "./integrations/analytics/adobe";
 import type { AmplitudeAnalyticsConfig } from "./integrations/analytics/amplitude";
 import type { ClarityAnalyticsConfig } from "./integrations/analytics/clarity";
 import type { ClearbitAnalyticsConfig } from "./integrations/analytics/clearbit";
+import type { DatabuddyAnalyticsConfig } from "./integrations/analytics/databuddy";
 import type { FathomAnalyticsConfig } from "./integrations/analytics/fathom";
 import type { GoogleAnalyticsConfig } from "./integrations/analytics/google-analytics";
 import type { GoogleTagManagerConfig } from "./integrations/analytics/google-tag-manager";
@@ -66,6 +67,7 @@ export interface AnalyticsIntegrations {
   amplitude?: AmplitudeAnalyticsConfig;
   clarity?: ClarityAnalyticsConfig;
   clearbit?: ClearbitAnalyticsConfig;
+  databuddy?: DatabuddyAnalyticsConfig;
   fathom?: FathomAnalyticsConfig;
   ga4?: GoogleAnalyticsConfig;
   gtm?: GoogleTagManagerConfig;

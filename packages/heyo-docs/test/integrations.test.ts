@@ -5,6 +5,7 @@ import { adobeAnalyticsScript } from "../src/integrations/analytics/adobe";
 import { amplitudeAnalyticsScript } from "../src/integrations/analytics/amplitude";
 import { clarityBootstrapScript } from "../src/integrations/analytics/clarity";
 import { clearbitAnalyticsScript } from "../src/integrations/analytics/clearbit";
+import { databuddyAnalyticsScript } from "../src/integrations/analytics/databuddy";
 import { fathomAnalyticsScript } from "../src/integrations/analytics/fathom";
 import {
   googleAnalyticsBootstrapScript,
@@ -90,6 +91,13 @@ test("keeps an official source of truth directly above every provider schema", a
       ),
       schema: "clearbitAnalyticsSchema",
       sourceOfTruth: "help.clearbit.com",
+    },
+    {
+      source: Bun.file(
+        new URL("../src/integrations/analytics/databuddy.ts", import.meta.url),
+      ),
+      schema: "databuddyAnalyticsSchema",
+      sourceOfTruth: "www.databuddy.cc",
     },
     {
       source: Bun.file(
@@ -298,6 +306,24 @@ test("normalises integrations into their purpose-specific categories", () => {
           amplitude: { apiKey: "amplitude-public-key" },
           clarity: { projectId: "abc123" },
           clearbit: { publishableKey: "pk_clearbit" },
+          databuddy: {
+            clientId: "databuddy-client-id",
+            scriptUrl: "https://analytics.example.com/databuddy.js",
+            apiUrl: "https://basket.example.com",
+            trackWebVitals: true,
+            trackErrors: true,
+            trackOutgoingLinks: true,
+            trackInteractions: false,
+            trackAttributes: false,
+            trackHashChanges: false,
+            enableBatching: true,
+            batchSize: 20,
+            batchTimeout: 5000,
+            samplingRate: 0.5,
+            skipPatterns: ["/admin/**"],
+            maskPatterns: ["/users/*"],
+            disabled: false,
+          },
           fathom: { siteId: "ABCDE12" },
           ga4: { measurementId: "G-ABC123" },
           gtm: { containerId: "GTM-ABC123" },
@@ -367,6 +393,24 @@ test("normalises integrations into their purpose-specific categories", () => {
       amplitude: { apiKey: "amplitude-public-key" },
       clarity: { projectId: "abc123" },
       clearbit: { publishableKey: "pk_clearbit" },
+      databuddy: {
+        clientId: "databuddy-client-id",
+        scriptUrl: "https://analytics.example.com/databuddy.js",
+        apiUrl: "https://basket.example.com",
+        trackWebVitals: true,
+        trackErrors: true,
+        trackOutgoingLinks: true,
+        trackInteractions: false,
+        trackAttributes: false,
+        trackHashChanges: false,
+        enableBatching: true,
+        batchSize: 20,
+        batchTimeout: 5000,
+        samplingRate: 0.5,
+        skipPatterns: ["/admin/**"],
+        maskPatterns: ["/users/*"],
+        disabled: false,
+      },
       fathom: { siteId: "ABCDE12" },
       ga4: { measurementId: "G-ABC123" },
       gtm: { containerId: "GTM-ABC123" },
@@ -497,6 +541,112 @@ test("rejects unknown, insecure, and malformed integration configuration", () =>
     validateConfig({
       content: "./content",
       integrations: {
+        analytics: {
+          databuddy: {
+            clientId: "databuddy-client-id",
+            scriptUrl: "http://analytics.example.com/databuddy.js",
+          },
+        },
+      },
+    }),
+  ).toThrow(/Databuddy scriptUrl/);
+  expect(() =>
+    validateConfig({
+      content: "./content",
+      integrations: {
+        analytics: {
+          databuddy: {
+            clientId: "databuddy-client-id",
+            scriptUrl:
+              "https://analytics.example.com/databuddy.js?token=secret",
+          },
+        },
+      },
+    }),
+  ).toThrow(/Databuddy scriptUrl/);
+  expect(() =>
+    validateConfig({
+      content: "./content",
+      integrations: {
+        analytics: {
+          databuddy: {
+            clientId: "databuddy-client-id",
+            apiUrl: "https://basket.example.com/",
+          },
+        },
+      },
+    }),
+  ).toThrow(/Databuddy apiUrl/);
+  expect(() =>
+    validateConfig({
+      content: "./content",
+      integrations: {
+        analytics: {
+          databuddy: {
+            clientId: "databuddy-client-id",
+            skipPatterns: ["admin/**"],
+          },
+        },
+      },
+    }),
+  ).toThrow(/Databuddy path patterns/);
+  expect(() =>
+    validateConfig({
+      content: "./content",
+      integrations: {
+        analytics: {
+          databuddy: { clientId: "databuddy-client-id", batchSize: 51 },
+        },
+      },
+    }),
+  ).toThrow(/batchSize/);
+  expect(() =>
+    validateConfig({
+      content: "./content",
+      integrations: {
+        analytics: {
+          databuddy: { clientId: "databuddy-client-id", batchTimeout: 1.5 },
+        },
+      },
+    }),
+  ).toThrow(/batchTimeout/);
+  expect(() =>
+    validateConfig({
+      content: "./content",
+      integrations: {
+        analytics: {
+          databuddy: { clientId: "databuddy-client-id", samplingRate: 1.5 },
+        },
+      },
+    }),
+  ).toThrow(/samplingRate/);
+  expect(() =>
+    validateConfig({
+      content: "./content",
+      integrations: {
+        analytics: {
+          databuddy: { clientId: " " },
+        },
+      },
+    }),
+  ).toThrow(/clientId/);
+  expect(() =>
+    validateConfig({
+      content: "./content",
+      integrations: {
+        analytics: {
+          databuddy: {
+            clientId: "databuddy-client-id",
+            trackPageviews: true,
+          },
+        },
+      },
+    } as never),
+  ).toThrow(/Unrecognized key/);
+  expect(() =>
+    validateConfig({
+      content: "./content",
+      integrations: {
         support: {
           chatwoot: { baseUrl: "http://chat.example.com", websiteToken: "x" },
         },
@@ -612,6 +762,67 @@ test("emits each provider's isolated browser integration", () => {
   expect(clarityBootstrapScript()).toContain("https://www.clarity.ms/tag/");
   expect(clearbitAnalyticsScript({ publishableKey: "pk_clearbit" })).toEqual({
     src: "https://tag.clearbitscripts.com/v1/pk_clearbit/tags.js",
+  });
+  expect(databuddyAnalyticsScript({ clientId: "databuddy-client-id" })).toEqual(
+    {
+      async: true,
+      crossOrigin: "anonymous",
+      src: "https://cdn.databuddy.cc/databuddy.js",
+      clientId: "databuddy-client-id",
+      apiUrl: undefined,
+      trackWebVitals: undefined,
+      trackErrors: undefined,
+      trackOutgoingLinks: undefined,
+      trackInteractions: undefined,
+      trackAttributes: undefined,
+      trackHashChanges: undefined,
+      enableBatching: undefined,
+      batchSize: undefined,
+      batchTimeout: undefined,
+      samplingRate: undefined,
+      skipPatterns: undefined,
+      maskPatterns: undefined,
+      disabled: undefined,
+    },
+  );
+  expect(
+    databuddyAnalyticsScript({
+      clientId: "databuddy-client-id",
+      scriptUrl: "https://analytics.example.com/databuddy.js",
+      apiUrl: "https://basket.example.com",
+      trackWebVitals: true,
+      trackErrors: true,
+      trackOutgoingLinks: true,
+      trackInteractions: false,
+      trackAttributes: false,
+      trackHashChanges: false,
+      enableBatching: false,
+      batchSize: 20,
+      batchTimeout: 5000,
+      samplingRate: 0.5,
+      skipPatterns: ["/admin/**"],
+      maskPatterns: ["/users/*"],
+      disabled: false,
+    }),
+  ).toEqual({
+    async: true,
+    crossOrigin: "anonymous",
+    src: "https://analytics.example.com/databuddy.js",
+    clientId: "databuddy-client-id",
+    apiUrl: "https://basket.example.com",
+    trackWebVitals: "true",
+    trackErrors: "true",
+    trackOutgoingLinks: "true",
+    trackInteractions: "false",
+    trackAttributes: "false",
+    trackHashChanges: "false",
+    enableBatching: "false",
+    batchSize: "20",
+    batchTimeout: "5000",
+    samplingRate: "0.5",
+    skipPatterns: '["/admin/**"]',
+    maskPatterns: '["/users/*"]',
+    disabled: "false",
   });
   expect(fathomAnalyticsScript({ siteId: "ABCDE12" })).toEqual({
     defer: true,
@@ -761,6 +972,9 @@ test("wires each browser integration into every framework template", async () =>
     "data-papercups-token",
     "data-heyo-typebot",
     "data-zammad-chat-id",
+    "data-client-id",
+    "data-track-web-vitals",
+    "data-skip-patterns",
     "data-google-tag-manager-container-id",
     "data-hotjar-site-id",
     "data-logrocket-app-id",
