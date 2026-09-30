@@ -5,6 +5,6 @@
  * new built-in theme. Keeping this module dependency-free lets configuration
  * validation use the same list without loading React components.
  */
-export const builtInThemeNames = ["grain", "shade", "moss"] as const;
+export const builtInThemeNames = ["grain", "shade", "moss", "heyo"] as const;
 
 export type BuiltInThemeName = (typeof builtInThemeNames)[number];

@@ -59,10 +59,19 @@ export function DocumentationSearch({
   pages,
   trigger = "button",
   triggerClassName,
+  triggerContent,
 }: SearchProps & {
   trigger?: "button" | "input";
-  /** Theme-specific presentation for the compact input trigger. */
+  /** Theme-specific presentation for the trigger. */
   triggerClassName?: string;
+  /**
+   * Replaces the button trigger's contents for themes that draw their own
+   * affordance. A button is the accessible shape for something that opens a
+   * dialog, and unlike the read-only input it does not keep a focus ring after
+   * the dialog closes: browsers always treat a focused text field as
+   * keyboard-focused, so restoring focus to one parks a ring on it.
+   */
+  triggerContent?: ReactNode;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const resultRefs = useRef<Array<HTMLAnchorElement | null>>([]);
@@ -166,15 +175,23 @@ export function DocumentationSearch({
       ) : (
         <button
           aria-keyshortcuts="Control+K Meta+K"
-          className="flex h-10 w-full items-center gap-2 px-4 text-sm text-foreground/60 transition-colors hover:bg-foreground/[0.03] hover:text-foreground"
+          aria-label="Search documentation"
+          className={cn(
+            "flex h-10 w-full items-center gap-2 px-4 text-sm text-foreground/60 transition-colors hover:bg-foreground/[0.03] hover:text-foreground",
+            triggerClassName,
+          )}
           onClick={() => setOpen(true)}
           type="button"
         >
-          <Icon className="size-4 shrink-0" name="search" />
-          <span className="min-w-0 flex-1 text-left">Search</span>
-          <kbd className="hidden rounded border border-foreground/10 bg-muted px-1.5 py-0.5 font-mono text-[0.625rem] text-muted-foreground sm:inline">
-            ⌘ K
-          </kbd>
+          {triggerContent ?? (
+            <>
+              <Icon className="size-4 shrink-0" name="search" />
+              <span className="min-w-0 flex-1 text-left">Search</span>
+              <kbd className="hidden rounded border border-foreground/10 bg-muted px-1.5 py-0.5 font-mono text-[0.625rem] text-muted-foreground sm:inline">
+                ⌘ K
+              </kbd>
+            </>
+          )}
         </button>
       )}
       <DialogContent

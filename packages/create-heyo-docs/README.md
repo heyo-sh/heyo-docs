@@ -29,13 +29,13 @@ The creator works with pnpm, npm, Yarn, and Bun.
 Passing options makes the creator non-interactive; include a project-directory
 argument when using them in automation.
 
-| Option              | Values                          |
-| ------------------- | ------------------------------- |
-| `--template`        | `react-router`, `next`, `astro` |
-| `--theme`           | `grain`, `shade`, `moss`        |
-| `--deployment`      | `cloudflare`, `vercel`, `later` |
-| `--package-manager` | `bun`, `pnpm`, `npm`, `yarn`    |
-| `--no-install`      | Skip dependency installation    |
+| Option              | Values                           |
+| ------------------- | -------------------------------- |
+| `--template`        | `react-router`, `next`, `astro`  |
+| `--theme`           | `grain`, `shade`, `moss`, `heyo` |
+| `--deployment`      | `cloudflare`, `vercel`, `later`  |
+| `--package-manager` | `bun`, `pnpm`, `npm`, `yarn`     |
+| `--no-install`      | Skip dependency installation     |
 
 Read the [full documentation](https://heyo.sh) for configuration, content, components, framework integrations, and deployment.
 

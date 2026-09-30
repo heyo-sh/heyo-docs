@@ -236,6 +236,14 @@ const aiChatThemeStyles = {
     header: "border-border",
     footer: "border-border bg-card",
   },
+  heyo: {
+    composer: "rounded-lg border-border shadow-xs",
+    trigger: "rounded-lg shadow-sm",
+    drawer:
+      "!m-0 !h-dvh !max-h-dvh !w-[min(100%,26rem)] !rounded-none !border-y-0 !border-r-0 !border-l !border-border !bg-background !shadow-lg sm:!w-[26rem]",
+    header: "border-border bg-background",
+    footer: "border-border bg-background",
+  },
 } satisfies Record<
   BuiltInThemeName,
   {

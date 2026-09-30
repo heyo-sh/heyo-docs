@@ -25,7 +25,7 @@ export { mergePackageJson, replacePlaceholders } from "./utils";
 export type * from "./types";
 
 const USAGE =
-  "Usage: create-heyo-docs [project-name] [--template react-router|next|astro] [--deployment cloudflare|vercel|later] [--theme grain|shade|moss] [--package-manager bun|pnpm|npm|yarn] [--no-install]";
+  "Usage: create-heyo-docs [project-name] [--template react-router|next|astro] [--deployment cloudflare|vercel|later] [--theme grain|shade|moss|heyo] [--package-manager bun|pnpm|npm|yarn] [--no-install]";
 const TEMPLATE_OPTIONS = [
   { value: "react-router", label: "React Router" },
   { value: "next", label: "Next.js" },
@@ -40,6 +40,7 @@ const THEME_OPTIONS = [
   { value: "grain", label: "Grain" },
   { value: "shade", label: "Shade" },
   { value: "moss", label: "Moss" },
+  { value: "heyo", label: "Heyo" },
   {
     value: "dripper",
     label: "Dripper — Soon",
@@ -139,7 +140,7 @@ export function parseArguments(argv: string[]): {
     } else if (value === "--theme") {
       options.theme = readEnum(
         argv[++index],
-        ["grain", "shade", "moss"] as const,
+        ["grain", "shade", "moss", "heyo"] as const,
         "theme",
       );
     } else if (value === "--package-manager") {
@@ -182,6 +183,7 @@ async function askQuestions(defaults: CreateOptions): Promise<CreateOptions> {
     "grain",
     "shade",
     "moss",
+    "heyo",
   ] as const);
   const packageManager = await selectAvailable(
     "Package manager",
