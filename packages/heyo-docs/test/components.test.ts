@@ -12,6 +12,7 @@ import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 import { heyoDocs as defineHeyoDocs } from "../src/config";
 import { DocsApp } from "../src/index";
 import { grainTheme } from "../src/theme/grain";
+import { heyoTheme } from "../src/theme/heyo";
 import { mossTheme } from "../src/theme/moss";
 import { shadeTheme } from "../src/theme/shade";
 import { PageNavigation } from "../src/theme/components/actions/navigation";
@@ -281,6 +282,91 @@ test("places Moss search and footer links in the sidebar with centered header ta
   );
 });
 
+test("puts the Heyo group switcher and search in the sidebar head", () => {
+  const html = renderToStaticMarkup(
+    createElement(DocsApp, {
+      theme: heyoTheme,
+      config: heyoDocs({
+        branding: { name: "Heyo console" },
+        footer: {
+          github: "https://github.com/acme",
+          website: "https://example.com",
+        },
+        groups: [
+          {
+            group: "Documentation",
+            sections: [{ section: "Start here", pages: ["index"] }],
+          },
+          {
+            group: "Reference",
+            sections: [{ pages: ["reference"] }],
+          },
+        ],
+        theme: "heyo",
+      }),
+      isDark: true,
+      pages: [
+        { ...pages[0]!, sourcePath: "index.mdx" },
+        {
+          ...pages[0]!,
+          slug: "/reference",
+          sourcePath: "reference.mdx",
+          title: "Reference page",
+        },
+      ],
+      pathname: "/",
+    }),
+  );
+
+  // The brand falls back to a letter mark rather than the Heyo Docs logo.
+  expect(html).not.toContain('data-slot="heyo-docs-logo"');
+  expect(html).toContain("Heyo console");
+  // The switcher is a select-shaped control rather than header tabs.
+  expect(html).toContain('data-slot="dropdown-menu-trigger"');
+  expect(html).toContain('aria-label="Documentation groups"');
+  expect(html).toContain('aria-label="Search documentation"');
+  // The search affordance is a button: a read-only input would keep a focus
+  // ring after the dialog closes.
+  expect(html).not.toContain('readonly=""');
+  // A section heading discloses its pages and counts them.
+  expect(html).toContain("border border-dashed border-border");
+  expect(html).toContain('aria-label="Use light theme"');
+  expect(html).toContain('aria-label="Website"');
+  expect(html).toContain('aria-label="GitHub"');
+  expect(html.indexOf('aria-label="Documentation groups"')).toBeLessThan(
+    html.indexOf('aria-label="Search documentation"'),
+  );
+  expect(html.indexOf('aria-label="Search documentation"')).toBeLessThan(
+    html.indexOf('aria-label="Documentation navigation"'),
+  );
+});
+
+test("omits the Heyo group switcher and sidebar footer when they would say nothing", () => {
+  const html = renderToStaticMarkup(
+    createElement(DocsApp, {
+      theme: heyoTheme,
+      config: heyoDocs({
+        branding: { name: "Heyo console" },
+        groups: [
+          {
+            group: "Documentation",
+            sections: [{ section: "Start here", pages: ["index"] }],
+          },
+        ],
+        theme: "heyo",
+      }),
+      pages: [{ ...pages[0]!, sourcePath: "index.mdx" }],
+      pathname: "/",
+    }),
+  );
+
+  expect(html).not.toContain('aria-label="Documentation groups"');
+  expect(html).not.toContain('aria-label="Website"');
+  expect(html).not.toContain('aria-label="GitHub"');
+  expect(html).toContain('aria-label="Documentation navigation"');
+  expect(html).toContain('aria-label="Search documentation"');
+});
+
 test("renders registered custom components from compiled MDX in documentation and changelog pages", async () => {
   const mdxComponents = {
     FeatureCard({ children, title }: { children?: ReactNode; title: string }) {
@@ -458,7 +544,7 @@ test("renders configured group icons in every theme's group navigation", () => {
   const GroupIcon: IconComponent = (props) =>
     createElement("svg", { "data-group-icon": "true", ...props });
 
-  for (const theme of ["grain", "shade", "moss"] as const) {
+  for (const theme of ["grain", "shade", "moss", "heyo"] as const) {
     const html = renderToStaticMarkup(
       createElement(DocsApp, {
         theme: grainTheme,

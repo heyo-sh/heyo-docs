@@ -243,6 +243,23 @@ describe("creator utilities", () => {
     });
   });
 
+  test("accepts Heyo as an available theme", () => {
+    expect(
+      parseArguments([
+        "my-docs",
+        "--theme",
+        "heyo",
+        "--package-manager",
+        "bun",
+        "--no-install",
+      ]),
+    ).toMatchObject({
+      interactive: false,
+      showHelp: false,
+      options: { theme: "heyo" },
+    });
+  });
+
   test("accepts Next.js as an available template", () => {
     expect(
       parseArguments([

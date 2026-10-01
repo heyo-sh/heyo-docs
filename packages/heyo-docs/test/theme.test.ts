@@ -55,3 +55,21 @@ test("selects the built-in moss theme", () => {
     "SidebarFooter",
   ]);
 });
+
+test("selects the built-in heyo theme", () => {
+  const theme = resolveTheme("heyo");
+  expect(theme.name).toBe("heyo");
+  expect(Object.keys(theme.components)).toEqual([
+    "Layout",
+    "TopNavigation",
+    "Breadcrumb",
+    "Sidebar",
+    "DocsPage",
+    "ChangelogPage",
+    "OpenApiPage",
+    "TableOfContents",
+    "Tabs",
+    "Search",
+    "SidebarFooter",
+  ]);
+});

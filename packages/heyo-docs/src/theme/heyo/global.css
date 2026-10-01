@@ -1,0 +1,419 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@source "./";
+@source "../components";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Heyo — the console theme.
+ *
+ * It carries the heyo-ui design language into documentation:
+ *
+ * 1. Monochrome accent. `--primary` is the inverse of the page — near-black on
+ *    light, near-white on dark — so hue is left to mean exactly one thing:
+ *    status. A blue primary button competes with a blue callout for the same
+ *    glance; an ink-coloured one never does.
+ * 2. Flat surfaces. The sidebar shares the page fill instead of floating on its
+ *    own tint; separation is a single hairline.
+ * 3. Translucent edges. A solid grey line has to be re-picked for every surface
+ *    it might sit on, a translucent one is correct on all of them.
+ * 4. Dense type. 12 / 13 / 14 / 16px, with hierarchy coming from weight and
+ *    colour rather than size.
+ */
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: var(--heyo-docs-font-family);
+  --font-mono: var(--heyo-docs-font-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /*
+   * Depth is a hairline plus a whisper of drop. The tint flips with the colour
+   * mode, so the shadows have to stay inline: a `.dark` override of
+   * `--heyo-docs-shadow-*` then reaches every utility.
+   */
+  --shadow-2xs: 0 1px 1px var(--heyo-docs-shadow-weak);
+  --shadow-xs: 0 1px 1px var(--heyo-docs-shadow-weak);
+  --shadow-sm: 0 1px 2px var(--heyo-docs-shadow);
+  --shadow-md:
+    0 2px 6px var(--heyo-docs-shadow), 0 1px 2px var(--heyo-docs-shadow-weak);
+  --shadow-lg:
+    0 8px 28px var(--heyo-docs-shadow-strong), 0 2px 6px var(--heyo-docs-shadow);
+  --shadow-xl:
+    0 16px 48px var(--heyo-docs-shadow-strong),
+    0 4px 10px var(--heyo-docs-shadow);
+}
+
+@theme {
+  /*
+   * Dense first. Most of the interface sits on `base`; hierarchy comes from
+   * weight and colour, never from another size.
+   */
+  --text-xs: 12px;
+  --text-xs--line-height: 1.3333;
+  --text-sm: 13px;
+  --text-sm--line-height: 1.5385;
+  --text-base: 14px;
+  --text-base--line-height: 1.5;
+  --text-lg: 16px;
+  --text-lg--line-height: 1.5;
+  --text-xl: 18px;
+  --text-xl--line-height: 1.4444;
+  --text-2xl: 22px;
+  --text-2xl--line-height: 1.2727;
+  --text-3xl: 28px;
+  --text-3xl--line-height: 1.2143;
+  --text-4xl: 34px;
+  --text-4xl--line-height: 1.1765;
+
+  --ease-heyo: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+:root {
+  --heyo-docs-font-family:
+    "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --heyo-docs-font-mono:
+    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+
+  color-scheme: light;
+
+  /* Page fill. The sidebar deliberately shares it. */
+  --background: #fafafa;
+  --foreground: #1a1a1e;
+  /* Secondary surface: cards, tables, the search field. */
+  --card: #ffffff;
+  --card-foreground: #09090b;
+  --popover: #ffffff;
+  --popover-foreground: #1a1a1e;
+  /* Ink, not a hue. */
+  --primary: #18181b;
+  --primary-foreground: #fafafa;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #18181b;
+  --muted: #f1f1f2;
+  --muted-foreground: #71717a;
+  --accent: #f4f4f5;
+  --accent-foreground: #09090b;
+  --destructive: #dc2626;
+  /* Translucent edges: one value that is correct on every surface. */
+  --border: oklch(0% 0 0 / 0.1);
+  --input: oklch(0% 0 0 / 0.14);
+  --ring: #18181b;
+  --chart-1: #18181b;
+  --chart-2: #52525b;
+  --chart-3: #71717a;
+  --chart-4: #a1a1aa;
+  --chart-5: #d4d4d8;
+  --radius: 0.5rem;
+  --sidebar: #fafafa;
+  --sidebar-foreground: #1a1a1e;
+  --sidebar-primary: #18181b;
+  --sidebar-primary-foreground: #fafafa;
+  --sidebar-accent: #f1f1f2;
+  --sidebar-accent-foreground: #09090b;
+  --sidebar-border: oklch(0% 0 0 / 0.1);
+  --sidebar-ring: #18181b;
+
+  --heyo-docs-shadow-weak: oklch(0% 0 0 / 0.04);
+  --heyo-docs-shadow: oklch(0% 0 0 / 0.07);
+  --heyo-docs-shadow-strong: oklch(0% 0 0 / 0.1);
+}
+
+/*
+ * The dark ramp is flat on purpose and anchored on #0a0a0a. Panels do not get
+ * lighter as they nest; a hairline says where one surface ends and the next
+ * begins.
+ */
+.dark {
+  color-scheme: dark;
+
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --card: #111111;
+  --card-foreground: #fafafa;
+  --popover: #161616;
+  --popover-foreground: #ededed;
+  --primary: #fafafa;
+  --primary-foreground: #18181b;
+  --secondary: #18181b;
+  --secondary-foreground: #fafafa;
+  --muted: #17171a;
+  --muted-foreground: #a1a1aa;
+  --accent: #1f1f22;
+  --accent-foreground: #fafafa;
+  --destructive: #f7796d;
+  --border: oklch(100% 0 0 / 0.09);
+  --input: oklch(100% 0 0 / 0.13);
+  --ring: #e4e4e7;
+  --chart-1: #fafafa;
+  --chart-2: #d4d4d8;
+  --chart-3: #a1a1aa;
+  --chart-4: #71717a;
+  --chart-5: #3f3f46;
+  --sidebar: #0a0a0a;
+  --sidebar-foreground: #ededed;
+  --sidebar-primary: #fafafa;
+  --sidebar-primary-foreground: #18181b;
+  --sidebar-accent: #17171a;
+  --sidebar-accent-foreground: #fafafa;
+  --sidebar-border: oklch(100% 0 0 / 0.09);
+  --sidebar-ring: #e4e4e7;
+
+  --heyo-docs-shadow-weak: oklch(0% 0 0 / 0.3);
+  --heyo-docs-shadow: oklch(0% 0 0 / 0.4);
+  --heyo-docs-shadow-strong: oklch(0% 0 0 / 0.55);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply font-sans scroll-smooth;
+    overscroll-behavior-y: none;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    overscroll-behavior-y: none;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  select:not([multiple]) {
+    @apply h-8 w-full cursor-pointer appearance-none rounded-lg bg-card bg-no-repeat px-3 py-1.5 pr-9 text-left text-sm text-foreground/70 shadow-xs ring-1 ring-border transition-colors outline-none hover:bg-muted hover:text-foreground focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 16 16'%3E%3Cpath stroke='%2371717a' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
+    background-position: right 0.75rem center;
+    background-size: 0.875rem;
+  }
+
+  .dark select:not([multiple]) {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 16 16'%3E%3Cpath stroke='%23a1a1aa' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
+  }
+
+  ::selection {
+    background-color: color-mix(in oklch, var(--primary) 22%, transparent);
+    color: inherit;
+  }
+}
+
+@layer components {
+  /*
+   * The 404 body. Its markup is shared by every theme but no stylesheet ever
+   * claimed it, so the page landed as three unstyled lines — the one screen a
+   * reader reaches by accident deserves better than a browser default.
+   */
+  .heyo-docs-article {
+    max-width: 34rem;
+    padding-top: 2rem;
+  }
+
+  .heyo-docs-article h1 {
+    margin: 0.75rem 0 0;
+    font-size: var(--text-3xl);
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: var(--foreground);
+  }
+
+  .heyo-docs-article p {
+    margin: 0.75rem 0 0;
+    color: var(--muted-foreground);
+  }
+
+  .heyo-docs-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    height: 1.375rem;
+    padding-inline: 0.5rem;
+    border-radius: var(--radius-sm);
+    background-color: color-mix(in oklch, var(--foreground) 6%, transparent);
+    font-family: var(--heyo-docs-font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.06em;
+    color: var(--muted-foreground);
+  }
+
+  .heyo-docs-mdx-content > :first-child {
+    margin-top: 0 !important;
+  }
+
+  .heyo-docs-mdx-content > :last-child {
+    margin-bottom: 0 !important;
+  }
+
+  /*
+   * The native scrollbar, styled. `ScrollArea` replaces the scrollbar with real
+   * elements where the surface is a designed one; this is for the panes that
+   * should not pay for an extra element.
+   */
+  .heyo-docs-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklch, var(--foreground) 22%, transparent)
+      transparent;
+  }
+
+  .heyo-docs-scrollbar::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  .heyo-docs-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .heyo-docs-scrollbar::-webkit-scrollbar-thumb {
+    background-color: color-mix(in oklch, var(--foreground) 20%, transparent);
+    background-clip: content-box;
+    border: 3px solid transparent;
+    border-radius: 9999px;
+  }
+
+  .heyo-docs-scrollbar:hover::-webkit-scrollbar-thumb,
+  .heyo-docs-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(in oklch, var(--foreground) 34%, transparent);
+  }
+
+  .heyo-docs-code .shiki {
+    margin: 0;
+    min-width: max-content;
+    background-color: transparent !important;
+    padding: 0.75rem 1rem;
+    font-family: var(--heyo-docs-font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.5rem;
+  }
+
+  .heyo-docs-code .shiki code,
+  .heyo-docs-code .shiki .line {
+    display: block;
+  }
+
+  .heyo-docs-code .shiki .line {
+    white-space: pre;
+  }
+
+  .dark .heyo-docs-code .shiki,
+  .dark .heyo-docs-code .shiki span {
+    color: var(--shiki-dark) !important;
+    font-style: var(--shiki-dark-font-style, inherit);
+    background-color: transparent !important;
+  }
+
+  .heyo-docs-code[data-line-numbers] .shiki code {
+    counter-reset: line;
+  }
+
+  .heyo-docs-code[data-line-numbers] .shiki .line::before {
+    display: inline-block;
+    width: 2.5rem;
+    padding-right: 1rem;
+    color: var(--muted-foreground);
+    content: counter(line);
+    counter-increment: line;
+    user-select: none;
+    text-align: right;
+  }
+}
+
+/*
+ * Entrance motion: a short rise, no blur. Chrome settles before the content so
+ * the page reads as one move rather than three.
+ */
+@keyframes heyo-docs-enter-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heyo-docs-enter-slide {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.heyo-docs-enter {
+  animation-duration: 320ms;
+  animation-fill-mode: both;
+  animation-timing-function: var(--ease-heyo);
+  will-change: opacity, transform;
+}
+
+.heyo-docs-enter--top-navigation {
+  animation-duration: 240ms;
+  animation-name: heyo-docs-enter-rise;
+}
+
+.heyo-docs-enter--navigation {
+  animation-name: heyo-docs-enter-slide;
+}
+
+.heyo-docs-enter--content {
+  animation-delay: 80ms;
+  animation-name: heyo-docs-enter-rise;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heyo-docs-enter {
+    animation: none;
+  }
+}

@@ -1,6 +1,6 @@
 export type Template = "react-router" | "next" | "astro";
 export type Deployment = "cloudflare" | "vercel" | "later";
-export type Theme = "grain" | "shade" | "moss";
+export type Theme = "grain" | "shade" | "moss" | "heyo";
 export type PackageManager = "bun" | "pnpm" | "npm" | "yarn";
 
 export interface CreateOptions {
