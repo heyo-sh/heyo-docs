@@ -331,12 +331,19 @@
     line-height: 1.5rem;
   }
 
-  .heyo-docs-code .shiki code,
-  .heyo-docs-code .shiki .line {
+  /*
+   * Shiki separates its line spans with a real newline. Blocks already break
+   * the line, so the `<pre>` must stop honouring that character or every line
+   * break is rendered twice; `white-space` is restored on the line itself so
+   * indentation inside it survives.
+   */
+  .heyo-docs-code .shiki code {
     display: block;
+    white-space: normal;
   }
 
   .heyo-docs-code .shiki .line {
+    display: block;
     white-space: pre;
   }
 

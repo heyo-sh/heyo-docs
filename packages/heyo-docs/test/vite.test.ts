@@ -42,6 +42,18 @@ test("resolves a bare content directory from an app root in a monorepo", async (
   }
 });
 
+test("declares the JSX runtime so a virtual page cannot trigger a mid-render re-optimisation", () => {
+  const plugin = heyoDocs({ config: defineHeyoDocs({ content: "content" }) });
+
+  // Vite's scanner never sees a virtual module, so the runtime every compiled
+  // page imports has to be declared or it is discovered during the first
+  // render — which reloads the environment and splits React in two.
+  expect(plugin.configEnvironment().optimizeDeps.include).toEqual([
+    "react/jsx-runtime",
+    "react/jsx-dev-runtime",
+  ]);
+});
+
 test("exposes an AI configuration to the browser without authentication", async () => {
   const root = await createFixture();
   try {

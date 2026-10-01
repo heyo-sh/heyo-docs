@@ -44,12 +44,29 @@ const MDX_MODULE_PREFIX = "virtual:heyo-docs-mdx:";
 const RESOLVED_PREFIX = "\0";
 
 /**
+ * The runtime every compiled page imports.
+ *
+ * Vite's dependency scanner only crawls real files, and all of this plugin's
+ * output lives behind virtual modules, so the JSX runtime stays invisible
+ * until a page is actually rendered. Discovering it mid-request makes Vite
+ * re-bundle the environment's dependencies and reload it in the middle of a
+ * render, which leaves one half of the React tree holding a different copy of
+ * React from the other — `Cannot read properties of null (reading
+ * 'useContext')` on the first request after a cold or invalidated cache.
+ *
+ * Declaring it here means the optimizer is complete before the first request,
+ * and every consumer gets that without a line of configuration.
+ */
+const MDX_RUNTIME_DEPENDENCIES = ["react/jsx-runtime", "react/jsx-dev-runtime"];
+
+/**
  * A deliberately structural subset of Vite's plugin API. Keeping this contract
  * local avoids leaking a Vite 7 or 8-specific branded type into consumers.
  */
 export interface HeyoDocsVitePlugin {
   name: string;
   enforce: "pre";
+  configEnvironment(): { optimizeDeps: { include: string[] } };
   configResolved(config: { command?: "build" | "serve"; root: string }): void;
   configureServer?(server: {
     watcher: { add(paths: string[]): void };
@@ -141,6 +158,9 @@ export function heyoDocs(options: HeyoDocsViteOptions): HeyoDocsVitePlugin {
   return {
     name: "heyo-docs:content",
     enforce: "pre",
+    configEnvironment() {
+      return { optimizeDeps: { include: [...MDX_RUNTIME_DEPENDENCIES] } };
+    },
     configResolved(config) {
       root = config.root;
       contentDirectory = resolve(root, options.config.content);

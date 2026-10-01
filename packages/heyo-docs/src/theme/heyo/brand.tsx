@@ -7,8 +7,15 @@ import type { BrandingConfig } from "../../types";
  */
 export function HeyoBrand({ branding }: { branding: BrandingConfig }) {
   if (branding.logo) {
+    // `dark:invert` because the theme's chrome is ink on paper and back again:
+    // a monochrome mark drawn for the light surface is invisible on the dark
+    // one, and a logo is the one thing on a page nobody expects to vanish.
     return (
-      <img alt="" className="max-h-6 w-auto max-w-36" src={branding.logo} />
+      <img
+        alt=""
+        className="max-h-6 w-auto max-w-36 dark:invert"
+        src={branding.logo}
+      />
     );
   }
 
