@@ -78,7 +78,7 @@
       "dependencies": {
         "@fontsource-variable/figtree": "^5.3.0",
         "@heyo-sh/heyo-docs": "workspace:*",
-        "@react-router/node": "8.3.1",
+        "@react-router/node": "8.4.0",
         "@remixicon/react": "^4.9.0",
         "beautiful-mermaid": "^1.1.3",
         "isbot": "5.2.2",
@@ -669,7 +669,7 @@
 
     "@react-router/express": ["@react-router/express@8.4.0", "", { "dependencies": { "@react-router/node": "8.4.0" }, "peerDependencies": { "express": "^4.22.2 || ^5", "react-router": "8.4.0", "typescript": "^5.1.0 || ^6.0.0 || ^7.0.0" }, "optionalPeers": ["typescript"] }, "sha512-JPujWEE0LZuwuuBoZwXwYDZSrqft63GU1c0XZ1JOGQPqmR8/nrzvBU/UgPCFHAuPsfRk79ebxljmlri+4sGR+w=="],
 
-    "@react-router/node": ["@react-router/node@8.3.1", "", { "dependencies": { "@remix-run/node-fetch-server": "^0.14.1" }, "peerDependencies": { "react-router": "8.3.1", "typescript": "^5.1.0 || ^6.0.0 || ^7.0.0" }, "optionalPeers": ["typescript"] }, "sha512-JQI2vPd0twfHXxRxD1QWxKkCfu5I7bxojgEZFL97EvbJLm1B6p4qeqvGc9hl9g/3ZYbieczQY6ElM3zZjiG4sA=="],
+    "@react-router/node": ["@react-router/node@8.4.0", "", { "dependencies": { "@remix-run/node-fetch-server": "^0.14.1" }, "peerDependencies": { "react-router": "8.4.0", "typescript": "^5.1.0 || ^6.0.0 || ^7.0.0" }, "optionalPeers": ["typescript"] }, "sha512-1teZHtk7XDm1pteQ2Plgtvtjjup5C5sIwFlOMYVIyoOH7X3bId3Qb//kUdbydX6NRIxcGK28UnfZlz4SrD/mkg=="],
 
     "@react-router/serve": ["@react-router/serve@8.4.0", "", { "dependencies": { "@react-router/express": "8.4.0", "@react-router/node": "8.4.0", "@remix-run/node-fetch-server": "^0.14.1", "compression": "^1.8.1", "express": "^5.2.1", "morgan": "^1.10.1", "source-map-support": "^0.5.21" }, "peerDependencies": { "react-router": "8.4.0" }, "bin": { "react-router-serve": "bin.cjs" } }, "sha512-R2i5hed/7wwPxARQxSNM99rFnjy6bCigu8vUVyghaB6Si1VdUAjz7u7zhyBQ/T+8fdPHXIZ9SMV4rPmguD0nEw=="],
 
@@ -2181,13 +2181,7 @@
 
     "@modelcontextprotocol/sdk/zod": ["zod@4.1.5", "", {}, "sha512-rcUUZqlLJgBC33IT3PNMgsCq6TzLQEG/Ei/KTCU0PedSWRMAXoOUN+4t/0H+Q8bdnLPdqUYnvboJT0bn/229qg=="],
 
-    "@react-router/dev/@react-router/node": ["@react-router/node@8.4.0", "", { "dependencies": { "@remix-run/node-fetch-server": "^0.14.1" }, "peerDependencies": { "react-router": "8.4.0", "typescript": "^5.1.0 || ^6.0.0 || ^7.0.0" }, "optionalPeers": ["typescript"] }, "sha512-1teZHtk7XDm1pteQ2Plgtvtjjup5C5sIwFlOMYVIyoOH7X3bId3Qb//kUdbydX6NRIxcGK28UnfZlz4SrD/mkg=="],
-
     "@react-router/dev/chokidar": ["chokidar@5.0.0", "", { "dependencies": { "readdirp": "^5.0.0" } }, "sha512-TQMmc3w+5AxjpL8iIiwebF73dRDF4fBIieAqGn9RGCWaEVwQ6Fb2cGe31Yns0RRIzii5goJ1Y7xbMwo1TxMplw=="],
-
-    "@react-router/express/@react-router/node": ["@react-router/node@8.4.0", "", { "dependencies": { "@remix-run/node-fetch-server": "^0.14.1" }, "peerDependencies": { "react-router": "8.4.0", "typescript": "^5.1.0 || ^6.0.0 || ^7.0.0" }, "optionalPeers": ["typescript"] }, "sha512-1teZHtk7XDm1pteQ2Plgtvtjjup5C5sIwFlOMYVIyoOH7X3bId3Qb//kUdbydX6NRIxcGK28UnfZlz4SrD/mkg=="],
-
-    "@react-router/serve/@react-router/node": ["@react-router/node@8.4.0", "", { "dependencies": { "@remix-run/node-fetch-server": "^0.14.1" }, "peerDependencies": { "react-router": "8.4.0", "typescript": "^5.1.0 || ^6.0.0 || ^7.0.0" }, "optionalPeers": ["typescript"] }, "sha512-1teZHtk7XDm1pteQ2Plgtvtjjup5C5sIwFlOMYVIyoOH7X3bId3Qb//kUdbydX6NRIxcGK28UnfZlz4SrD/mkg=="],
 
     "@tailwindcss/node/lightningcss": ["lightningcss@1.32.0", "", { "dependencies": { "detect-libc": "^2.0.3" }, "optionalDependencies": { "lightningcss-android-arm64": "1.32.0", "lightningcss-darwin-arm64": "1.32.0", "lightningcss-darwin-x64": "1.32.0", "lightningcss-freebsd-x64": "1.32.0", "lightningcss-linux-arm-gnueabihf": "1.32.0", "lightningcss-linux-arm64-gnu": "1.32.0", "lightningcss-linux-arm64-musl": "1.32.0", "lightningcss-linux-x64-gnu": "1.32.0", "lightningcss-linux-x64-musl": "1.32.0", "lightningcss-win32-arm64-msvc": "1.32.0", "lightningcss-win32-x64-msvc": "1.32.0" } }, "sha512-NXYBzinNrblfraPGyrbPoD19C1h9lfI/1mzgWYvXUTe414Gz/X1FD2XBZSZM7rRTrMA8JL3OtAaGifrIKhQ5yQ=="],
 
