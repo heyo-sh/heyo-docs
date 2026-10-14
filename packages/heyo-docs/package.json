@@ -18,7 +18,7 @@
     "rehype-slug": "6.0.0",
     "remark-frontmatter": "5.0.0",
     "remark-gfm": "^4.0.1",
-    "shadcn": "^4.21.0",
+    "shadcn": "^4.21.4",
     "shiki": "^4.5.0",
     "tailwind-merge": "^3.7.0",
     "tailwindcss": "^4.1.14",
