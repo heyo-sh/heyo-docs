@@ -311,6 +311,8 @@ export interface DocsPage {
   title: string;
   description: string;
   content: ComponentType<{ components?: MdxComponents }>;
+  /** Wait for this page's browser chunk before committing a client-side route. */
+  preload?: () => Promise<unknown>;
   tableOfContents: TableOfContentsItem[];
   seo: SeoData;
   sourcePath?: string;

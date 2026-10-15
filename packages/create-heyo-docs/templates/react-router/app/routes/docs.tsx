@@ -5,10 +5,7 @@ import {
   findOpenApiEndpoint,
 } from "@heyo-sh/heyo-docs/model";
 import { changelogGroupForPage } from "@heyo-sh/heyo-docs/navigation";
-import {
-  openApiEndpointDataPath,
-  openApiEndpointDetail,
-} from "@heyo-sh/heyo-docs/openapi";
+import { openApiEndpointDetail } from "@heyo-sh/heyo-docs/openapi";
 import { docsSeoMeta } from "@heyo-sh/heyo-docs/seo/react-router";
 import type { OpenApiEndpoint } from "@heyo-sh/heyo-docs/types";
 import { useDocsTheme } from "@heyo-sh/heyo-docs/theme/provider";
@@ -16,6 +13,7 @@ import {
   Link,
   useLoaderData,
   useParams,
+  type ClientLoaderFunctionArgs,
   type LoaderFunctionArgs,
   type MetaFunction,
 } from "react-router";
@@ -48,31 +46,36 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
   if (!endpoint) return {};
 
-  // Prerendering serialises this operation-specific data with its static route,
-  // so the browser's first paint already contains the complete API reference.
-  if (typeof window === "undefined") {
-    const serverModel = createDocsModel(config, pages, openApiDocuments);
-    const currentOpenApiEndpoint = findOpenApiEndpoint(
-      serverModel.endpoints,
-      pathname,
-    );
-    return {
-      currentOpenApiEndpoint: currentOpenApiEndpoint
-        ? openApiEndpointDetail(currentOpenApiEndpoint)
-        : undefined,
-    };
-  }
-
-  // Client transitions wait for the static shard before committing the new
-  // route. This prevents rendering the compact index and replacing it later.
-  const response = await fetch(openApiEndpointDataPath(endpoint.slug));
-  if (!response.ok)
-    throw new Response("OpenAPI endpoint data could not be loaded", {
-      status: response.status,
-    });
+  // This loader runs on the server, including during prerendering, so the
+  // operation's full data is serialised with the route. First paint and every
+  // client transition therefore start from the complete API reference.
+  const serverModel = createDocsModel(config, pages, openApiDocuments);
+  const currentOpenApiEndpoint = findOpenApiEndpoint(
+    serverModel.endpoints,
+    pathname,
+  );
   return {
-    currentOpenApiEndpoint: (await response.json()) as OpenApiEndpoint,
+    currentOpenApiEndpoint: currentOpenApiEndpoint
+      ? (openApiEndpointDetail(currentOpenApiEndpoint) as OpenApiEndpoint)
+      : undefined,
   };
+}
+
+/**
+ * Loads the page's MDX chunk before the new route is displayed, so a reader
+ * never sees a loading placeholder replace the page they came from.
+ */
+export async function clientLoader({
+  params,
+  serverLoader,
+}: ClientLoaderFunctionArgs) {
+  const model = createDocsModel(config, pages, [], openApiEndpoints);
+  const page = findDocsPage(model.pages, pathnameFor(params));
+  const [data] = await Promise.all([
+    serverLoader<Awaited<ReturnType<typeof loader>>>(),
+    page?.preload?.(),
+  ]);
+  return data;
 }
 
 export const meta: MetaFunction = ({ params }) => {

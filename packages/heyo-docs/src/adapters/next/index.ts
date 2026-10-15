@@ -133,15 +133,19 @@ function clientModule(
     ...serializableConfig,
     ...(publicAi ? { ai: publicAi } : {}),
   };
+  // React.lazy suspends on its first server render. Next then saves the
+  // Suspense fallback in statically generated HTML and swaps in MDX via an
+  // inline script, causing a visible flash. Eager imports make the HTML
+  // complete before it is sent. Keep client-side navigation in Next's router.
   const imports = pages
     .map(
       (page, index) =>
-        `const Page${index} = lazy(() => import(${javascriptStringLiteral(
+        `import Page${index} from ${javascriptStringLiteral(
           moduleSpecifier(
             generatedDirectory,
             resolve(contentDirectory, page.sourcePath),
           ),
-        )}));`,
+        )};`,
     )
     .join("\n");
   const serializedPages = pages
@@ -162,7 +166,7 @@ function clientModule(
     )
     .join("\n");
 
-  return `import { lazy } from "react";\nimport type { ClientHeyoDocsConfig, DocsPage, OpenApiEndpoint } from "@heyo-sh/heyo-docs/types";\n\n${imports}\n\nexport const docsConfig = ${JSON.stringify(clientConfig)} satisfies ClientHeyoDocsConfig;\n\nexport const pages = [\n${serializedPages}\n] satisfies DocsPage[];\n\n/** Navigation/search index only — detailed endpoint JSON is emitted to public/. */\nexport const openApiEndpoints: OpenApiEndpoint[] = ${JSON.stringify(openApiEndpoints)};\n`;
+  return `import type { ClientHeyoDocsConfig, DocsPage, OpenApiEndpoint } from "@heyo-sh/heyo-docs/types";\n\n${imports}\n\nexport const docsConfig = ${JSON.stringify(clientConfig)} satisfies ClientHeyoDocsConfig;\n\nexport const pages = [\n${serializedPages}\n] satisfies DocsPage[];\n\n/** Navigation/search index only — detailed endpoint JSON is emitted to public/. */\nexport const openApiEndpoints: OpenApiEndpoint[] = ${JSON.stringify(openApiEndpoints)};\n`;
 }
 
 async function writeOpenApiEndpointAssets(

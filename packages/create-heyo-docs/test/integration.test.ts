@@ -77,6 +77,17 @@ async function expectBuiltThemeUtilities(
   expect(stylesheets.join("\n")).toContain("sm\\:grid-cols-2");
 }
 
+async function expectCompleteDocumentationHtml(file: string): Promise<void> {
+  const html = await Bun.file(file).text();
+  expect(html).toContain("This documentation is ready for your content.");
+  expect(html).not.toContain("Loading documentation…");
+  // `<!--$!-->` marks a Suspense boundary the server gave up on. React Router
+  // keeps its hydration data behind such a boundary, so a document carrying
+  // this marker never hydrates: no table-of-contents tracking, no client-side
+  // navigation, no syntax highlighting. `renderToString` produces it.
+  expect(html).not.toContain("<!--$!-->");
+}
+
 beforeAll(async () => {
   await run(["bun", "run", "build"], runtimeDirectory);
   await run(["bun", "run", "build"], creatorDirectory);
@@ -123,6 +134,9 @@ describe.serial("generated React Router projects", () => {
       );
       expect(packageJson.scripts.build).toBe("react-router build");
       await expectBuiltThemeUtilities(projectPath, "build/client");
+      await expectCompleteDocumentationHtml(
+        join(projectPath, "build/client/index.html"),
+      );
       expect(
         await Bun.file(join(projectPath, "app/routes.ts")).text(),
       ).toContain("sitemap.xml");
@@ -170,6 +184,10 @@ describe.serial("generated React Router projects", () => {
         join(projectPath, "app/routes/docs.tsx"),
       ).text();
       expect(docsRouteSource).toContain("iconSet={iconSet}");
+      // The browser loads the destination MDX chunk before the route renders,
+      // which is what lets the document body do without a Suspense boundary.
+      expect(docsRouteSource).toContain("clientLoader");
+      expect(docsRouteSource).toContain("preload?.()");
       expect(docsRouteSource).toContain("useDocsTheme");
       expect(docsRouteSource).toContain("onThemeToggle");
       expect(docsRouteSource).toContain(
@@ -230,6 +248,9 @@ describe.serial("generated Astro projects", () => {
       );
       expect(packageJson.scripts.build).toBe("astro build");
       await expectBuiltThemeUtilities(projectPath, "dist/client");
+      await expectCompleteDocumentationHtml(
+        join(projectPath, "dist/client/index.html"),
+      );
       expect(
         await Bun.file(join(projectPath, "astro.config.ts")).text(),
       ).toContain("heyoDocsAstro({ config })");
@@ -345,6 +366,9 @@ describe.serial("generated Next.js projects", () => {
       expect(packageJson.scripts.build).toContain("next build");
       expect(packageJson.scripts.build).not.toContain("--webpack");
       await expectBuiltThemeUtilities(projectPath, ".next/static");
+      await expectCompleteDocumentationHtml(
+        join(projectPath, ".next/server/app/index.html"),
+      );
       expect(
         await Bun.file(join(projectPath, "app/robots.txt/route.ts")).text(),
       ).toContain("Sitemap:");

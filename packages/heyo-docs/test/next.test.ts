@@ -84,7 +84,8 @@ test("generates browser-safe Next data, server data, endpoint shards, and local 
       ),
     ]);
 
-    expect(client).toContain('lazy(() => import("../../content/index.mdx"))');
+    expect(client).toContain('import Page0 from "../../content/index.mdx";');
+    expect(client).not.toContain("lazy(");
     expect(client).toContain('"placeholder":"Ask AI about the docs"');
     expect(client).toContain(
       '"copyForLLM":"enabled","openIn":"enabled","chat":',
@@ -134,7 +135,7 @@ test("generates browser-safe Next data, server data, endpoint shards, and local 
   }
 });
 
-test("escapes unsafe paths in generated Next dynamic imports", async () => {
+test("escapes unsafe paths in generated Next imports", async () => {
   const root = await mkdtemp(join(tmpdir(), "heyo-docs-next-"));
   await mkdir(join(root, "content", "<", "script>"), { recursive: true });
   await writeFile(
@@ -153,7 +154,7 @@ test("escapes unsafe paths in generated Next dynamic imports", async () => {
       "utf8",
     );
     expect(client).toContain(
-      String.raw`lazy(() => import("../../content/\u003C/script\u003E/index.mdx"))`,
+      String.raw`import Page0 from "../../content/\u003C/script\u003E/index.mdx";`,
     );
   } finally {
     await rm(root, { force: true, recursive: true });

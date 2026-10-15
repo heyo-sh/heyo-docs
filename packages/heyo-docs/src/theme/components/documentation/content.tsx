@@ -1,5 +1,3 @@
-import { Suspense } from "react";
-
 import type {
   DocsPage,
   MdxComponents,
@@ -54,16 +52,21 @@ export function DocumentationContent({
           </p>
         ) : null}
       </header>
-      <Suspense fallback={<p aria-busy="true">Loading documentation…</p>}>
-        <Content
-          components={{
-            ...documentationMdxComponents,
-            ...mdxComponents,
-            h1: DocumentTitle as never,
-            pre: DocumentationCodeBlock as never,
-          }}
-        />
-      </Suspense>
+      {/*
+       * Rendered without a Suspense boundary. Server rendering imports MDX
+       * eagerly, so the document is finished before it is sent; a boundary
+       * would only let a streaming renderer flush a placeholder the browser
+       * has to replace. In the browser a route loads the destination chunk
+       * before it displays the page.
+       */}
+      <Content
+        components={{
+          ...documentationMdxComponents,
+          ...mdxComponents,
+          h1: DocumentTitle as never,
+          pre: DocumentationCodeBlock as never,
+        }}
+      />
     </article>
   );
 }

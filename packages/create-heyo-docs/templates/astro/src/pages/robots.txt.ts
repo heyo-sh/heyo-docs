@@ -10,6 +10,7 @@ export const GET: APIRoute = ({ request }) => {
       "User-agent: *",
       "Allow: /",
       "Disallow: /__heyo-docs/",
+      "Disallow: /heyo-docs-internal/",
       "",
       `Sitemap: ${siteUrl}/sitemap.xml`,
       "",
