@@ -82,7 +82,6 @@ export function DocsApp({
   currentOpenApiEndpoint,
   link,
   mdxComponents,
-  suspendMdx,
   theme,
   themeComponents,
   openApiDocuments,
@@ -100,7 +99,6 @@ export function DocsApp({
           isDark={isDark}
           onThemeToggle={onThemeToggle}
           mdxComponents={mdxComponents}
-          suspendMdx={suspendMdx}
           theme={theme}
           themeComponents={themeComponents}
           openApiDocuments={openApiDocuments}
@@ -120,7 +118,6 @@ function DocsAppContent({
   onThemeToggle,
   currentOpenApiEndpoint,
   mdxComponents,
-  suspendMdx,
   theme,
   themeComponents,
   openApiDocuments,
@@ -304,14 +301,12 @@ function DocsAppContent({
             actions={pageActions}
             group={changelogGroup}
             mdxComponents={mdxComponents}
-            suspendMdx={suspendMdx}
             page={page!}
           />
         ) : (
           <DocsPage
             actions={pageActions}
             mdxComponents={mdxComponents}
-            suspendMdx={suspendMdx}
             next={pageNavigation.next}
             page={page!}
             previous={pageNavigation.previous}

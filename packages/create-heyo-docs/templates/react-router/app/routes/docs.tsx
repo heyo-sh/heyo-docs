@@ -129,9 +129,6 @@ function DocsShell({
       openApiRequestUrl="/heyo-docs-internal/openapi-request"
       pages={pages}
       pathname={pathname}
-      // Server MDX is imported eagerly and `clientLoader` preloads the next
-      // page's chunk, so the document never needs a loading placeholder.
-      suspendMdx={false}
       theme={__HEYO_THEME_IDENTIFIER__}
       isDark={mounted ? resolvedTheme === "dark" : undefined}
       onThemeToggle={mounted ? toggleTheme : undefined}

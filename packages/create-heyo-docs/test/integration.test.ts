@@ -184,9 +184,10 @@ describe.serial("generated React Router projects", () => {
         join(projectPath, "app/routes/docs.tsx"),
       ).text();
       expect(docsRouteSource).toContain("iconSet={iconSet}");
-      // Server MDX is eager, so the boundary only costs a flushed placeholder.
-      expect(docsRouteSource).toContain("suspendMdx={false}");
+      // The browser loads the destination MDX chunk before the route renders,
+      // which is what lets the document body do without a Suspense boundary.
       expect(docsRouteSource).toContain("clientLoader");
+      expect(docsRouteSource).toContain("preload?.()");
       expect(docsRouteSource).toContain("useDocsTheme");
       expect(docsRouteSource).toContain("onThemeToggle");
       expect(docsRouteSource).toContain(

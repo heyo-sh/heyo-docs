@@ -8,10 +8,7 @@ import { platformAdapter } from "./platform.astro";
 
 export default defineConfig({
   adapter: platformAdapter,
-  integrations: [
-    react({ experimentalDisableStreaming: true }),
-    heyoDocsAstro({ config }),
-  ],
+  integrations: [react(), heyoDocsAstro({ config })],
   output: "static",
   site: config.siteUrl,
   vite: { plugins: [tailwindcss()] },
