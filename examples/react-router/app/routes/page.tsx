@@ -1,1 +1,1 @@
-export { default, loader, meta, ErrorBoundary } from "./docs";
+export { default, clientLoader, loader, meta, ErrorBoundary } from "./docs";

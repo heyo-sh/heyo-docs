@@ -42,6 +42,26 @@ test("resolves a bare content directory from an app root in a monorepo", async (
   }
 });
 
+test("preloads only a destination MDX chunk before client navigation", async () => {
+  const root = await createFixture();
+  try {
+    const plugin = heyoDocs({
+      config: defineHeyoDocs({ content: "content" }),
+    });
+    plugin.configResolved({ command: "build", root });
+    const id = plugin.resolveId("virtual:heyo-docs-content")!;
+    const client = await loadVirtualModule(plugin, id, "client");
+    const server = await loadVirtualModule(plugin, id, "server");
+    expect(client).toContain("const LazyPage0 = lazy(preloadPage0)");
+    expect(client).toContain("LoadedPage0 ?? LazyPage0");
+    expect(client).toContain("preload: preloadPage0");
+    expect(server).toContain("import Page0 from");
+    expect(server).not.toContain("preload:");
+  } finally {
+    await rm(root, { force: true, recursive: true });
+  }
+});
+
 test("declares the JSX runtime so a virtual page cannot trigger a mid-render re-optimisation", () => {
   const plugin = heyoDocs({ config: defineHeyoDocs({ content: "content" }) });
 

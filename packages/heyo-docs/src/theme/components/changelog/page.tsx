@@ -118,8 +118,20 @@ export function ChangelogPage({
   group,
   mdxComponents,
   page,
+  suspendMdx = true,
 }: ChangelogPageProps) {
   const Content = page.content;
+  const content = (
+    <Content
+      components={{
+        ...documentationMdxComponents,
+        ...mdxComponents,
+        h1: DocumentTitle as never,
+        pre: DocumentationCodeBlock as never,
+        Update: Update as never,
+      }}
+    />
+  );
   const updates = page.changelogUpdates ?? [];
   const availableTags = useMemo(
     () =>
@@ -172,17 +184,13 @@ export function ChangelogPage({
               </p>
             </header>
             <div className="mt-10">
-              <Suspense fallback={<p aria-busy="true">Loading changelog…</p>}>
-                <Content
-                  components={{
-                    ...documentationMdxComponents,
-                    ...mdxComponents,
-                    h1: DocumentTitle as never,
-                    pre: DocumentationCodeBlock as never,
-                    Update: Update as never,
-                  }}
-                />
-              </Suspense>
+              {suspendMdx ? (
+                <Suspense fallback={<p aria-busy="true">Loading changelog…</p>}>
+                  {content}
+                </Suspense>
+              ) : (
+                content
+              )}
             </div>
             <div className="mb-6 mt-12">
               <PoweredByHeyo />

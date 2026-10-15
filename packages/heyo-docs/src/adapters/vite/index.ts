@@ -498,18 +498,21 @@ function createContentModule(
       const source = javascriptStringLiteral(
         `${MDX_MODULE_PREFIX}${encodeURIComponent(page.sourcePath)}`,
       );
-      // SSR receives ordinary imports so static renderers never suspend while
-      // producing HTML. The browser receives the same page metadata with a
-      // React.lazy component, which makes every MDX document its own chunk.
+      // SSR imports MDX eagerly. In the browser, a route loader can preload
+      // only the destination chunk. Once loaded the wrapper renders it
+      // synchronously; React.lazy handles initial hydration without losing
+      // per-page code splitting.
       return isServer
         ? `import Page${index} from ${source};`
-        : `const Page${index} = lazy(() => import(${source}));`;
+        : `let LoadedPage${index};\nconst preloadPage${index} = () => import(${source}).then((module) => { LoadedPage${index} = module.default; return module; });\nconst LazyPage${index} = lazy(preloadPage${index});\nconst Page${index} = (props) => createElement(LoadedPage${index} ?? LazyPage${index}, props);`;
     })
     .join("\n");
   const pageData = pages
-    .map((page, index) => serializePage(page, index, config))
+    .map((page, index) => serializePage(page, index, config, !isServer))
     .join(",\n");
-  const lazyImport = isServer ? "" : 'import { lazy } from "react";\n\n';
+  const lazyImport = isServer
+    ? ""
+    : 'import { createElement, lazy } from "react";\n\n';
   return `${lazyImport}${modules}\n\nexport const pages = [\n${pageData}\n];\n`;
 }
 
@@ -517,6 +520,7 @@ function serializePage(
   page: ScannedPage,
   index: number,
   config: HeyoDocsConfig,
+  isClient: boolean,
 ): string {
   return [
     "  {",
@@ -529,6 +533,7 @@ function serializePage(
     `    sourcePath: ${JSON.stringify(page.sourcePath)},`,
     `    searchContent: ${JSON.stringify(searchTextFromMdx(page.raw))},`,
     `    content: Page${index},`,
+    ...(isClient ? [`    preload: preloadPage${index},`] : []),
     "  }",
   ].join("\n");
 }

@@ -17,6 +17,7 @@ interface DocumentationContentProps {
   mdxComponents?: MdxComponents;
   /** Shows the Markdown and AI actions displayed on regular documentation pages. */
   showActions?: boolean;
+  suspendMdx?: boolean;
 }
 
 /** Shared typography for ordinary MDX content and changelog update bodies. */
@@ -32,8 +33,19 @@ export function DocumentationContent({
   page,
   mdxComponents,
   showActions = true,
+  suspendMdx = true,
 }: DocumentationContentProps) {
   const Content = page.content;
+  const content = (
+    <Content
+      components={{
+        ...documentationMdxComponents,
+        ...mdxComponents,
+        h1: DocumentTitle as never,
+        pre: DocumentationCodeBlock as never,
+      }}
+    />
+  );
 
   return (
     <article className={`max-w-3xl ${documentationContentClassName}`}>
@@ -54,16 +66,13 @@ export function DocumentationContent({
           </p>
         ) : null}
       </header>
-      <Suspense fallback={<p aria-busy="true">Loading documentation…</p>}>
-        <Content
-          components={{
-            ...documentationMdxComponents,
-            ...mdxComponents,
-            h1: DocumentTitle as never,
-            pre: DocumentationCodeBlock as never,
-          }}
-        />
-      </Suspense>
+      {suspendMdx ? (
+        <Suspense fallback={<p aria-busy="true">Loading documentation…</p>}>
+          {content}
+        </Suspense>
+      ) : (
+        content
+      )}
     </article>
   );
 }

@@ -311,6 +311,8 @@ export interface DocsPage {
   title: string;
   description: string;
   content: ComponentType<{ components?: MdxComponents }>;
+  /** Wait for this page's browser chunk before committing a client-side route. */
+  preload?: () => Promise<unknown>;
   tableOfContents: TableOfContentsItem[];
   seo: SeoData;
   sourcePath?: string;
@@ -555,6 +557,8 @@ export interface DocsPageProps {
   actions: PageActionsConfig;
   /** Application-owned components injected into the page's MDX content. */
   mdxComponents?: MdxComponents;
+  /** Whether MDX may suspend while its module loads in the browser. */
+  suspendMdx?: boolean;
 }
 
 export interface ChangelogPageProps {
@@ -563,6 +567,7 @@ export interface ChangelogPageProps {
   actions: PageActionsConfig;
   /** Application-owned components injected into the changelog's MDX content. */
   mdxComponents?: MdxComponents;
+  suspendMdx?: boolean;
 }
 
 export interface OpenApiPageProps {
@@ -636,6 +641,8 @@ export interface DocsAppProps {
    * and changelog page. Keys are the JSX tag names used in MDX.
    */
   mdxComponents?: MdxComponents;
+  /** Disable when the adapter imports every MDX module synchronously (Next.js). */
+  suspendMdx?: boolean;
   /** The statically selected theme implementation for this application. */
   theme: HeyoDocsTheme;
   /**

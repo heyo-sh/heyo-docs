@@ -5,6 +5,7 @@ import { DocumentationContent } from "./content";
 export function DocumentationPage({
   actions,
   mdxComponents,
+  suspendMdx,
   next,
   page,
   previous,
@@ -17,6 +18,7 @@ export function DocumentationPage({
           <DocumentationContent
             actions={actions}
             mdxComponents={mdxComponents}
+            suspendMdx={suspendMdx}
             page={page}
           />
           <PageNavigation next={next} previous={previous} />

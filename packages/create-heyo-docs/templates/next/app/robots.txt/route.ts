@@ -7,6 +7,7 @@ export function GET(request: Request) {
       "User-agent: *",
       "Allow: /",
       "Disallow: /__heyo-docs/",
+      "Disallow: /heyo-docs-internal/",
       "",
       `Sitemap: ${siteUrl}/sitemap.xml`,
       "",

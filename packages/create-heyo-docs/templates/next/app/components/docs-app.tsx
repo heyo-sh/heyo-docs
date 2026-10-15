@@ -39,6 +39,7 @@ export function NextDocsApp({
       openApiEndpoints={openApiEndpoints}
       openApiRequestUrl="/heyo-docs-internal/openapi-request"
       pages={pages}
+      suspendMdx={false}
       pathname={pathname}
       theme={__HEYO_THEME_IDENTIFIER__}
     />
