@@ -77,6 +77,47 @@ async function expectBuiltThemeUtilities(
   expect(stylesheets.join("\n")).toContain("sm\\:grid-cols-2");
 }
 
+function expectCloudflareAuthMapping(routeSource: string): void {
+  expect(routeSource).toContain("HEYO_DOCS_AI_API_KEY");
+  expect(routeSource).toContain("!config.ai.chat.auth && token");
+  expect(routeSource).toContain('auth: { type: "api-key" as const, token }');
+  expect(routeSource).not.toMatch(/\n    auth:/);
+}
+
+async function enableCloudflareChat(
+  projectPath: string,
+  template: "react-router" | "astro" | "next",
+): Promise<void> {
+  const path = join(projectPath, "heyo-docs.config.ts");
+  const source = await Bun.file(path).text();
+  const resolver =
+    template === "next"
+      ? `const { getCloudflareContext } = await import("@opennextjs/cloudflare");
+          return getCloudflareContext().env.HEYO_DOCS_AI_API_KEY ?? "";`
+      : template === "react-router"
+        ? `return process.env.HEYO_DOCS_AI_API_KEY ?? "";`
+        : `const { env } = await import("cloudflare:workers");
+          return env.HEYO_DOCS_AI_API_KEY ?? "";`;
+  const configured = source.replace(
+    "  // Set this before deploying",
+    `  ai: {
+    chat: {
+      provider: "openai",
+      model: "gpt-5-mini",
+      auth: {
+        type: "api-key",
+        token: async () => {
+          ${resolver}
+        },
+      },
+    },
+  },
+  // Set this before deploying`,
+  );
+  expect(configured).not.toBe(source);
+  await Bun.write(path, configured);
+}
+
 async function expectCompleteDocumentationHtml(file: string): Promise<void> {
   const html = await Bun.file(file).text();
   expect(html).toContain("This documentation is ready for your content.");
@@ -121,6 +162,8 @@ describe.serial("generated React Router projects", () => {
         heyoDocsVersion: `file:${tarball}`,
       });
       await run(["bun", "install"], projectPath);
+      if (deployment === "cloudflare")
+        await enableCloudflareChat(projectPath, "react-router");
       await verifyPublishedRuntimeEntrypoints(projectPath);
       await run(["bun", "run", "build"], projectPath);
       const packageJson = JSON.parse(
@@ -204,6 +247,9 @@ describe.serial("generated React Router projects", () => {
         await Bun.file(join(projectPath, "react-router.config.ts")).text(),
       ).toContain("prerender");
       if (deployment === "cloudflare") {
+        expectCloudflareAuthMapping(
+          await Bun.file(join(projectPath, "app/routes/ai-chat.ts")).text(),
+        );
         expect(
           await Bun.file(join(projectPath, "wrangler.jsonc")).exists(),
         ).toBe(true);
@@ -236,6 +282,8 @@ describe.serial("generated Astro projects", () => {
         heyoDocsVersion: `file:${tarball}`,
       });
       await run(["bun", "install"], projectPath);
+      if (deployment === "cloudflare")
+        await enableCloudflareChat(projectPath, "astro");
       await run(["bun", "run", "build"], projectPath);
       const packageJson = JSON.parse(
         await Bun.file(join(projectPath, "package.json")).text(),
@@ -300,6 +348,11 @@ describe.serial("generated Astro projects", () => {
         await Bun.file(join(projectPath, "src/heyo-docs-icons.tsx")).text(),
       ).toContain('from "@remixicon/react"');
       if (deployment === "cloudflare") {
+        expectCloudflareAuthMapping(
+          await Bun.file(
+            join(projectPath, "src/pages/heyo-docs-internal/ai-chat.ts"),
+          ).text(),
+        );
         expect(
           await Bun.file(join(projectPath, "wrangler.jsonc")).exists(),
         ).toBe(true);
@@ -352,6 +405,8 @@ describe.serial("generated Next.js projects", () => {
         heyoDocsVersion: `file:${tarball}`,
       });
       await run(["bun", "install"], projectPath);
+      if (deployment === "cloudflare")
+        await enableCloudflareChat(projectPath, "next");
       await run(["bun", "run", "typecheck"], projectPath);
       await run(["bun", "run", "build"], projectPath);
       const packageJson = JSON.parse(
@@ -448,6 +503,11 @@ describe.serial("generated Next.js projects", () => {
         ).exists(),
       ).toBe(true);
       if (deployment === "cloudflare") {
+        expectCloudflareAuthMapping(
+          await Bun.file(
+            join(projectPath, "app/heyo-docs-internal/ai-chat/route.ts"),
+          ).text(),
+        );
         await run(["bun", "x", "opennextjs-cloudflare", "build"], projectPath);
         expect(
           await Bun.file(join(projectPath, "wrangler.jsonc")).exists(),

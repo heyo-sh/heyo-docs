@@ -16,14 +16,19 @@ export async function action({ context, request }: ActionFunctionArgs) {
       { error: "AI chat is not configured." },
       { status: 404 },
     );
-  const bindings = context.get(cloudflareContext);
-  const token = bindings.HEYO_DOCS_AI_API_KEY;
+
+  const token = context.get(cloudflareContext).HEYO_DOCS_AI_API_KEY;
   const { createAiChatResponse } = await import("@heyo-sh/heyo-docs/ai");
   return createAiChatResponse(request, {
-    ai: config.ai,
-    ...(config.ai?.chat.auth || !token
-      ? {}
-      : { auth: { type: "api-key" as const, token } }),
+    ai: {
+      ...config.ai,
+      chat: {
+        ...config.ai.chat,
+        ...(!config.ai.chat.auth && token
+          ? { auth: { type: "api-key" as const, token } }
+          : {}),
+      },
+    },
     markdownPages,
     pages,
     title: config.title,
