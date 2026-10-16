@@ -124,7 +124,7 @@ describe("configuration", () => {
     ).toEqual({ copyForLLM: "disabled", openIn: "enabled" });
   });
 
-  test("allows chat credentials to be supplied by a request handler", () => {
+  test("allows chat configuration before server credentials are set", () => {
     expect(
       heyoDocs({
         content: "./content",
@@ -136,6 +136,26 @@ describe("configuration", () => {
         },
       }).ai?.chat?.auth,
     ).toBeUndefined();
+  });
+
+  test("accepts server-only API key resolvers without running them during validation", () => {
+    let called = false;
+    const token = () => {
+      called = true;
+      return "secret";
+    };
+    expect(
+      heyoDocs({
+        ai: {
+          chat: {
+            provider: "openai",
+            model: "gpt-5-mini",
+            auth: { type: "api-key", token },
+          },
+        },
+      }).ai?.chat?.auth,
+    ).toEqual({ type: "api-key", token });
+    expect(called).toBe(false);
   });
 
   test("requires a complete AI provider configuration", () => {

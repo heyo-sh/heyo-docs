@@ -171,7 +171,7 @@ export function llmsIndex(
 
   for (const page of pages) {
     const title = escapeMarkdownLinkText(page.title);
-    const url = absolutePageUrl(siteUrl, page.slug);
+    const url = absoluteUrlAtBasePath(siteUrl, markdownPathname(page.slug));
     const description = page.description.trim();
     lines.push(
       description

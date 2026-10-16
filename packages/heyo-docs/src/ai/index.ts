@@ -31,15 +31,13 @@ const MAX_TOOL_CALLS = 8;
 
 export interface AiChatOptions {
   ai?: AiConfig;
-  /**
-   * Credentials resolved by the framework for this request. Use this for
-   * platform bindings such as Cloudflare Worker secrets.
-   */
-  auth?: AiChatAuth;
   pages: SearchDocument[];
   markdownPages: MarkdownPage[];
   title: string;
 }
+
+type ResolvedAiChatAuth =
+  { type: "api-key"; token: string } | Exclude<AiChatAuth, { type: "api-key" }>;
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -67,7 +65,7 @@ export async function createAiChatResponse(
   const denied = await options.ai?.authorize?.(request);
   if (denied instanceof Response) return denied;
 
-  const auth = options.auth ?? configuredChat.auth;
+  const auth = configuredChat.auth;
   if (!auth)
     return Response.json(
       { error: "AI chat authentication is not configured." },
@@ -81,7 +79,23 @@ export async function createAiChatResponse(
       },
       { status: 500 },
     );
-  const chat = { ...configuredChat, auth };
+  let resolvedAuth: ResolvedAiChatAuth;
+  try {
+    if (auth.type === "api-key") {
+      const token =
+        typeof auth.token === "function" ? await auth.token() : auth.token;
+      if (!token?.trim()) throw new Error("Missing API key");
+      resolvedAuth = { type: "api-key", token };
+    } else {
+      resolvedAuth = auth;
+    }
+  } catch {
+    return Response.json(
+      { error: "AI chat authentication is not configured." },
+      { status: 500 },
+    );
+  }
+  const chat = { ...configuredChat, auth: resolvedAuth };
 
   const messages = await chatMessagesFrom(request);
   if (!messages)
@@ -152,7 +166,7 @@ async function chatMessagesFrom(
 function piChatStream(
   request: Request,
   options: {
-    chat: AiChatConfig & { auth: AiChatAuth };
+    chat: AiChatConfig & { auth: ResolvedAiChatAuth };
     markdownByPath: Map<string, MarkdownPage>;
     messages: ChatMessage[];
     model: Model<Api>;
@@ -278,7 +292,7 @@ function piChatStream(
 }
 
 function piAgentAuthOptions(
-  chat: AiChatConfig & { auth: AiChatAuth },
+  chat: AiChatConfig & { auth: ResolvedAiChatAuth },
 ): Pick<AgentOptions, "getApiKey" | "streamFn"> {
   const auth = chat.auth;
   switch (auth.type) {

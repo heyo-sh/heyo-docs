@@ -164,21 +164,24 @@ export type MdxComponents = Record<string, ComponentType<any>>;
  */
 export type IconSet = Partial<Record<SemanticIcon, IconComponent>>;
 
+/** Resolves a server-side API key at request time (for platform secrets). */
+export type AiApiKeyResolver = () => string | Promise<string>;
+
 /** Resolves a fresh OAuth access token before every Pi request. */
 export type AiOAuthTokenResolver = () => string | Promise<string>;
 
 /**
  * Server-only authentication for the documentation-aware Pi chat.
  *
- * API-key providers receive `token` as Pi's `apiKey`. Pass it directly to
- * `createAiChatResponse` when the platform resolves credentials per request.
+ * API-key providers receive `token` as Pi's `apiKey`. A resolver can read
+ * platform secrets on the server at request time, after the build finishes.
  * OAuth resolvers run for every model request so callers can refresh
  * short-lived provider tokens.
  * Bedrock deliberately uses AWS's credential chain or its bearer-token API;
  * it never treats an API key as AWS credentials.
  */
 export type AiChatAuth =
-  | { type: "api-key"; token: string }
+  | { type: "api-key"; token: string | AiApiKeyResolver }
   | { type: "oauth"; getAccessToken: AiOAuthTokenResolver }
   | { type: "aws"; region?: string; profile?: string }
   | { type: "bedrock-bearer"; token: string; region?: string };
@@ -187,7 +190,7 @@ export type AiChatAuth =
 export interface AiChatConfig {
   provider: AiProvider;
   model: string;
-  /** Optional fallback authentication for non-binding-based deployments. */
+  /** Server-only authentication, including platform secret resolvers. */
   auth?: AiChatAuth;
   variant: AiChatVariant;
   icon: SemanticIcon;

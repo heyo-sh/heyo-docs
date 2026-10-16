@@ -16,10 +16,15 @@ export const POST: APIRoute = async ({ request }) => {
   const token = env.HEYO_DOCS_AI_API_KEY;
   const { createAiChatResponse } = await import("@heyo-sh/heyo-docs/ai");
   return createAiChatResponse(request, {
-    ai: config.ai,
-    ...(config.ai?.chat.auth || !token
-      ? {}
-      : { auth: { type: "api-key" as const, token } }),
+    ai: {
+      ...config.ai,
+      chat: {
+        ...config.ai.chat,
+        ...(!config.ai.chat.auth && token
+          ? { auth: { type: "api-key" as const, token } }
+          : {}),
+      },
+    },
     markdownPages,
     pages: markdownPages.map((page) => ({
       description: page.description,

@@ -122,12 +122,13 @@ test("runs the configured AI authorization and rate-limit guard before provider 
   });
 });
 
-test("uses API keys supplied by the request handler", async () => {
+test("resolves ai.chat.auth API keys at request time", async () => {
   registration = registerFauxProvider({
     api: "openai-responses",
     provider: "openai",
   });
   registration.setResponses([fauxAssistantMessage("Resolved at runtime.")]);
+  let calls = 0;
   const response = await createAiChatResponse(
     new Request("http://localhost/heyo-docs-internal/ai-chat", {
       method: "POST",
@@ -143,6 +144,13 @@ test("uses API keys supplied by the request handler", async () => {
         chat: {
           provider: "openai",
           model: "gpt-5-mini",
+          auth: {
+            type: "api-key",
+            token: () => {
+              calls++;
+              return "runtime-key";
+            },
+          },
           variant: "right",
           icon: "chat",
           text: "AI Chat",
@@ -150,7 +158,6 @@ test("uses API keys supplied by the request handler", async () => {
           placeholder: "Ask AI about the docs",
         },
       },
-      auth: { type: "api-key", token: "runtime-key" },
       markdownPages: [],
       pages: [],
       title: "Test docs",
@@ -159,9 +166,39 @@ test("uses API keys supplied by the request handler", async () => {
 
   await response.text();
   expect(response.status).toBe(200);
+  expect(calls).toBe(1);
 });
 
-test("rejects request credentials incompatible with the provider", async () => {
+test("rejects missing API keys from ai.chat.auth", async () => {
+  const response = await createAiChatResponse(
+    new Request("http://localhost/heyo-docs-internal/ai-chat", {
+      method: "POST",
+    }),
+    {
+      ai: {
+        copyForLLM: "enabled",
+        openIn: "enabled",
+        chat: {
+          provider: "openai",
+          model: "gpt-5-mini",
+          auth: { type: "api-key", token: () => "" },
+          variant: "right",
+          icon: "chat",
+          text: "AI Chat",
+          name: "AI",
+          placeholder: "Ask AI about the docs",
+        },
+      },
+      markdownPages: [],
+      pages: [],
+      title: "Test docs",
+    },
+  );
+
+  expect(response.status).toBe(500);
+});
+
+test("rejects configured credentials incompatible with the provider", async () => {
   const response = await createAiChatResponse(
     new Request("http://localhost/heyo-docs-internal/ai-chat", {
       method: "POST",
@@ -177,6 +214,7 @@ test("rejects request credentials incompatible with the provider", async () => {
         chat: {
           provider: "github-copilot",
           model: "gpt-5-mini",
+          auth: { type: "api-key", token: "not-an-oauth-token" },
           variant: "right",
           icon: "chat",
           text: "AI Chat",
@@ -184,7 +222,6 @@ test("rejects request credentials incompatible with the provider", async () => {
           placeholder: "Ask AI about the docs",
         },
       },
-      auth: { type: "api-key", token: "not-an-oauth-token" },
       markdownPages: [],
       pages: [],
       title: "Test docs",

@@ -33,6 +33,7 @@ import { zammadSupportSchema } from "./integrations/support/zammad";
 import { umamiAnalyticsSchema } from "./integrations/analytics/umami";
 import { authTypesForAiProvider } from "./ai/auth";
 import type {
+  AiApiKeyResolver,
   AiChatAuth,
   AiOAuthTokenResolver,
   DocumentationSection,
@@ -54,8 +55,18 @@ const oauthTokenResolverSchema = z.custom<AiOAuthTokenResolver>(
   "auth.getAccessToken must be a function.",
 );
 
+const apiKeyResolverSchema = z.custom<AiApiKeyResolver>(
+  (value): value is AiApiKeyResolver => typeof value === "function",
+  "auth.token must be a non-empty string or a function.",
+);
+
 const chatAuthSchema: z.ZodType<AiChatAuth> = z.union([
-  z.object({ type: z.literal("api-key"), token: nonEmptyString }).strict(),
+  z
+    .object({
+      type: z.literal("api-key"),
+      token: z.union([nonEmptyString, apiKeyResolverSchema]),
+    })
+    .strict(),
   z
     .object({
       type: z.literal("oauth"),

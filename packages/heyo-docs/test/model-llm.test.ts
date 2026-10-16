@@ -219,18 +219,20 @@ test("generates safe, complete LLM Markdown for pages and OpenAPI endpoints", ()
       "https://docs.example.com/",
     ),
   ).toBe(
-    "# Acme\n\n> Reference.\n\n## Documentation\n\n- [Acme \\[Docs\\]](https://docs.example.com/): Welcome.\n- [Create widget](https://docs.example.com/api/widgets/create-widget): Creates a widget.\n",
+    "# Acme\n\n> Reference.\n\n## Documentation\n\n- [Acme \\[Docs\\]](https://docs.example.com/index.md): Welcome.\n- [Create widget](https://docs.example.com/api/widgets/create-widget.md): Creates a widget.\n",
   );
   expect(llmsFull(docs, "https://docs.example.com/")).toContain(
     "# Create widget (https://docs.example.com/api/widgets/create-widget)",
   );
-  expect(
-    llmsIndex(
-      docs,
-      { title: "Acme", description: "" },
-      "https://docs.example.com/docs",
-    ),
-  ).toContain(
-    "[Create widget](https://docs.example.com/docs/api/widgets/create-widget)",
+  const mountedIndex = llmsIndex(
+    docs,
+    { title: "Acme", description: "" },
+    "https://docs.example.com/docs",
+  );
+  expect(mountedIndex).toContain(
+    "[Create widget](https://docs.example.com/docs/api/widgets/create-widget.md)",
+  );
+  expect(mountedIndex).toContain(
+    "[Acme \\[Docs\\]](https://docs.example.com/docs/index.md)",
   );
 });
