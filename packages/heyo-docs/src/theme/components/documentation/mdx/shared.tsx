@@ -129,12 +129,17 @@ function collectText(node: ReactNode, segments: (TextBreak | string)[]) {
   if (lines) segments.push({ lines });
 }
 
-function trailingNewlines(text: string) {
-  return /\n*$/.exec(text)![0].length;
+/** Counted by hand: an anchored `\n*` match backtracks over long input. */
+function trailingNewlines(text: string, limit: number) {
+  let count = 0;
+  while (count < limit && text.at(-1 - count) === "\n") count += 1;
+  return count;
 }
 
-function leadingNewlines(text: string) {
-  return /^\n*/.exec(text)![0].length;
+function leadingNewlines(text: string, limit: number) {
+  let count = 0;
+  while (count < limit && text[count] === "\n") count += 1;
+  return count;
 }
 
 /**
@@ -161,7 +166,9 @@ export function textFromNode(node: ReactNode): string {
     if (segment === "") continue;
 
     if (pendingLines > 0) {
-      const present = trailingNewlines(text) + leadingNewlines(segment);
+      const present =
+        trailingNewlines(text, pendingLines) +
+        leadingNewlines(segment, pendingLines);
       text += "\n".repeat(Math.max(0, pendingLines - present));
       pendingLines = 0;
     }
