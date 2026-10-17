@@ -29,6 +29,7 @@ import { cn } from "../../../lib/utils";
 import { Icon } from "../../../components/icons";
 import { Accordion, AccordionItem, Tab, Tabs } from "./mdx/interactive";
 import { Mermaid } from "./mdx/mermaid";
+import { plainCodeHtml } from "./mdx/plain-code";
 import {
   asElements,
   ComponentContent,
@@ -49,25 +50,6 @@ interface MdxCodeBlockProps extends WithChildren {
 
 function languageFromClassName(className?: string) {
   return className?.match(/(?:^|\s)language-([^\s]+)/)?.[1];
-}
-
-function plainCodeHtml(source: string) {
-  return `<pre class="shiki"><code>${source
-    .split("\n")
-    .map(
-      (line) =>
-        `<span class="line">${line.replace(/[&<>"']/g, (character) => {
-          const entities: Record<string, string> = {
-            "&": "&amp;",
-            "'": "&#39;",
-            '"': "&quot;",
-            "<": "&lt;",
-            ">": "&gt;",
-          };
-          return entities[character]!;
-        })}</span>`,
-    )
-    .join("")}</code></pre>`;
 }
 
 function CopyButton({

@@ -13,6 +13,8 @@ import yaml from "shiki/dist/langs/yaml.mjs";
 import githubDark from "shiki/dist/themes/github-dark.mjs";
 import githubLight from "shiki/dist/themes/github-light.mjs";
 
+import { plainCodeHtml } from "./plain-code";
+
 const shiki = createHighlighterCoreSync({
   engine: createJavaScriptRegexEngine(),
   langs: [
@@ -62,24 +64,4 @@ export function highlightCode(source: string, language: string): string {
   } catch {
     return plainCodeHtml(source);
   }
-}
-
-function plainCodeHtml(source: string) {
-  return `<pre class="shiki"><code>${source
-    .split("\n")
-    .map(
-      (line) =>
-        `<span class="line">${line.replace(
-          /[&<>"']/g,
-          (character) =>
-            ({
-              "&": "&amp;",
-              "'": "&#39;",
-              '"': "&quot;",
-              "<": "&lt;",
-              ">": "&gt;",
-            })[character]!,
-        )}</span>`,
-    )
-    .join("")}</code></pre>`;
 }
