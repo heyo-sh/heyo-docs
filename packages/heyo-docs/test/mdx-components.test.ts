@@ -1,6 +1,7 @@
 import { expect, test } from "bun:test";
-import { compile } from "@mdx-js/mdx";
+import { compile, run } from "@mdx-js/mdx";
 import { createElement, type ComponentType } from "react";
+import * as runtime from "react/jsx-runtime";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import {
@@ -333,6 +334,101 @@ test("uses a fenced code block title as its label", () => {
   expect(html).toContain(
     '<span class="min-w-0 flex-1 truncate font-mono">app/routes/markdown.ts</span>',
   );
+});
+
+function codeMarkup(html: string) {
+  return html.match(/<pre class="shiki"><code>[\s\S]*?<\/code><\/pre>/)?.[0];
+}
+
+async function renderMdx(source: string) {
+  const compiled = await compile(source, { outputFormat: "function-body" });
+  const { default: Content } = (await run(compiled, {
+    ...runtime,
+    baseUrl: import.meta.url,
+  } as never)) as { default: ComponentType<Record<string, unknown>> };
+
+  return renderToStaticMarkup(
+    createElement(Content, {
+      components: {
+        ...documentationMdxComponents,
+        pre: DocumentationCodeBlock,
+      },
+    }),
+  );
+}
+
+test("keeps the blank lines of a fenced code block", () => {
+  const html = renderToStaticMarkup(
+    createElement(
+      DocumentationCodeBlock,
+      null,
+      createElement("code", { className: "language-text" }, "test\n\ntest2\n"),
+    ),
+  );
+
+  expect(codeMarkup(html)).toBe(
+    '<pre class="shiki"><code><span class="line">test</span>\n' +
+      '<span class="line"></span>\n' +
+      '<span class="line">test2</span></code></pre>',
+  );
+});
+
+test("keeps a leading blank line of a fenced code block", () => {
+  const html = renderToStaticMarkup(
+    createElement(
+      DocumentationCodeBlock,
+      null,
+      createElement("code", { className: "language-text" }, "\ntest\n"),
+    ),
+  );
+
+  expect(codeMarkup(html)).toBe(
+    '<pre class="shiki"><code><span class="line"></span>\n' +
+      '<span class="line">test</span></code></pre>',
+  );
+});
+
+test("keeps the line breaks an MDX author writes inside a code block", async () => {
+  const markdownChildren = codeMarkup(
+    await renderMdx('<CodeBlock language="text">\ntest\n\ntest2\n</CodeBlock>'),
+  );
+
+  expect(markdownChildren).toBe(
+    '<pre class="shiki"><code><span class="line">test</span>\n' +
+      '<span class="line"></span>\n' +
+      '<span class="line">test2</span></code></pre>',
+  );
+  expect(markdownChildren).toBe(
+    codeMarkup(await renderMdx("```text\ntest\n\ntest2\n```")),
+  );
+  expect(markdownChildren).toBe(
+    codeMarkup(
+      await renderMdx(
+        '<CodeBlock language="text">\n  {`test\n\ntest2`}\n</CodeBlock>',
+      ),
+    ),
+  );
+});
+
+test("keeps single line breaks inside a code block", async () => {
+  expect(
+    codeMarkup(
+      await renderMdx(
+        '<CodeBlock language="text">\nfirst\nsecond\n</CodeBlock>',
+      ),
+    ),
+  ).toBe(
+    '<pre class="shiki"><code><span class="line">first</span>\n' +
+      '<span class="line">second</span></code></pre>',
+  );
+});
+
+test("keeps the lines of a diagram written inside a component", async () => {
+  const html = await renderMdx(
+    "<Mermaid>\nflowchart LR\nA --> B\n\nB --> C\n</Mermaid>",
+  );
+
+  expect(html).toContain("flowchart LR\nA --&gt; B\n\nB --&gt; C");
 });
 
 test("MDX compiles component syntax used by the documentation theme", async () => {

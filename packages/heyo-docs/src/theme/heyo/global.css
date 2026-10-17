@@ -342,9 +342,15 @@
     white-space: normal;
   }
 
+  /*
+   * A blank line is an empty span, and an empty block box has no line box to
+   * give it height, so `min-height` keeps those lines in the listing instead
+   * of silently collapsing them away.
+   */
   .heyo-docs-code .shiki .line {
     display: block;
     white-space: pre;
+    min-height: 1lh;
   }
 
   .dark .heyo-docs-code .shiki,
