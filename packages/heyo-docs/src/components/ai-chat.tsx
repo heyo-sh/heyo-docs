@@ -241,7 +241,7 @@ const aiChatThemeStyles = {
     trigger: "rounded-lg shadow-sm",
     drawer:
       "!m-0 !h-dvh !max-h-dvh !w-[min(100%,26rem)] !rounded-none !border-y-0 !border-r-0 !border-l !border-border !bg-background !shadow-lg sm:!w-[26rem]",
-    header: "border-border bg-background",
+    header: "h-12 border-border bg-background px-4 py-0",
     footer: "border-border bg-background",
   },
 } satisfies Record<
@@ -539,7 +539,8 @@ export function AiChat({
         <DrawerContent className={styles.drawer}>
           <DrawerHeader
             className={cn(
-              "flex-row items-center justify-between border-b p-4",
+              "flex-row items-center justify-between border-b",
+              theme !== "heyo" && "p-4",
               styles.header,
             )}
           >
