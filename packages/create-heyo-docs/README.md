@@ -22,7 +22,10 @@ yarn dlx @heyo-sh/create-heyo-docs
 bun create @heyo-sh/heyo-docs
 ```
 
-The creator works with pnpm, npm, Yarn, and Bun.
+The creator works with pnpm, npm, Yarn, and Bun. In projects targeting Cloudflare,
+the `deploy` script builds the site before publishing it, so prerendered pages and
+assets always come from the current source. You can still run `build` separately
+to check the output before deploying.
 
 ## Options
 

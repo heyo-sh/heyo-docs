@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "deploy": "wrangler deploy --config dist/server/wrangler.json",
+    "deploy": "astro build && wrangler deploy --config dist/server/wrangler.json",
     "cf-typegen": "wrangler types",
     "typecheck": "bun run cf-typegen && astro check"
   },
