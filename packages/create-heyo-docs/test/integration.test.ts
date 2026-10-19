@@ -253,7 +253,9 @@ describe.serial("generated React Router projects", () => {
         expect(
           await Bun.file(join(projectPath, "wrangler.jsonc")).exists(),
         ).toBe(true);
-        expect(packageJson.scripts.deploy).toBe("wrangler deploy");
+        expect(packageJson.scripts.deploy).toBe(
+          "react-router build && wrangler deploy",
+        );
       }
       if (deployment === "vercel") {
         expect(await Bun.file(join(projectPath, "vercel.json")).exists()).toBe(
@@ -357,7 +359,7 @@ describe.serial("generated Astro projects", () => {
           await Bun.file(join(projectPath, "wrangler.jsonc")).exists(),
         ).toBe(true);
         expect(packageJson.scripts.deploy).toBe(
-          "wrangler deploy --config dist/server/wrangler.json",
+          "astro build && wrangler deploy --config dist/server/wrangler.json",
         );
         expect(
           await Bun.file(
