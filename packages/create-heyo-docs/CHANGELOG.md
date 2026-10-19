@@ -1,5 +1,11 @@
 # @heyo-sh/create-heyo-docs
 
+## 3.2.2
+
+### Patch Changes
+
+- 042f57a: Build generated React Router and Astro Cloudflare projects before deploying so Wrangler cannot publish stale prerendered documentation and assets.
+
 ## 3.2.1
 
 ### Patch Changes
