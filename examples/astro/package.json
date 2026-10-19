@@ -17,7 +17,7 @@
     "@astrojs/react": "^6.0.6",
     "@fontsource-variable/figtree": "^5.3.0",
     "@remixicon/react": "^4.9.0",
-    "astro": "7.2.10",
+    "astro": "7.4.0",
     "@heyo-sh/heyo-docs": "workspace:*",
     "react": "19.3.0",
     "react-dom": "19.3.0",
