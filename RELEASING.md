@@ -33,6 +33,15 @@ and published only by GitHub Actions.
 4. Review and merge that pull request. The workflow then asks for approval of
    the `npm` environment and publishes the versioned packages.
 
+Several quick merges into `main` may show cancelled Release runs: GitHub Actions
+replaces pending runs in the `release-main` concurrency group. A cancelled
+run alone does not skip a release: the newest run checks the current `main`
+and publishes any versioned packages that are not yet on npm. Changes to a
+published package, including pinned runtime dependency updates, still need a
+changeset to create a new version. Check the newest run, its publish log, and
+the npm versions before rerunning anything; do not rerun an outdated commit
+after a newer release has completed.
+
 The first run on `main` can publish the existing package versions directly when
 the npm packages do not yet exist. Inspect package contents with
 `bun pm pack --dry-run` and approve the protected `npm` environment only after
