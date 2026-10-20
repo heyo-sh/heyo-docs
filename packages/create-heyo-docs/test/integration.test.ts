@@ -1,12 +1,13 @@
 import {
   afterAll,
+  afterEach,
   beforeAll,
   describe,
   expect,
   setDefaultTimeout,
   test,
 } from "bun:test";
-import { readdir } from "node:fs/promises";
+import { readdir, rm } from "node:fs/promises";
 import { join, resolve } from "node:path";
 
 import { scaffoldProject } from "../src/scaffold";
@@ -148,9 +149,17 @@ afterAll(async () => {
 });
 
 describe.serial("generated React Router projects", () => {
+  let projectToClean: string | undefined;
+  afterEach(async () => {
+    if (projectToClean)
+      await rm(projectToClean, { recursive: true, force: true });
+    projectToClean = undefined;
+  });
+
   for (const deployment of ["cloudflare", "later"] as Deployment[]) {
     test(`${deployment} installs and builds`, async () => {
       const name = `docs-${deployment}`;
+      projectToClean = join(temporaryRoot, name);
       const { projectPath } = await scaffoldProject({
         projectName: name,
         template: "react-router",
@@ -270,9 +279,17 @@ describe.serial("generated React Router projects", () => {
 });
 
 describe.serial("generated Astro projects", () => {
+  let projectToClean: string | undefined;
+  afterEach(async () => {
+    if (projectToClean)
+      await rm(projectToClean, { recursive: true, force: true });
+    projectToClean = undefined;
+  });
+
   for (const deployment of ["cloudflare", "vercel", "later"] as Deployment[]) {
     test(`${deployment} installs and builds`, async () => {
       const name = `astro-docs-${deployment}`;
+      projectToClean = join(temporaryRoot, name);
       const { projectPath } = await scaffoldProject({
         projectName: name,
         template: "astro",
@@ -390,12 +407,20 @@ describe.serial("generated Astro projects", () => {
 });
 
 describe.serial("generated Next.js projects", () => {
+  let projectToClean: string | undefined;
+  afterEach(async () => {
+    if (projectToClean)
+      await rm(projectToClean, { recursive: true, force: true });
+    projectToClean = undefined;
+  });
+
   for (const deployment of ["cloudflare", "vercel", "later"] as Deployment[]) {
     test(`${deployment} installs and builds`, async () => {
       // A lockfile in an ancestor directory used to make Turbopack choose that
       // directory as its root instead of the generated project's directory.
       await Bun.write(join(temporaryRoot, "package-lock.json"), "{}\n");
       const name = `next-docs-${deployment}`;
+      projectToClean = join(temporaryRoot, name);
       const { projectPath } = await scaffoldProject({
         projectName: name,
         template: "next",
