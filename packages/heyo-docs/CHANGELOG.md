@@ -1,5 +1,11 @@
 # @heyo-sh/heyo-docs
 
+## 4.0.2
+
+### Patch Changes
+
+- cb5300a: Update the pinned typebox runtime dependency to 1.4.1.
+
 ## 4.0.1
 
 ### Patch Changes

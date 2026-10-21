@@ -1,6 +1,6 @@
 {
   "name": "@heyo-sh/heyo-docs",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "dependencies": {
     "@base-ui/react": "^1.9.0",
     "@mariozechner/pi-agent-core": "0.73.1",
