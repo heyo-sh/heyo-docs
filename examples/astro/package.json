@@ -19,8 +19,8 @@
     "@remixicon/react": "^4.9.0",
     "astro": "7.4.0",
     "@heyo-sh/heyo-docs": "workspace:*",
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "shadcn": "^4.21.4",
     "tw-animate-css": "^1.4.0"
   },
