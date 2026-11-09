@@ -35,7 +35,7 @@
     "rehype-slug": "6.0.0",
     "remark-frontmatter": "5.0.0",
     "remark-gfm": "^4.0.1",
-    "tailwindcss": "^4.1.14",
+    "tailwindcss": "^4.3.5",
     "tsx": "^4.23.15",
     "typescript": "5.9.3"
   }
