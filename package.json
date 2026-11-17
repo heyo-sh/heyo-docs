@@ -31,9 +31,9 @@
     "@types/react-dom": "19.3.0",
     "bun-types": "1.4.4",
     "husky": "9.1.7",
-    "knip": "6.44.0",
+    "knip": "6.45.1",
     "lint-staged": "17.6.0",
-    "prettier": "3.9.10",
+    "prettier": "3.10.1",
     "prettier-plugin-astro": "^1.1.2",
     "typescript": "7.0.2"
   },
