@@ -28,8 +28,8 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.5",
-    "@react-router/dev": "8.5.1",
-    "@react-router/serve": "8.5.1",
+    "@react-router/dev": "8.5.2",
+    "@react-router/serve": "8.5.2",
     "@types/node": "26.6.6",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
