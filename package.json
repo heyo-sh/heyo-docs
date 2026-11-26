@@ -29,10 +29,10 @@
     "@types/node": "26.6.6",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
-    "bun-types": "1.4.4",
+    "bun-types": "1.4.5",
     "husky": "9.1.7",
-    "knip": "6.45.1",
-    "lint-staged": "17.6.0",
+    "knip": "6.47.0",
+    "lint-staged": "17.6.1",
     "prettier": "3.10.1",
     "prettier-plugin-astro": "^1.1.2",
     "typescript": "7.0.2"
